@@ -1,0 +1,13 @@
+{
+  "name": "vimnotion",
+  "version": "1.0.0",
+  "description": "notion with vim motions",
+  "license": "ISC",
+  "author": "jackmu@umich.edu",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "live-server",
+    "tw": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

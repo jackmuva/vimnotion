@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Vim Notion</title>
+	<style type="text/css">
+		html,
+		body,
+		.container {
+			margin: 0;
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+			background: #d7d7d7;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container" id="main-container">
+		<textarea id="editor"></textarea>
+		<div id="mode-container">Normal</div>
+		<div id="vim-command-line"></div>
+	</div>
+	<script src="src/index.js" type="module"></script>
+</body>
+
+</html>
