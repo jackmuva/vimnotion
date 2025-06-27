@@ -4,22 +4,14 @@
 <head>
 	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Vim Notion</title>
-	<style type="text/css">
-		html,
-		body,
-		.container {
-			margin: 0;
-			height: 100vh;
-			width: 100vw;
-			overflow: hidden;
-			background: #d7d7d7;
-		}
-	</style>
+	<link href="./src/styles/output.css" rel="stylesheet">
 </head>
 
 <body>
-	<div class="container" id="main-container">
-		<textarea id="editor"></textarea>
+	<div class="flex flex-col bg-stone-50 h-dvh w-dvw justify-center items-center" id="main-container">
+		<textarea id="editor"
+			class="p-2 rounded-sm bg-stone-200 outline-none w-11/12 max-w-[900px] h-5/6 max-h-[1000px] resize-none"
+			readonly></textarea>
 		<div id="mode-container">Normal</div>
 		<div id="vim-command-line"></div>
 	</div>

@@ -15,10 +15,11 @@ document.addEventListener('keyup', (e) => {
 	if (e.key === 'Escape') {
 		mode = VIM_MODE.NORMAL
 		document.getElementById('vim-command-line').innerHTML = "";
+		document.getElementById('editor').readOnly = true;
 	} else if (mode === VIM_MODE.NORMAL) {
 		handleNormalKey(e.key);
 	} else if (mode === VIM_MODE.INSERT) {
-
+		document.getElementById('editor').readOnly = false;
 	}
 	document.getElementById('mode-container').innerHTML = mode;
 });
