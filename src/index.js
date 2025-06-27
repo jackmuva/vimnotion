@@ -10,6 +10,29 @@ export const VIM_MODE = Object.freeze({
 /** @type {VimMode} */
 let mode = VIM_MODE.NORMAL;
 
+/**
+ * Updates the cursor style based on the current vim mode
+ * @returns {void}
+ */
+function updateCursorStyle() {
+	const editor = document.getElementById('editor');
+	
+	// Remove all cursor classes
+	editor.classList.remove('vim-normal-cursor', 'vim-insert-cursor');
+	
+	// Add the appropriate cursor class based on mode
+	if (mode === VIM_MODE.NORMAL || mode === VIM_MODE.VISUAL || mode === VIM_MODE.V_LINE) {
+		editor.classList.add('vim-normal-cursor');
+	} else if (mode === VIM_MODE.INSERT) {
+		editor.classList.add('vim-insert-cursor');
+	}
+}
+
+// Initialize cursor style on page load
+document.addEventListener('DOMContentLoaded', () => {
+	updateCursorStyle();
+});
+
 document.addEventListener('keyup', (e) => {
 	console.log(e);
 	if (e.key === 'Escape') {
@@ -19,9 +42,9 @@ document.addEventListener('keyup', (e) => {
 	} else if (mode === VIM_MODE.NORMAL) {
 		handleNormalKey(e.key);
 	} else if (mode === VIM_MODE.INSERT) {
-		document.getElementById('editor').readOnly = false;
 	}
 	document.getElementById('mode-container').innerHTML = mode;
+	updateCursorStyle();
 });
 
 /**
@@ -30,6 +53,10 @@ document.addEventListener('keyup', (e) => {
 */
 function handleNormalKey(key) {
 	let curInput = document.getElementById('vim-command-line').innerHTML
+	if (curInput.charAt(0) !== ":") {
+		curInput = "";
+	}
+
 	if (key === 'Backspace') {
 		curInput = curInput.slice(0, -1);
 	} else if (key === 'Enter') {
@@ -39,15 +66,19 @@ function handleNormalKey(key) {
 		return;
 	} else if (key === 'i') {
 		mode = VIM_MODE.INSERT;
+		document.getElementById('editor').readOnly = false;
 		curInput = "";
 	} else if (key === 'I') {
 		mode = VIM_MODE.INSERT;
+		document.getElementById('editor').readOnly = false;
 		curInput = "";
 	} else if (key === 'a') {
 		mode = VIM_MODE.INSERT;
+		document.getElementById('editor').readOnly = false;
 		curInput = "";
 	} else if (key === 'A') {
 		mode = VIM_MODE.INSERT;
+		document.getElementById('editor').readOnly = false;
 		curInput = "";
 	} else if (key === 'v') {
 		mode = VIM_MODE.VISUAL;
