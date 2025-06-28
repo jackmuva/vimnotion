@@ -16,16 +16,13 @@ let mode = VIM_MODE.NORMAL;
  */
 function updateCursorStyle() {
 	const editor = document.getElementById('editor');
-	
-	// Remove all cursor classes
-	editor.classList.remove('vim-normal-cursor', 'vim-insert-cursor');
-	
-	// Add the appropriate cursor class based on mode
+
+	editor.classList.remove('vim-normal-cursor');
+
 	if (mode === VIM_MODE.NORMAL || mode === VIM_MODE.VISUAL || mode === VIM_MODE.V_LINE) {
 		editor.classList.add('vim-normal-cursor');
-	} else if (mode === VIM_MODE.INSERT) {
-		editor.classList.add('vim-insert-cursor');
 	}
+	console.log(editor.classList);
 }
 
 // Initialize cursor style on page load

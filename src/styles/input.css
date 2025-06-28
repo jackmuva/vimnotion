@@ -9,19 +9,13 @@
     text-shadow: 0 0 0 #dc2626;
 }
 
-.vim-insert-cursor {
-    caret-color: #059669; /* emerald-600 */
-    caret-shape: bar;
-}
 
 /* Custom block cursor implementation for better browser support */
-.vim-normal-cursor:focus {
+.vim-normal-cursor:focus{
     background: linear-gradient(to right, #dc2626 0%, #dc2626 1ch, transparent 1ch);
     background-size: 1ch 1em;
     background-repeat: no-repeat;
     background-position: 0 0;
 }
 
-.vim-insert-cursor:focus {
-    caret-color: #059669;
-}
+
