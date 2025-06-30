@@ -6,3 +6,11 @@ export const VIM_MODE = Object.freeze({
 	VISUAL: 'Visual',
 	V_LINE: 'V-Line',
 });
+
+/**
+ * @typedef VimState 
+ * @type {Object}
+ * @property {string} mode 
+ * @property {number} rowNum
+ * @property {number} colNum
+ */

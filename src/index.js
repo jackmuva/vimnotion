@@ -1,29 +1,32 @@
-import { handleInsertKey } from "./markdown-module.js";
-import { handleNormalKey } from "./normal-module.js";
+import { handleInsertKey } from "./lib/insert-module.js";
+import { handleNormalKey } from "./lib/normal-module.js";
+import { moveCursor } from "./lib/utils.js";
 import { VIM_MODE } from "./types/typedef.js";
 
-//NOTE: These are my states
-
-/** @type {import("./types/typedef.js").VimMode} */
-let mode = VIM_MODE.NORMAL;
-
-let fullTextContainer = `
-	<div contenteditable="false" id='editor' class="h-full w-full outline-none wrap-anywhere">
-`;
+/** @type {string} */
+const fullTextContainer = `<div contenteditable="false" id='editor' class="h-full w-full outline-none wrap-anywhere">`;
+/** @type {string} */
 const closingDiv = "</div>";
+/** @type {import("./types/typedef.js").VimState} */
+let state = {
+	mode: VIM_MODE.NORMAL,
+	rowNum: 0,
+	colNum: 0,
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('full-text-container').innerHTML = fullTextContainer
-		+ (localStorage.getItem('content') ?? "")
+		+ (localStorage.getItem('content') ?? "_")
 		+ closingDiv;
+	moveCursor(state);
 });
 
 document.addEventListener('keyup', (e) => {
 	console.log(e);
-	if (mode === VIM_MODE.NORMAL) {
-		mode = handleNormalKey(e.key, mode);
-	} else if (mode === VIM_MODE.INSERT) {
-		mode = handleInsertKey(e.key, mode);
+	if (state.mode === VIM_MODE.NORMAL) {
+		state = handleNormalKey(e.key, state);
+	} else if (state.mode === VIM_MODE.INSERT) {
+		state = handleInsertKey(e.key, state);
 	}
-	document.getElementById('mode-container').innerHTML = mode;
+	document.getElementById('mode-container').innerHTML = state.mode;
 });
