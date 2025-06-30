@@ -169,6 +169,9 @@
   .h-dvh {
     height: 100dvh;
   }
+  .h-full {
+    height: 100%;
+  }
   .max-h-\[1000px\] {
     max-height: 1000px;
   }
@@ -178,11 +181,11 @@
   .w-dvw {
     width: 100dvw;
   }
+  .w-full {
+    width: 100%;
+  }
   .max-w-\[900px\] {
     max-width: 900px;
-  }
-  .resize-none {
-    resize: none;
   }
   .flex-col {
     flex-direction: column;
@@ -208,20 +211,15 @@
   .font-mono {
     font-family: var(--font-mono);
   }
+  .wrap-anywhere {
+    overflow-wrap: anywhere;
+  }
   .outline-none {
     --tw-outline-style: none;
     outline-style: none;
   }
 }
-.vim-normal-cursor {
-  caret-color: #dc2626;
-  caret-shape: block;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 0 #dc2626;
-}
-.vim-normal-cursor:focus {
-  background: linear-gradient(to right, #dc2626 0%, #dc2626 1ch, transparent 1ch);
-  background-size: 1ch 1em;
-  background-repeat: no-repeat;
-  background-position: 0 0;
+#editor > span {
+  background-color: #6b6a69;
+  color: white;
 }

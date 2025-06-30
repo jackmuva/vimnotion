@@ -1,21 +1,6 @@
 @import "tailwindcss";
 
-/* Vim cursor styles */
-.vim-normal-cursor {
-    caret-color: #dc2626; /* red-600 */
-    caret-shape: block;
-    /* Fallback for browsers that don't support caret-shape */
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 0 #dc2626;
+#editor > span {
+    background-color: #6b6a69;
+    color: white;
 }
-
-
-/* Custom block cursor implementation for better browser support */
-.vim-normal-cursor:focus{
-    background: linear-gradient(to right, #dc2626 0%, #dc2626 1ch, transparent 1ch);
-    background-size: 1ch 1em;
-    background-repeat: no-repeat;
-    background-position: 0 0;
-}
-
-
