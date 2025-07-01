@@ -24,9 +24,7 @@ export function handleInsertKey(key, state) {
 export function handleInsertInitiate(key, state) {
 	if (key === 'i') {
 		state.mode = VIM_MODE.INSERT;
-		console.log(window.document.getElementById('editor').innerHTML.toString());
 		removeSpan();
-		console.log(window.document.getElementById('editor').innerHTML.toString());
 		initInsert();
 	} else if (key === 'I') {
 		state.mode = VIM_MODE.INSERT;

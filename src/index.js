@@ -21,8 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	moveCursor(state);
 });
 
-document.addEventListener('keyup', (e) => {
-	console.log(e);
+document.addEventListener('keydown', (e) => {
 	if (state.mode === VIM_MODE.NORMAL) {
 		state = handleNormalKey(e.key, state);
 	} else if (state.mode === VIM_MODE.INSERT) {

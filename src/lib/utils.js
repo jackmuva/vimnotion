@@ -16,7 +16,8 @@ export function moveCursor(state) {
 * @returns {void}
 */
 export function removeSpan() {
-	document.getElementById('editor').innerHTML = document.getElementById('editor').innerHTML.toString().replace('<span id="cursor">', "")
-	console.log(document.getElementById('editor').innerHTML.toString().replace('</span><!--closingspan-->', ""));
-	document.getElementById('editor').innerHTML = document.getElementById('editor').innerHTML.toString().replace('</span><!--closingspan-->', '');
+	let editorContent = document.getElementById('editor').innerHTML.toString();
+	editorContent = editorContent.replace('<span id="cursor">', "");
+	editorContent = editorContent.replace('</span><!--closingspan-->', '');
+	document.getElementById('editor').innerHTML = editorContent;
 }
