@@ -5,9 +5,11 @@ import { moveCursor, countRowsCols } from "./utils.js";
 /**
 * @param {string} key 
 * @param {import("../types/typedef.js").VimState} state
+* @param {KeyboardEvent} event
 * @returns {import("../types/typedef.js").VimState}
 */
-export function handleNormalKey(key, state) {
+export function handleNormalKey(key, state, event) {
+	event.preventDefault();
 	let curInput = document.getElementById('vim-command-line').innerHTML;
 	const rowMap = countRowsCols();
 	console.log(rowMap);

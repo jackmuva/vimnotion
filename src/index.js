@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	moveCursor(state, rowMap);
 });
 
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', (event) => {	
 	if (state.mode === VIM_MODE.NORMAL) {
-		state = handleNormalKey(e.key, state);
+		state = handleNormalKey(event.key, state, event);
 	} else if (state.mode === VIM_MODE.INSERT) {
-		state = handleInsertKey(e.key, state);
+		state = handleInsertKey(event.key, state);
 	}
 	document.getElementById('mode-container').innerHTML = state.mode;
 });
