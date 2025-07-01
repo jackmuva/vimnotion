@@ -27,7 +27,7 @@ export function handleNormalKey(key, state) {
 			state.colNum > 0 ? state.colNum -= 1 : state.colNum = 0;
 			moveCursor(state, rowMap);
 		} else if (key === "l") {
-			state.colNum < rowMap.get(state.rowNum).length - 2 ? state.colNum += 1 : state.colNum = rowMap.get(state.rowNum).length - 2;
+			state.colNum < rowMap.get(state.rowNum).length - 1 ? state.colNum += 1 : state.colNum = rowMap.get(state.rowNum).length - 1;
 			moveCursor(state, rowMap);
 		} else if (key === "j") {
 			rowMap.has(state.rowNum + 1) ? state.rowNum += 1 : state.rowNum = state.rowNum;

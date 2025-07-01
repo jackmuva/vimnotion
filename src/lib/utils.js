@@ -52,12 +52,15 @@ export function countRowsCols() {
 		lineContent += char;
 		charCount++;
 		let currentY = line.offsetHeight;
-		if (currentY > lineY || i == textArr.length - 1) {
+		if (currentY > lineY) {
+			lineContent = lineContent.slice(0, -1); // Remove the wrap-causing character
 			resMap.set(lineNo, lineContent);
 			lineY = currentY;
-			charCount = 0;
+			charCount = 1;
 			lineNo++;
-			lineContent = "";
+			lineContent = char; // Start next line with the wrap-causing character
+		} else if (i == textArr.length - 1) {
+			resMap.set(lineNo, lineContent);
 		}
 	});
 	line.remove();
