@@ -196,6 +196,9 @@
   .justify-center {
     justify-content: center;
   }
+  .overflow-y-scroll {
+    overflow-y: scroll;
+  }
   .rounded-sm {
     border-radius: var(--radius-sm);
   }

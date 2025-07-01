@@ -1,6 +1,6 @@
 import { handleInsertKey } from "./lib/insert-module.js";
 import { handleNormalKey } from "./lib/normal-module.js";
-import { moveCursor } from "./lib/utils.js";
+import { moveCursor, countRowsCols } from "./lib/utils.js";
 import { VIM_MODE } from "./types/typedef.js";
 
 /** @type {string} */
@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('full-text-container').innerHTML = fullTextContainer
 		+ (localStorage.getItem('content') ?? "_")
 		+ closingDiv;
-	moveCursor(state);
+	const rowMap = countRowsCols();
+	moveCursor(state, rowMap);
 });
 
 document.addEventListener('keydown', (e) => {

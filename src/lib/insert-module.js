@@ -1,5 +1,5 @@
 import { VIM_MODE } from "../types/typedef.js";
-import { removeSpan, moveCursor } from "./utils.js";
+import { removeSpan, moveCursor, countRowsCols } from "./utils.js";
 
 /**
  * @param {string} key 
@@ -57,7 +57,8 @@ function initInsert() {
  * @returns {import("../types/typedef.js").VimState}
 */
 function convertToMarkdown(state) {
-	moveCursor(state);
+	const rowMap = countRowsCols();
+	moveCursor(state, rowMap);
 	return state;
 }
 

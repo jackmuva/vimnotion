@@ -1,6 +1,6 @@
 import { handleInsertInitiate } from "./insert-module.js";
 import { VIM_MODE } from "../types/typedef.js";
-import { moveCursor } from "./utils.js";
+import { moveCursor, countRowsCols } from "./utils.js";
 
 /**
 * @param {string} key 
@@ -9,6 +9,9 @@ import { moveCursor } from "./utils.js";
 */
 export function handleNormalKey(key, state) {
 	let curInput = document.getElementById('vim-command-line').innerHTML;
+	const rowMap = countRowsCols();
+	console.log(rowMap);
+
 	if (curInput.charAt(0) !== ":") {
 		curInput = "";
 		if (key === 'i' || key === "I" || key === "a" || key === "A") {
@@ -22,10 +25,16 @@ export function handleNormalKey(key, state) {
 			curInput = "";
 		} else if (key === "h") {
 			state.colNum > 0 ? state.colNum -= 1 : state.colNum = 0;
-			moveCursor(state);
+			moveCursor(state, rowMap);
 		} else if (key === "l") {
-			state.colNum < 100 ? state.colNum += 1 : state.colNum = 100;
-			moveCursor(state);
+			state.colNum < rowMap.get(state.rowNum).length - 2 ? state.colNum += 1 : state.colNum = rowMap.get(state.rowNum).length - 2;
+			moveCursor(state, rowMap);
+		} else if (key === "j") {
+			rowMap.has(state.rowNum + 1) ? state.rowNum += 1 : state.rowNum = state.rowNum;
+			moveCursor(state, rowMap);
+		} else if (key === "k") {
+			rowMap.has(state.rowNum - 1) ? state.rowNum -= 1 : state.rowNum = state.rowNum;
+			moveCursor(state, rowMap);
 		}
 	}
 
@@ -57,4 +66,5 @@ export function handleNormalCommand(command) {
 		window.location.reload();
 	}
 }
+
 
