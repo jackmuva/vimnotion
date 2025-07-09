@@ -4,14 +4,21 @@
   "description": "notion with vim motions",
   "license": "ISC",
   "author": "jackmu@umich.edu",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
-    "dev": "live-server",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "tw": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@replit/codemirror-vim": "^6.3.0",
     "@tailwindcss/cli": "^4.1.11",
+    "codemirror": "^6.0.2",
     "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "vite": "^6.2.2"
   }
 }
