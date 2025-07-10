@@ -1,6 +1,0 @@
-@import "tailwindcss";
-
-#editor > span {
-    background-color: #6b6a69;
-    color: white;
-}
