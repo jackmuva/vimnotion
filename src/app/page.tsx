@@ -1,21 +1,9 @@
-import { auth } from "@/auth";
-import { Session } from "next-auth";
-import { Dashboard } from "./components/dashboard";
-import { SigninPage } from "./components/signin-page";
+import { VimEditor } from "@/components/custom/vim-editor";
 
-export default async function Home() {
-  const session: Session | null = await auth()
-  console.log(session);
-  if (session) {
-    return (
-      <div className="flex min-w-screen min-h-screen p-8 font-mono">
-        <Dashboard session={session} />
-      </div>
-    );
-  }
+export default function Home() {
   return (
-    <div className="flex min-w-screen min-h-screen p-8 font-mono">
-      <SigninPage />
+    <div className="bg-background w-dvw h-dvh flex justify-center items-center">
+      <VimEditor />
     </div>
   );
 }
