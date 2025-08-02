@@ -13,7 +13,8 @@
     "codemirror": "^6.0.2",
     "next": "15.4.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "thememirror": "^2.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
