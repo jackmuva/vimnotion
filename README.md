@@ -1,9 +1,7 @@
 # vimnotion - notion with vim motion
 
 ## Getting Started
-
-First, run the development server:
-
+### nextjs
 ```bash
 npm run dev
 # or
@@ -12,6 +10,11 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+### go webserver
+```bash
+go run main.go
 ```
 
 ## Todos
