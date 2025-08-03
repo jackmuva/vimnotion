@@ -1,25 +1,25 @@
 'use client';
 import { basicSetup, EditorView } from 'codemirror';
-import { keymap } from '@codemirror/view';
-import { vim, getCM, Vim, CodeMirror } from "@replit/codemirror-vim"
-import { useEffect, useState } from 'react';
+import { vim } from "@replit/codemirror-vim"
+import { useEffect, useState, useRef } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { customTheme, customKeyMappings } from './custom-editor-settings';
+import { applyCustomVim, customTheme } from './custom-editor-settings';
 
 export const VimEditor = () => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
-	const themeCompartment = new Compartment();
+	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
+	const themeRef = useRef(new Compartment());
+	const theme = themeRef.current;
+
+	const toggleLeaderPanel = () => {
+		setLeaderPanel((prev) => !prev);
+	}
 
 	useEffect(() => {
 		if (vimEditor !== null) {
 			return;
-		}
-
-		let theme = lightTheme;
-		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			theme = darkTheme
 		}
 
 		let view = new EditorView({
@@ -28,28 +28,52 @@ export const VimEditor = () => {
 				// make sure vim is included before other keymaps
 				vim(),
 				basicSetup,
-				themeCompartment.of(customTheme),
-				theme,
+				new Compartment().of(customTheme),
+				theme.of(lightTheme),
 				markdown(),
-				keymap.of(customKeyMappings),
 			],
 			parent: document.querySelector('#vim-editor')!,
-		})
-		let cm = getCM(view);
-		Vim.defineEx('write', 'w', function() {
-			console.log('saving');
 		});
-		Vim.defineAction("toggleLeaderPanel", (args) => {
-			console.log('toggling');
-		});
-		Vim.unmap('<Space>', "false");
-		Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', { cm: cm, args: [] }, { context: 'normal' });
+
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			view.dispatch({
+				effects: theme.reconfigure(darkTheme),
+			});
+		}
+
+		applyCustomVim(() => toggleLeaderPanel());
 		setVimEditor(view);
 	}, []);
 
+	useEffect(() => {
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+			if (event.matches) {
+				console.log('switching to dark');
+				vimEditor?.dispatch({
+					effects: theme.reconfigure(darkTheme),
+				});
+			} else {
+				console.log('switching to light');
+				vimEditor?.dispatch({
+					effects: theme.reconfigure(lightTheme),
+				});
+			}
+		});
+	}, [vimEditor]);
+
+
+
 	return (
-		<div id='vim-editor'
-			className='w-full h-full overflow-y-scroll p-10'>
+		<div className='relative h-full w-full p-10'>
+			<div className='w-full h-full relative'>
+				<div id='vim-editor'
+					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll relative`}>
+				</div>
+				{leaderPanel && <div id='leader-panel'
+					className='w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
+					m-1 rounded-sm'>
+				</div>}
+			</div>
 		</div>
 	)
 
