@@ -48,12 +48,10 @@ export const VimEditor = () => {
 	useEffect(() => {
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
 			if (event.matches) {
-				console.log('switching to dark');
 				vimEditor?.dispatch({
 					effects: theme.reconfigure(darkTheme),
 				});
 			} else {
-				console.log('switching to light');
 				vimEditor?.dispatch({
 					effects: theme.reconfigure(lightTheme),
 				});
@@ -64,7 +62,7 @@ export const VimEditor = () => {
 
 
 	return (
-		<div className='relative h-full w-full p-10'>
+		<div className='relative h-full w-full pt-14 p-10'>
 			<div className='w-full h-full relative'>
 				<div id='vim-editor'
 					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll relative`}>
