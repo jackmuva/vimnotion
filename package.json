@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.3.4",
     "@replit/codemirror-vim": "^6.3.0",
     "codemirror": "^6.0.2",
     "next": "15.4.3",
