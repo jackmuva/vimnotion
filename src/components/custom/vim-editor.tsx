@@ -1,11 +1,12 @@
 'use client';
 import { basicSetup, EditorView } from 'codemirror';
-import { vim } from "@replit/codemirror-vim"
+import { keymap } from '@codemirror/view';
+import { vim, getCM, Vim, CodeMirror } from "@replit/codemirror-vim"
 import { useEffect, useState } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { customTheme } from './editor-styling';
+import { customTheme, customKeyMappings } from './custom-editor-settings';
 
 export const VimEditor = () => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
@@ -15,6 +16,7 @@ export const VimEditor = () => {
 		if (vimEditor !== null) {
 			return;
 		}
+
 		let theme = lightTheme;
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			theme = darkTheme
@@ -25,14 +27,23 @@ export const VimEditor = () => {
 			extensions: [
 				// make sure vim is included before other keymaps
 				vim(),
-				// include the default keymap and all other keymaps you want to use in insert mode
 				basicSetup,
 				themeCompartment.of(customTheme),
 				theme,
 				markdown(),
+				keymap.of(customKeyMappings),
 			],
 			parent: document.querySelector('#vim-editor')!,
 		})
+		let cm = getCM(view);
+		Vim.defineEx('write', 'w', function() {
+			console.log('saving');
+		});
+		Vim.defineAction("toggleLeaderPanel", (args) => {
+			console.log('toggling');
+		});
+		Vim.unmap('<Space>', "false");
+		Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', { cm: cm, args: [] }, { context: 'normal' });
 		setVimEditor(view);
 	}, []);
 
