@@ -7,14 +7,22 @@ export const customTheme = EditorView.theme({
 	},
 }, { dark: false });
 
-export const applyCustomVim = (toggleLeaderPanel: () => void) => {
+export const applyCustomVim = ({ toggleLeaderPanel, toggleSidebar }:
+	{ toggleLeaderPanel: () => void, toggleSidebar: () => void }) => {
 	Vim.defineEx('write', 'w', function() {
 		console.log('saving');
 	});
+
 	Vim.defineAction("toggleLeaderPanel", (cm, args) => {
 		toggleLeaderPanel();
-		console.log('toggling');
 	});
 	Vim.unmap('<Space>', "false");
 	Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', {}, { context: 'normal' });
+
+	Vim.defineAction("toggleSidebar", (cm, args) => {
+		toggleSidebar();
+	});
+	Vim.unmap('-', "false");
+	Vim.mapCommand('-', 'action', 'toggleSidebar', {}, { context: 'normal' });
+
 }

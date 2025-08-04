@@ -1,4 +1,3 @@
-'use client';
 import { basicSetup, EditorView } from 'codemirror';
 import { vim } from "@replit/codemirror-vim"
 import { useEffect, useState, useRef } from 'react';
@@ -7,7 +6,7 @@ import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 
-export const VimEditor = () => {
+export const VimEditor = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
 	const themeRef = useRef(new Compartment());
@@ -23,7 +22,7 @@ export const VimEditor = () => {
 		}
 
 		let view = new EditorView({
-			doc: "",
+			doc: "\n\n\n\n\n\n",
 			extensions: [
 				// make sure vim is included before other keymaps
 				vim(),
@@ -41,7 +40,7 @@ export const VimEditor = () => {
 			});
 		}
 
-		applyCustomVim(() => toggleLeaderPanel());
+		applyCustomVim({ toggleLeaderPanel: toggleLeaderPanel, toggleSidebar: toggleSidebar });
 		setVimEditor(view);
 	}, []);
 
