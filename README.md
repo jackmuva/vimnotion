@@ -19,7 +19,6 @@ go run main.go
 
 ## Todos
 - github auth
-- codemirror with vim motions
 - markdown renderer
 - neovim-like actions like tabs, split, search, oil, search
 - create teams
