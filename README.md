@@ -20,6 +20,8 @@ go run main.go
 ## Todos
 - github auth
 - markdown renderer
+  - ability to link pages, insert images, embed videos
+- normie view
 - neovim-like actions like tabs, split, search, oil, search
 - create teams
 - extensabiity with hotkeys for apis
