@@ -2,7 +2,7 @@
 import { VimEditor } from "@/components/custom/vim-editor";
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false);
@@ -10,6 +10,12 @@ export default function Home() {
   const toggleSidebar = () => {
     setOpenSidebar((prev) => !prev);
   }
+
+  useEffect(() => {
+    if (openSidebar) {
+      document.getElementById('sidebar')!.focus()
+    }
+  }, [openSidebar]);
 
   return (
     <div className="bg-background w-dvw h-dvh flex justify-center items-center font-mono">
