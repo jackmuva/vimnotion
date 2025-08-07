@@ -1,43 +1,57 @@
-package main
+package server
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/joho/godotenv"
 	"io"
 	"net"
 	"net/http"
+	"os"
 )
 
-const keyServerAddr = "serverAddr"
+const keyServerAddr = "go-vimnotion-server"
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	hasQ := r.URL.Query().Has("q")
-	q := r.URL.Query().Get("q")
-	if !hasQ {
-		w.Header().Set("x-missing-filed", "q")
-		w.WriteHeader(http.StatusBadRequest)
-	}
-	fmt.Printf("%s: got / request. %t=%s\n", ctx.Value(keyServerAddr), hasQ, q)
+	fmt.Printf("got / request")
 	io.WriteString(w, "This is vimnotion\n")
 }
 
-func getHello(w http.ResponseWriter, r *http.Request) {
+func githubCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		fmt.Printf("could not read body: %s", err)
+
+	hasCode := r.URL.Query().Has("code")
+	code := r.URL.Query().Get("code")
+	if !hasCode {
+		fmt.Printf("no code received from github")
+		w.Header().Set("x-missing-filed", "q")
+		w.WriteHeader(http.StatusBadRequest)
 	}
-	fmt.Printf("%s: got /hello request. Body: \n%s\n", ctx.Value(keyServerAddr), body)
-	io.WriteString(w, "Hello\n")
+
+}
+
+type EnvVars struct {
+	githubClientId  string
+	githubSecretKey string
+}
+
+func getEnv() EnvVars {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Printf("Error loading .env file")
+	}
+
+	githubClientId := os.Getenv("GITHUB_CLIENT_ID")
+	githubSecretKey := os.Getenv("GITHUB_SECRET_KEY")
+
+	return EnvVars{githubClientId: githubClientId, githubSecretKey: githubSecretKey}
 }
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", getRoot)
-	mux.HandleFunc("/hello", getHello)
+	mux.HandleFunc("/oauth/github/callback", githubCallback)
 
 	ctx := context.Background()
 	server := &http.Server{
