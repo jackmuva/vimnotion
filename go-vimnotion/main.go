@@ -1,51 +1,37 @@
-package server
+package main
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/joho/godotenv"
 	"io"
 	"net"
 	"net/http"
-	"os"
+	"net/url"
+	"vimnotion.com/server/oauth/github"
 )
 
 const keyServerAddr = "go-vimnotion-server"
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got / request")
+	fmt.Printf("got / request\n")
 	io.WriteString(w, "This is vimnotion\n")
 }
 
 func githubCallback(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
 	hasCode := r.URL.Query().Has("code")
 	code := r.URL.Query().Get("code")
 	if !hasCode {
-		fmt.Printf("no code received from github")
-		w.Header().Set("x-missing-filed", "q")
+		fmt.Printf("no code received from github\n")
 		w.WriteHeader(http.StatusBadRequest)
 	}
-
-}
-
-type EnvVars struct {
-	githubClientId  string
-	githubSecretKey string
-}
-
-func getEnv() EnvVars {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Printf("Error loading .env file")
+	fmt.Printf("code: %s", code)
+	tokenBody := oauth_github.GetGithubToken(code)
+	tokenValues, valErr := url.ParseQuery(tokenBody)
+	if valErr != nil {
+		fmt.Printf("error getting token values: %s\n", valErr)
 	}
-
-	githubClientId := os.Getenv("GITHUB_CLIENT_ID")
-	githubSecretKey := os.Getenv("GITHUB_SECRET_KEY")
-
-	return EnvVars{githubClientId: githubClientId, githubSecretKey: githubSecretKey}
+	fmt.Printf("map: %s\n", tokenValues["access_token"][0])
 }
 
 func main() {
