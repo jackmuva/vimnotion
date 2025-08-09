@@ -1,6 +1,7 @@
 package oauth_github
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,14 +21,62 @@ func GetGithubToken(code string) string {
 
 	req, reqErr := http.NewRequest(http.MethodPost, requestUrl, strings.NewReader(data.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	res, resErr := http.DefaultClient.Do(req)
-	resBody, bodyErr := io.ReadAll(res.Body)
-	res.Body.Close()
-	if reqErr != nil && resErr != nil && bodyErr != nil {
-		fmt.Printf("error with github oauth flow: %s | %s | %s", reqErr, resErr, bodyErr)
+	if reqErr != nil {
+		fmt.Printf("[GITHUB TOKEN REQUEST]: %s\n", reqErr)
 	}
-	fmt.Printf("successfully requested token: %s\n", resBody)
-	return string(resBody)
+
+	res, resErr := http.DefaultClient.Do(req)
+	if resErr != nil {
+		fmt.Printf("[GITHUB TOKEN RESPONSE]: %s\n", resErr)
+	}
+
+	body, bodyErr := io.ReadAll(res.Body)
+	if bodyErr != nil {
+		fmt.Printf("[GITHUB TOKEN BODY]: %s\n", bodyErr)
+	}
+
+	res.Body.Close()
+	fmt.Printf("successfully requested token: %s\n", body)
+	tokenValues, valErr := url.ParseQuery(string(body))
+	if valErr != nil {
+		fmt.Printf("error getting token values: %s\n", valErr)
+	}
+
+	return tokenValues["access_token"][0]
+
 }
 
-//TODO:Get user data
+func GetGithubUser(token string) map[string]interface{} {
+	var authSb strings.Builder
+	authSb.WriteString("Bearer ")
+	authSb.WriteString(token)
+
+	requestUrl := "https://api.github.com/user"
+
+	req, reqErr := http.NewRequest(http.MethodGet, requestUrl, nil)
+	req.Header.Add("Accept", "application/vnd.github+json")
+	req.Header.Add("X-GitHub-Api-Version", "2022-11-28")
+	req.Header.Add("Authorization", authSb.String())
+	if reqErr != nil {
+		fmt.Printf("[GITHUB USER REQUEST]: %s\n", reqErr)
+	}
+
+	res, resErr := http.DefaultClient.Do(req)
+	if resErr != nil {
+		fmt.Printf("[GITHUB USER RESPONSE]: %s\n", resErr)
+	}
+
+	body, bodyErr := io.ReadAll(res.Body)
+	if bodyErr != nil {
+		fmt.Printf("[GITHUB USER BODY]: %s\n", bodyErr)
+	}
+
+	var userData map[string]interface{}
+	jsonErr := json.Unmarshal(body, &userData)
+	if jsonErr != nil {
+		fmt.Printf("[GITHUB USER JSON]: %s\n", jsonErr)
+	}
+
+	res.Body.Close()
+	return userData
+}

@@ -7,7 +7,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"vimnotion.com/server/oauth/github"
 )
 
@@ -25,13 +24,9 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("no code received from github\n")
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	fmt.Printf("code: %s", code)
-	tokenBody := oauth_github.GetGithubToken(code)
-	tokenValues, valErr := url.ParseQuery(tokenBody)
-	if valErr != nil {
-		fmt.Printf("error getting token values: %s\n", valErr)
-	}
-	fmt.Printf("map: %s\n", tokenValues["access_token"][0])
+	token := oauth_github.GetGithubToken(code)
+	userData := oauth_github.GetGithubUser(token)
+	fmt.Printf("user: %s\n", userData)
 }
 
 func main() {
