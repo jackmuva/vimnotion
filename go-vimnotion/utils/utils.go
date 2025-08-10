@@ -9,16 +9,22 @@ import (
 type EnvVars struct {
 	GithubClientId  string
 	GithubSecretKey string
+	AuthSecret      string
 }
 
-func GetEnv() EnvVars {
+func GetEnv() *EnvVars {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Printf("Error loading .env file")
 	}
 
-	githubClientId := os.Getenv("GITHUB_CLIENT_ID")
-	githubSecretKey := os.Getenv("GITHUB_SECRET_KEY")
+	envVars := EnvVars{
+		GithubClientId:  os.Getenv("GITHUB_CLIENT_ID"),
+		GithubSecretKey: os.Getenv("GITHUB_SECRET_KEY"),
+		AuthSecret:      os.Getenv("AUTH_SECRET"),
+	}
 
-	return EnvVars{GithubClientId: githubClientId, GithubSecretKey: githubSecretKey}
+	var pointerEnv *EnvVars
+	pointerEnv = &envVars
+	return pointerEnv
 }

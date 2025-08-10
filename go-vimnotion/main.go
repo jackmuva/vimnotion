@@ -26,6 +26,7 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	token := oauth_github.GetGithubToken(code)
 	userData := oauth_github.GetGithubUser(token)
+	//TODO: use the jwt method and store it in cookie with redirect
 	fmt.Printf("user: %s\n", userData)
 }
 

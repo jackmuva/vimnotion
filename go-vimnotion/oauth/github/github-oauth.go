@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"vimnotion.com/server/oauth"
 	"vimnotion.com/server/utils"
 )
 
 func GetGithubToken(code string) string {
-	envVars := utils.GetEnv()
+	envPointer := utils.GetEnv()
+	envVars := *envPointer
 
 	requestUrl := "https://github.com/login/oauth/access_token"
 	data := url.Values{}
@@ -46,7 +48,7 @@ func GetGithubToken(code string) string {
 
 }
 
-func GetGithubUser(token string) map[string]interface{} {
+func GetGithubUser(token string) oauth.UserData {
 	var authSb strings.Builder
 	authSb.WriteString("Bearer ")
 	authSb.WriteString(token)
@@ -71,12 +73,18 @@ func GetGithubUser(token string) map[string]interface{} {
 		fmt.Printf("[GITHUB USER BODY]: %s\n", bodyErr)
 	}
 
-	var userData map[string]interface{}
-	jsonErr := json.Unmarshal(body, &userData)
+	var userMap map[string]any
+	jsonErr := json.Unmarshal(body, &userMap)
 	if jsonErr != nil {
 		fmt.Printf("[GITHUB USER JSON]: %s\n", jsonErr)
 	}
-
 	res.Body.Close()
+
+	userData := oauth.UserData{
+		Username: userMap["login"].(string),
+		Name:     userMap["name"].(string),
+		Avatar:   userMap["avatar_url"].(string),
+		Email:    userMap["email"].(string),
+	}
 	return userData
 }
