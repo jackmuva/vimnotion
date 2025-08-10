@@ -19,6 +19,8 @@ go run main.go
 
 ## Todos
 - github auth
+- search experience
+  - graphdb, indexed db with sync
 - markdown renderer
   - ability to link pages, insert images, embed videos
 - normie view
