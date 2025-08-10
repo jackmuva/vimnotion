@@ -8,11 +8,9 @@ import (
 
 func ConnectGraphDriver() {
 	ctx := context.Background()
-	envPointer := utils.GetEnv()
-	envVars := *envPointer
 	driver, err := neo4j.NewDriverWithContext(
-		envVars.Neo4jUri,
-		neo4j.BasicAuth(envVars.Neo4jUsername, envVars.Neo4jPassword, ""))
+		utils.GetEnv().Neo4jUri,
+		neo4j.BasicAuth(utils.GetEnv().Neo4jUsername, utils.GetEnv().Neo4jPassword, ""))
 	defer driver.Close(ctx)
 
 	err = driver.VerifyConnectivity(ctx)

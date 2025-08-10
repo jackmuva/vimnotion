@@ -22,9 +22,6 @@ func healthcheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func githubCallback(w http.ResponseWriter, r *http.Request) {
-	envPointer := utils.GetEnv()
-	envVars := *envPointer
-
 	hasCode := r.URL.Query().Has("code")
 	code := r.URL.Query().Get("code")
 	if !hasCode {
@@ -47,7 +44,7 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, envVars.FrontendBaseUrl, http.StatusSeeOther)
+	http.Redirect(w, r, utils.GetEnv().FrontendBaseUrl, http.StatusSeeOther)
 }
 
 func getFiles(w http.ResponseWriter, r *http.Request) {

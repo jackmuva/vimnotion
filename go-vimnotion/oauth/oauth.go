@@ -15,9 +15,6 @@ type UserData struct {
 }
 
 func CreateJwt(userData UserData) string {
-	envPointer := utils.GetEnv()
-	envVars := *envPointer
-
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":    userData.Username,
 		"iat":    time.Now().Unix(),
@@ -27,7 +24,7 @@ func CreateJwt(userData UserData) string {
 		"name":   userData.Name,
 	})
 
-	tokenString, tokenErr := claims.SignedString([]byte(envVars.AuthSecret))
+	tokenString, tokenErr := claims.SignedString([]byte(utils.GetEnv().AuthSecret))
 	if tokenErr != nil {
 		fmt.Printf("[TOKEN ERROR]: %s\n", tokenErr)
 	}
@@ -35,11 +32,8 @@ func CreateJwt(userData UserData) string {
 }
 
 func VerifyJwt(tokenString string) (*jwt.Token, error) {
-	envPointer := utils.GetEnv()
-	envVars := *envPointer
-
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return []byte(envVars.AuthSecret), nil
+		return []byte(utils.GetEnv().AuthSecret), nil
 	})
 	if err != nil {
 		return nil, err
@@ -47,5 +41,6 @@ func VerifyJwt(tokenString string) (*jwt.Token, error) {
 	if !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
+
 	return token, nil
 }

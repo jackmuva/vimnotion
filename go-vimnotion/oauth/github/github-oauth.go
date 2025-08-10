@@ -12,14 +12,11 @@ import (
 )
 
 func GetGithubToken(code string) string {
-	envPointer := utils.GetEnv()
-	envVars := *envPointer
-
 	requestUrl := "https://github.com/login/oauth/access_token"
 	data := url.Values{}
 	data.Set("code", code)
-	data.Set("client_id", envVars.GithubClientId)
-	data.Set("client_secret", envVars.GithubSecretKey)
+	data.Set("client_id", utils.GetEnv().GithubClientId)
+	data.Set("client_secret", utils.GetEnv().GithubSecretKey)
 
 	req, reqErr := http.NewRequest(http.MethodPost, requestUrl, strings.NewReader(data.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
