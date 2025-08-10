@@ -9,9 +9,11 @@ export const Sidebar = () => {
 				method: "GET"
 			}).then((authReq) => {
 				authReq.json().then((authRes) => {
-					if (authRes.ok) {
+					if (authRes.authenticated === "true") {
 						localStorage.setItem("authenticated", "true");
 						setAuthenticated(true);
+					} else {
+						localStorage.setItem("authenticated", "false");
 					}
 				}).then((err) => {
 					throw Error("unable to authenticate" + err);
