@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"time"
+	"vimnotion.com/server/middleware"
 	"vimnotion.com/server/oauth"
 	"vimnotion.com/server/oauth/github"
 	"vimnotion.com/server/utils"
@@ -15,8 +16,8 @@ import (
 
 const keyServerAddr = "go-vimnotion-server"
 
-func getRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got / request\n")
+func healthcheck(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got healthcheck request\n")
 	io.WriteString(w, "This is vimnotion\n")
 }
 
@@ -49,10 +50,16 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, envVars.FrontendBaseUrl, http.StatusSeeOther)
 }
 
+func getFiles(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got healthcheck request\n")
+	io.WriteString(w, "This is vimnotion\n")
+}
+
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", getRoot)
+	mux.HandleFunc("/", healthcheck)
 	mux.HandleFunc("/oauth/github/callback", githubCallback)
+	mux.Handle("/files", middleware.AuthMiddleware(http.HandlerFunc(getFiles)))
 
 	ctx := context.Background()
 	server := &http.Server{

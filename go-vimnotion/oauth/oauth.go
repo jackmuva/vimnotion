@@ -2,9 +2,8 @@ package oauth
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/golang-jwt/jwt/v5"
+	"time"
 	"vimnotion.com/server/utils"
 )
 
@@ -33,4 +32,20 @@ func CreateJwt(userData UserData) string {
 		fmt.Printf("[TOKEN ERROR]: %s\n", tokenErr)
 	}
 	return tokenString
+}
+
+func VerifyJwt(tokenString string) (*jwt.Token, error) {
+	envPointer := utils.GetEnv()
+	envVars := *envPointer
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+		return []byte(envVars.AuthSecret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+	return token, nil
 }
