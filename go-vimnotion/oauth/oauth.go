@@ -28,7 +28,7 @@ func CreateJwt(userData UserData) string {
 		"name":   userData.Name,
 	})
 
-	tokenString, tokenErr := claims.SignedString(envVars.AuthSecret)
+	tokenString, tokenErr := claims.SignedString([]byte(envVars.AuthSecret))
 	if tokenErr != nil {
 		fmt.Printf("[TOKEN ERROR]: %s\n", tokenErr)
 	}

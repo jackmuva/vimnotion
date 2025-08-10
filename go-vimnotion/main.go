@@ -7,7 +7,10 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"time"
+	"vimnotion.com/server/oauth"
 	"vimnotion.com/server/oauth/github"
+	"vimnotion.com/server/utils"
 )
 
 const keyServerAddr = "go-vimnotion-server"
@@ -18,6 +21,9 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func githubCallback(w http.ResponseWriter, r *http.Request) {
+	envPointer := utils.GetEnv()
+	envVars := *envPointer
+
 	hasCode := r.URL.Query().Has("code")
 	code := r.URL.Query().Get("code")
 	if !hasCode {
@@ -25,9 +31,22 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	token := oauth_github.GetGithubToken(code)
+	fmt.Printf("token: %s\n", token)
 	userData := oauth_github.GetGithubUser(token)
-	//TODO: use the jwt method and store it in cookie with redirect
 	fmt.Printf("user: %s\n", userData)
+	jwt := oauth.CreateJwt(userData)
+	fmt.Printf("jwt: %s\n", jwt)
+
+	expire := time.Now().Add(time.Hour * 24 * 7)
+	cookie := http.Cookie{
+		Name:     "token",
+		Value:    jwt,
+		Expires:  expire,
+		MaxAge:   60 * 60 * 24 * 7,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, envVars.FrontendBaseUrl, http.StatusSeeOther)
 }
 
 func main() {

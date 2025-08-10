@@ -38,14 +38,50 @@ func GetGithubToken(code string) string {
 	}
 
 	res.Body.Close()
-	fmt.Printf("successfully requested token: %s\n", body)
 	tokenValues, valErr := url.ParseQuery(string(body))
 	if valErr != nil {
 		fmt.Printf("error getting token values: %s\n", valErr)
 	}
 
+	fmt.Printf("token values: %s\n", tokenValues)
 	return tokenValues["access_token"][0]
 
+}
+
+func GetGithubEmail(token string) string {
+	var authSb strings.Builder
+	authSb.WriteString("Bearer ")
+	authSb.WriteString(token)
+
+	requestUrl := "https://api.github.com/user/emails"
+
+	req, reqErr := http.NewRequest(http.MethodGet, requestUrl, nil)
+	req.Header.Add("Accept", "application/vnd.github+json")
+	req.Header.Add("X-GitHub-Api-Version", "2022-11-28")
+	req.Header.Add("Authorization", authSb.String())
+	if reqErr != nil {
+		fmt.Printf("[GITHUB EMAIL REQUEST]: %s\n", reqErr)
+	}
+
+	res, resErr := http.DefaultClient.Do(req)
+	if resErr != nil {
+		fmt.Printf("[GITHUB EMAIL RESPONSE]: %s\n", resErr)
+	}
+
+	body, bodyErr := io.ReadAll(res.Body)
+	if bodyErr != nil {
+		fmt.Printf("[GITHUB EMAIL BODY]: %s\n", bodyErr)
+	}
+
+	var emailMap []map[string]any
+	jsonErr := json.Unmarshal(body, &emailMap)
+	fmt.Printf("emailMap: %s\n", emailMap)
+	if jsonErr != nil {
+		fmt.Printf("[GITHUB EMAIL JSON]: %s\n", jsonErr)
+	}
+	res.Body.Close()
+
+	return emailMap[0]["email"].(string)
 }
 
 func GetGithubUser(token string) oauth.UserData {
@@ -75,6 +111,7 @@ func GetGithubUser(token string) oauth.UserData {
 
 	var userMap map[string]any
 	jsonErr := json.Unmarshal(body, &userMap)
+	fmt.Printf("userMap: %s\n", userMap)
 	if jsonErr != nil {
 		fmt.Printf("[GITHUB USER JSON]: %s\n", jsonErr)
 	}
@@ -84,7 +121,7 @@ func GetGithubUser(token string) oauth.UserData {
 		Username: userMap["login"].(string),
 		Name:     userMap["name"].(string),
 		Avatar:   userMap["avatar_url"].(string),
-		Email:    userMap["email"].(string),
+		Email:    GetGithubEmail(token),
 	}
 	return userData
 }
