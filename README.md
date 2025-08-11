@@ -28,3 +28,4 @@ go run main.go
 - create teams
 - extensabiity with hotkeys for apis
 - websockets/sse/version-history for collaboration
+  - but also multi-tab/window behavior
