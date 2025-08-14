@@ -47,7 +47,7 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, utils.GetEnv().FrontendBaseUrl, http.StatusSeeOther)
 }
 
-func getFiles(w http.ResponseWriter, r *http.Request) {
+func getPersonalDirectory(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("got healthcheck request\n")
 	io.WriteString(w, "This is vimnotion\n")
 }
@@ -56,12 +56,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", healthcheck)
 	mux.HandleFunc("/oauth/github/callback", githubCallback)
-	mux.Handle("/files", middleware.AuthMiddleware(http.HandlerFunc(getFiles)))
+	mux.Handle("/api/personal-directory", middleware.AuthMiddleware(http.HandlerFunc(getPersonalDirectory)))
+	corsHandler := middleware.EnableCors(mux)
 
 	ctx := context.Background()
 	server := &http.Server{
 		Addr:    ":3333",
-		Handler: mux,
+		Handler: corsHandler,
 		BaseContext: func(l net.Listener) context.Context {
 			ctx = context.WithValue(ctx, keyServerAddr, l.Addr().String())
 			return ctx
