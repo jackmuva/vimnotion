@@ -5,16 +5,12 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
+import { LeaderPanel } from './leader-panel';
 
-export const VimEditor = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
+export const VimEditor = ({ toggleSidebar, toggleLeaderPanel, leaderPanel }: { toggleSidebar: () => void, toggleLeaderPanel: () => void, leaderPanel: boolean }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
-	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
-
-	const toggleLeaderPanel = () => {
-		setLeaderPanel((prev) => !prev);
-	}
 
 	useEffect(() => {
 		if (vimEditor !== null) {
@@ -39,12 +35,15 @@ export const VimEditor = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
 				effects: theme.reconfigure(darkTheme),
 			});
 		}
-
 		applyCustomVim({ toggleLeaderPanel: toggleLeaderPanel, toggleSidebar: toggleSidebar });
 		setVimEditor(view);
 	}, []);
 
 	useEffect(() => {
+		if (vimEditor) {
+			vimEditor.focus();
+		}
+
 		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
 			if (event.matches) {
 				vimEditor?.dispatch({
@@ -58,18 +57,13 @@ export const VimEditor = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
 		});
 	}, [vimEditor]);
 
-
-
 	return (
 		<div className='relative h-full w-full pt-14 p-10'>
 			<div className='w-full h-full relative'>
 				<div id='vim-editor'
 					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll relative`}>
 				</div>
-				{leaderPanel && <div id='leader-panel'
-					className='w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
-					m-1 rounded-sm'>
-				</div>}
+				{leaderPanel && <LeaderPanel />}
 			</div>
 		</div>
 	)
