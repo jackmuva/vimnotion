@@ -3,11 +3,10 @@ package turso
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"os"
 	"strings"
 	"time"
-
-	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"vimnotion.com/server/utils"
 )
 
@@ -28,7 +27,7 @@ func ConnectTurso() *sql.DB {
 
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS test (email TEXT PRIMARY KEY, name TEXT)")
 	if err != nil {
-		fmt.Printf("error creating table: %w", err)
+		fmt.Printf("error creating table: %s", err)
 	}
 	return db
 }
