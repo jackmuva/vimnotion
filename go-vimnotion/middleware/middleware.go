@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
-
 	"vimnotion.com/server/oauth"
 	"vimnotion.com/server/utils"
 )
@@ -22,7 +21,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if jsonErr != nil {
 				fmt.Printf("unable to write error json: %s\n", err)
 			}
-			
+
 			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
 			return
 		}

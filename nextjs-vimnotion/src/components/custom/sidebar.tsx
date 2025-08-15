@@ -3,6 +3,9 @@ import useSWR from 'swr'
 
 export const Sidebar = () => {
 	const { data, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/personal-directory`, fetcher);
+	console.log("data: ", data);
+	console.log("error: ", error);
+	console.log("cookie: ", document.cookie);
 
 	return (
 		<div className="h-full w-96 pt-14 p-4 bg-background-muted/10 flex flex-col items-center">

@@ -29,11 +29,8 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	token := oauth_github.GetGithubToken(code)
-	fmt.Printf("token: %s\n", token)
 	userData := oauth_github.GetGithubUser(token)
-	fmt.Printf("user: %s\n", userData)
 	jwt := oauth.CreateJwt(userData)
-	fmt.Printf("jwt: %s\n", jwt)
 
 	expire := time.Now().Add(time.Hour * 24 * 7)
 	cookie := http.Cookie{
@@ -41,6 +38,7 @@ func githubCallback(w http.ResponseWriter, r *http.Request) {
 		Value:    jwt,
 		Expires:  expire,
 		MaxAge:   60 * 60 * 24 * 7,
+		Path:     "/",
 		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
