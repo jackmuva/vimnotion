@@ -40,7 +40,6 @@ func GetGithubToken(code string) string {
 		fmt.Printf("error getting token values: %s\n", valErr)
 	}
 
-	fmt.Printf("token values: %s\n", tokenValues)
 	return tokenValues["access_token"][0]
 
 }
@@ -72,7 +71,6 @@ func GetGithubEmail(token string) string {
 
 	var emailMap []map[string]any
 	jsonErr := json.Unmarshal(body, &emailMap)
-	fmt.Printf("emailMap: %s\n", emailMap)
 	if jsonErr != nil {
 		fmt.Printf("[GITHUB EMAIL JSON]: %s\n", jsonErr)
 	}
@@ -108,7 +106,6 @@ func GetGithubUser(token string) oauth.UserData {
 
 	var userMap map[string]any
 	jsonErr := json.Unmarshal(body, &userMap)
-	fmt.Printf("userMap: %s\n", userMap)
 	if jsonErr != nil {
 		fmt.Printf("[GITHUB USER JSON]: %s\n", jsonErr)
 	}
