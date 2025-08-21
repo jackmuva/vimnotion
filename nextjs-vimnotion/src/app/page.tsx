@@ -6,11 +6,6 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false);
-  const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
-
-  const toggleLeaderPanel = () => {
-    setLeaderPanel((prev) => !prev);
-  }
 
   const toggleSidebar = () => {
     setOpenSidebar((prev) => !prev);
@@ -18,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     if (openSidebar) {
-      document.getElementById('sidebar')!.focus()
+      document.getElementById('sidebar')?.focus()
     }
   }, [openSidebar]);
 
@@ -26,7 +21,7 @@ export default function Home() {
     <div className="bg-background w-dvw h-dvh flex justify-center items-center font-mono">
       <Header toggleSidebar={toggleSidebar} />
       {openSidebar && <Sidebar />}
-      <VimEditor toggleSidebar={toggleSidebar} leaderPanel={leaderPanel} toggleLeaderPanel={toggleLeaderPanel} />
+      <VimEditor toggleSidebar={toggleSidebar} />
     </div>
   );
 }

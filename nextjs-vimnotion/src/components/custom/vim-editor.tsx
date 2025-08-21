@@ -7,11 +7,26 @@ import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { LeaderPanel } from './leader-panel';
 
-export const VimEditor = ({ toggleSidebar, toggleLeaderPanel, leaderPanel }: { toggleSidebar: () => void, toggleLeaderPanel: () => void, leaderPanel: boolean }) => {
+export const VimEditor = ({ toggleSidebar }:
+	{ toggleSidebar: () => void }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
+	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
 
+	const toggleLeaderPanel = () => {
+		setLeaderPanel((prev) => !prev);
+	}
+	useEffect(() => {
+		if (leaderPanel) {
+			// Focus the button after the component has rendered
+			const button = document.getElementById('first-leader-option');
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [leaderPanel]);
+	
 	useEffect(() => {
 		if (vimEditor !== null) {
 			return;

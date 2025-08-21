@@ -24,5 +24,4 @@ export const applyCustomVim = ({ toggleLeaderPanel, toggleSidebar }:
 	});
 	Vim.unmap('-', "false");
 	Vim.mapCommand('-', 'action', 'toggleSidebar', {}, { context: 'normal' });
-
 }
