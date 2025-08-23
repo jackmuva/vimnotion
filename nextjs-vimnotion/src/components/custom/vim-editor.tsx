@@ -5,6 +5,7 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
+import { useStore } from '@/store/store';
 
 export const VimEditor = ({
 	paneId,
@@ -25,6 +26,7 @@ export const VimEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
+	const updateActivePane = useStore((state) => state.updateActivePane);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -71,6 +73,7 @@ export const VimEditor = ({
 	useEffect(() => {
 		if (vimEditor) {
 			vimEditor.focus();
+			updateActivePane(paneId);
 		}
 
 		if (typeof window !== 'undefined' && vimEditor) {
@@ -94,6 +97,10 @@ export const VimEditor = ({
 			};
 		}
 	}, [vimEditor]);
+
+	if (vimEditor?.hasFocus) {
+		updateActivePane(paneId);
+	}
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background py-1 pr-2'>
