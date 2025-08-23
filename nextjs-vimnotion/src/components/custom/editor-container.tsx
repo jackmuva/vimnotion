@@ -2,117 +2,136 @@ import { useRef, useState } from "react";
 import { VimEditor } from "./vim-editor";
 import { v4 } from "uuid";
 
-export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
-	const rootId = useRef(v4());
-	const [paneTree, setPaneTree] = useState<any>({
-		[rootId.current]: {
-			vertChildren: [],
-			horizChildren: [],
-		}
-	});
-	console.log(paneTree);
-
-	const splitVertical = (paneId: string) => {
-		const pane = document.getElementById(paneId);
-		const childOneId = v4();
-		const childTwoId = v4();
-		if (pane) {
-			pane.outerHTML = `
-				<div id={${paneId}} className="h-full w-full flex">
-					<div id={${childOneId}} className="h-full">
-						<EditorPane toggleSidebar={${toggleSidebar}}
-							splitHorizontal={${() => splitHorizontal(childOneId)}}
-							splitVertical={${() => splitVertical(childOneId)}} />
-					</div>
-					<div id={${childTwoId}} className="h-full">
-						<EditorPane toggleSidebar={${toggleSidebar}}
-							splitHorizontal={${() => splitHorizontal(childTwoId)}}
-							splitVertical={${() => splitVertical(childTwoId)}} />
-					</div>
-				</div>
-			`
-		}
-		setPaneTree((prev: any) => ({
-			...prev,
-			[paneId]: {
-				...prev[paneId],
-				vertChildren: [...prev[paneId].vertChildren, childOneId, childTwoId]
-			},
-			[childOneId]: {
-				vertChildren: [],
-				horizChildren: [],
-			},
-			[childTwoId]: {
-				vertChildren: [],
-				horizChildren: [],
-			}
-		}));
-	}
-
-	const splitHorizontal = (paneId: string) => {
-		const pane = document.getElementById(paneId);
-		const childOneId = v4();
-		const childTwoId = v4();
-		if (pane) {
-			pane.innerHTML = `
-				<div id={${paneId}} className="h-full w-full flex flex-col">
-					<div id={${childOneId}} className="w-full">
-						<EditorPane toggleSidebar={${toggleSidebar}}
-							splitHorizontal={${() => splitHorizontal(childOneId)}}
-							splitVertical={${() => splitVertical(childOneId)}} />
-					</div>
-					<div id={${childTwoId}} className="w-full">
-						<EditorPane toggleSidebar={toggleSidebar}
-							splitHorizontal={${() => splitHorizontal(childTwoId)}}
-							splitVertical={${() => splitVertical(childTwoId)}} />
-					</div>
-				</div>
-			`
-		}
-		setPaneTree((prev: any) => ({
-			...prev,
-			[paneId]: {
-				...prev[paneId],
-				horizChildren: [...prev[paneId].vertChildren, childOneId, childTwoId]
-			},
-			[childOneId]: {
-				vertChildren: [],
-				horizChildren: [],
-			},
-			[childTwoId]: {
-				vertChildren: [],
-				horizChildren: [],
-			}
-		}));
-	}
-
-
-	return (
-		<>
-			<div id={rootId.current} className="h-full w-full">
-				<EditorPane toggleSidebar={toggleSidebar}
-					splitHorizontal={() => splitHorizontal(rootId.current)}
-					splitVertical={() => splitVertical(rootId.current)} />
-			</div>
-		</>
-	);
-}
-
 enum SplitState {
 	NONE = "NONE",
 	HORIZONTAL = "HORIZONTAL",
 	VERTICAL = "VERTICAL",
 }
 
-const EditorPane = ({ toggleSidebar, splitHorizontal, splitVertical }: {
+type PaneNode = {
+	[id: string]: {
+		children: Array<string>,
+		state: SplitState
+	}
+}
+
+export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
+	const rootId = useRef(v4());
+	const [paneTree, setPaneTree] = useState<PaneNode>({
+		[rootId.current]: {
+			state: SplitState.NONE,
+			children: [],
+		}
+	});
+	const [parentMap, setParentMap] = useState<any>({});
+
+	console.log(paneTree);
+	console.log(parentMap);
+
+	const splitVertical = (paneId: string) => {
+		const childOneId = v4();
+		const childTwoId = v4();
+		setParentMap((prev: any) => ({
+			...prev,
+			[childOneId]: paneId,
+			[childTwoId]: paneId,
+		}));
+		setPaneTree((prev: PaneNode) => ({
+			...prev,
+			[paneId]: {
+				state: SplitState.VERTICAL,
+				children: [...prev[paneId].children, childOneId, childTwoId]
+			},
+			[childOneId]: {
+				state: SplitState.NONE,
+				children: [],
+			},
+			[childTwoId]: {
+				state: SplitState.NONE,
+				children: [],
+			}
+		}));
+	}
+
+	const splitHorizontal = (paneId: string) => {
+		const childOneId = v4();
+		const childTwoId = v4();
+		setParentMap((prev: any) => ({
+			...prev,
+			[childOneId]: paneId,
+			[childTwoId]: paneId,
+		}));
+		setPaneTree((prev: any) => ({
+			...prev,
+			[paneId]: {
+				state: SplitState.HORIZONTAL,
+				children: [...prev[paneId].children, childOneId, childTwoId]
+			},
+			[childOneId]: {
+				state: SplitState.NONE,
+				children: [],
+			},
+			[childTwoId]: {
+				state: SplitState.NONE,
+				children: [],
+			}
+		}));
+	}
+
+	const closePane = (paneId: string) => {
+		const parentId = parentMap[paneId];
+		const newTree = { ...paneTree };
+		const newMap = { ...parentMap };
+
+		delete newTree[paneId];
+
+		const parentNode = { ...newTree[parentId] };
+		parentNode.children = parentNode.children.filter(childId => childId !== paneId);
+		newTree[parentId] = parentNode;
+
+		delete newMap[paneId];
+
+		setPaneTree(newTree);
+		setParentMap(newMap);
+	}
+
+	const hydratePanes = (paneId: string) => {
+		if (paneTree[paneId].state === SplitState.NONE) {
+			return (
+				<div id={paneId} className="border h-full w-full">
+					<EditorPane toggleSidebar={toggleSidebar}
+						splitHorizontal={() => splitHorizontal(paneId)}
+						splitVertical={() => splitVertical(paneId)}
+						closePane={() => closePane(paneId)} />
+				</div>
+
+			);
+		}
+		return (
+			<div id={paneId} className={`h-full w-full flex 
+				${paneTree[paneId].state === SplitState.HORIZONTAL ?
+					"flex-col" : ""}`}>
+				{paneTree[paneId].children.map((childId) => {
+					return hydratePanes(childId)
+				})}
+			</div>
+		)
+	}
+
+	return (
+		<>
+			{hydratePanes(rootId.current)}
+		</>
+	);
+}
+
+const EditorPane = ({ toggleSidebar, splitHorizontal, splitVertical, closePane }: {
 	toggleSidebar: () => void,
 	splitHorizontal: () => void,
 	splitVertical: () => void,
+	closePane: () => void,
 }) => {
 
-	const closePane = () => {
-
-	}
 
 	return (
 		<div className="h-full w-full flex flex-col">

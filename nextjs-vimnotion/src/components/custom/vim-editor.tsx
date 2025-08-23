@@ -76,7 +76,7 @@ export const VimEditor = ({ toggleSidebar }:
 		<div className='relative h-full w-full '>
 			<div className='w-full h-full relative'>
 				<div id='vim-editor'
-					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll relative`}>
+					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll`}>
 				</div>
 				{leaderPanel && <LeaderPanel />}
 			</div>
