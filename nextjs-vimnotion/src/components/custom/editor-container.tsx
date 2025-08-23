@@ -96,12 +96,7 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 		delete newTree[paneId];
 
 		const parentNode = { ...newTree[parentId] };
-		for (const childId of parentNode.children) {
-			delete newTree[childId];
-			delete newMap[childId];
-		}
-		parentNode.children = [];
-		parentNode.state = SplitState.NONE;
+		parentNode.children = parentNode.children.filter(childId => childId !== paneId);
 		newTree[parentId] = parentNode;
 
 		setPaneTree(newTree);

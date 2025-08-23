@@ -97,7 +97,7 @@ export const VimEditor = ({ paneId, toggleSidebar }:
 	}, [vimEditor]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2'>
+		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2 pr-2'>
 			<div className='w-full h-full relative'>
 				<div id={`vim-editor-${paneId}`}
 					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll`}>
