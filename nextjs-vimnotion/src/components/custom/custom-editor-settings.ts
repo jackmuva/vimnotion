@@ -9,13 +9,34 @@ export const customTheme = EditorView.theme({
 
 export const applyCustomVim = ({
 	toggleLeaderPanel,
-	toggleSidebar
+	toggleSidebar,
+	splitVertical,
+	splitHorizontal,
+	closePane,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
+	splitVertical: () => void,
+	splitHorizontal: () => void,
+	closePane: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		console.log('saving');
+	});
+
+	Vim.defineEx('quit', 'q', function() {
+		closePane();
+	});
+
+	Vim.defineEx('split', 'split', function() {
+		splitHorizontal();
+	});
+
+	Vim.defineEx('vsplit shorthand', 'vs', function() {
+		splitVertical();
+	});
+	Vim.defineEx('vsplit', 'vsplit', function() {
+		splitVertical();
 	});
 
 	Vim.defineAction("toggleLeaderPanel", (cm, args) => {

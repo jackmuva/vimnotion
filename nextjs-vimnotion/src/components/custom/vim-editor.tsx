@@ -9,11 +9,17 @@ import { applyCustomVim, customTheme } from './custom-editor-settings';
 export const VimEditor = ({
 	paneId,
 	toggleSidebar,
-	toggleLeaderPanel
+	toggleLeaderPanel,
+	splitHorizontal,
+	splitVertical,
+	closePane,
 }: {
 	paneId: string,
 	toggleSidebar: () => void,
-	toggleLeaderPanel: () => void
+	toggleLeaderPanel: () => void,
+	splitHorizontal: () => void,
+	splitVertical: () => void,
+	closePane: () => void,
 }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
@@ -52,7 +58,13 @@ export const VimEditor = ({
 				effects: theme.reconfigure(darkTheme),
 			});
 		}
-		applyCustomVim({ toggleLeaderPanel: toggleLeaderPanel, toggleSidebar: toggleSidebar });
+		applyCustomVim({
+			toggleLeaderPanel: toggleLeaderPanel,
+			toggleSidebar: toggleSidebar,
+			splitVertical: splitVertical,
+			splitHorizontal: splitHorizontal,
+			closePane: closePane,
+		});
 		setVimEditor(view);
 	}, [isClient]);
 
@@ -84,11 +96,9 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2'>
-			<div className='w-full h-full relative'>
-				<div id={`vim-editor-${paneId}`}
-					className={`h-full w-full overflow-y-scroll`}>
-				</div>
+		<div className='relative h-full w-full rounded-sm z-20 bg-background py-1 pr-2'>
+			<div id={`vim-editor-${paneId}`}
+				className={`h-full w-full overflow-y-scroll`}>
 			</div>
 		</div>
 	)

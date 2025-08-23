@@ -164,14 +164,13 @@ const EditorPane = ({
 
 	return (
 		<div className="h-full w-full flex flex-col p-2">
-			<div className="flex space-x-2">
-				<button onClick={splitVertical}>vertical</button>
-				<button onClick={splitHorizontal}>horizontal</button>
-				<button onClick={closePane}>close</button>
-			</div>
 			<VimEditor paneId={paneId}
 				toggleSidebar={toggleSidebar}
-				toggleLeaderPanel={toggleLeaderPanel} />
+				toggleLeaderPanel={toggleLeaderPanel}
+				splitVertical={splitVertical}
+				splitHorizontal={splitHorizontal}
+				closePane={closePane}
+			/>
 		</div>
 	);
 }
