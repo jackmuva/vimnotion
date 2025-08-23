@@ -1,8 +1,8 @@
 'use client';
-import { VimEditor } from "@/components/custom/vim-editor";
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar";
 import { useEffect, useState } from "react";
+import { EditorContainer } from "@/components/custom/editor-container";
 
 export default function Home() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false);
@@ -22,7 +22,7 @@ export default function Home() {
       pt-14 p-10">
       <Header toggleSidebar={toggleSidebar} />
       {openSidebar && <Sidebar />}
-      <VimEditor toggleSidebar={toggleSidebar} />
+      <EditorContainer toggleSidebar={toggleSidebar} />
     </div>
   );
 }
