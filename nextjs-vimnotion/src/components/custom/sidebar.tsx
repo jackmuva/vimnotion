@@ -11,7 +11,7 @@ export const Sidebar = () => {
 
 	return (
 		<div className="h-full w-96 pt-14 p-4 bg-background-muted flex flex-col items-center 
-			z-20 absolute top-0 left-0">
+			z-30 absolute top-0 left-0">
 			{data?.StatusCode === 401 && <a id="sidebar" className="border-2 rounded-sm cursor-pointer bg-foreground-muted/50 
 				hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-fit 
 				space-x-2" href={`https://github.com/login/oauth/authorize?scope=read:user,user:email&
