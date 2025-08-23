@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { VimEditor } from "./vim-editor";
 import { v4 } from "uuid";
 
@@ -16,13 +16,23 @@ type PaneNode = {
 }
 
 export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
-	const rootId = useRef(v4());
-	const [paneTree, setPaneTree] = useState<PaneNode>({
-		[rootId.current]: {
-			state: SplitState.NONE,
-			children: [],
+	const rootId = useRef<string | null>(null);
+	const [isClient, setIsClient] = useState(false);
+
+	// Initialize rootId only on client side to avoid hydration mismatch
+	useEffect(() => {
+		if (!rootId.current) {
+			rootId.current = v4();
+			setPaneTree({
+				[rootId.current]: {
+					state: SplitState.NONE,
+					children: [],
+				}
+			});
 		}
-	});
+		setIsClient(true);
+	}, []);
+	const [paneTree, setPaneTree] = useState<PaneNode>({});
 	const [parentMap, setParentMap] = useState<any>({});
 
 	console.log(paneTree);
@@ -86,10 +96,13 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 		delete newTree[paneId];
 
 		const parentNode = { ...newTree[parentId] };
-		parentNode.children = parentNode.children.filter(childId => childId !== paneId);
+		for (const childId of parentNode.children) {
+			delete newTree[childId];
+			delete newMap[childId];
+		}
+		parentNode.children = [];
+		parentNode.state = SplitState.NONE;
 		newTree[parentId] = parentNode;
-
-		delete newMap[paneId];
 
 		setPaneTree(newTree);
 		setParentMap(newMap);
@@ -98,7 +111,7 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE) {
 			return (
-				<div id={paneId} className="border h-full w-full">
+				<div key={paneId} className="border h-full w-full">
 					<EditorPane toggleSidebar={toggleSidebar}
 						splitHorizontal={() => splitHorizontal(paneId)}
 						splitVertical={() => splitVertical(paneId)}
@@ -108,7 +121,7 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 			);
 		}
 		return (
-			<div id={paneId} className={`h-full w-full flex 
+			<div key={paneId} className={`h-full w-full flex 
 				${paneTree[paneId].state === SplitState.HORIZONTAL ?
 					"flex-col" : ""}`}>
 				{paneTree[paneId].children.map((childId) => {
@@ -118,11 +131,15 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 		)
 	}
 
+	if (!isClient || !rootId.current) {
+		return <div className="h-full w-full border">Loading...</div>;
+	}else{
 	return (
 		<>
 			{hydratePanes(rootId.current)}
 		</>
 	);
+	}
 }
 
 const EditorPane = ({ toggleSidebar, splitHorizontal, splitVertical, closePane }: {
