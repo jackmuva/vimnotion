@@ -10,14 +10,15 @@ import (
 )
 
 type ErrorMessage struct {
-	Message string
+	Message    string
+	StatusCode int
 }
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenCookie, err := r.Cookie("token")
 		if err != nil {
-			jsonMessage, jsonErr := json.Marshal(ErrorMessage{Message: "need to auth"})
+			jsonMessage, jsonErr := json.Marshal(ErrorMessage{Message: "need to auth", StatusCode: 401})
 			if jsonErr != nil {
 				fmt.Printf("unable to write error json: %s\n", err)
 			}

@@ -18,7 +18,8 @@ export default function Home() {
   }, [openSidebar]);
 
   return (
-    <div className="bg-background w-dvw h-dvh flex justify-center items-center font-mono">
+    <div className="bg-background w-dvw h-dvh flex justify-center items-center font-mono 
+      pt-14 p-10">
       <Header toggleSidebar={toggleSidebar} />
       {openSidebar && <Sidebar />}
       <VimEditor toggleSidebar={toggleSidebar} />

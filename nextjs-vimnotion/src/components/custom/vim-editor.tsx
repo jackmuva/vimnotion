@@ -26,7 +26,7 @@ export const VimEditor = ({ toggleSidebar }:
 			}
 		}
 	}, [leaderPanel]);
-	
+
 	useEffect(() => {
 		if (vimEditor !== null) {
 			return;
@@ -73,7 +73,7 @@ export const VimEditor = ({ toggleSidebar }:
 	}, [vimEditor]);
 
 	return (
-		<div className='relative h-full w-full pt-14 p-10'>
+		<div className='relative h-full w-full '>
 			<div className='w-full h-full relative'>
 				<div id='vim-editor'
 					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll relative`}>
