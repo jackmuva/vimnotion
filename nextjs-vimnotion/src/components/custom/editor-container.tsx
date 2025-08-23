@@ -15,7 +15,13 @@ type PaneNode = {
 	}
 }
 
-export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
+export const EditorContainer = ({
+	toggleSidebar,
+	toggleLeaderPanel
+}: {
+	toggleSidebar: () => void,
+	toggleLeaderPanel: () => void
+}) => {
 	const rootId = useRef<string | null>(null);
 	const [isClient, setIsClient] = useState(false);
 
@@ -107,12 +113,12 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 		if (paneTree[paneId].state === SplitState.NONE) {
 			return (
 				<div key={paneId} className="h-full w-full">
-					<EditorPane
-						paneId={paneId}
+					<EditorPane paneId={paneId}
 						toggleSidebar={toggleSidebar}
 						splitHorizontal={() => splitHorizontal(paneId)}
 						splitVertical={() => splitVertical(paneId)}
-						closePane={() => closePane(paneId)} />
+						closePane={() => closePane(paneId)}
+						toggleLeaderPanel={toggleLeaderPanel} />
 				</div>
 
 			);
@@ -139,12 +145,20 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 	}
 }
 
-const EditorPane = ({ paneId, toggleSidebar, splitHorizontal, splitVertical, closePane }: {
+const EditorPane = ({
+	paneId,
+	toggleSidebar,
+	splitHorizontal,
+	splitVertical,
+	closePane,
+	toggleLeaderPanel
+}: {
 	paneId: string,
 	toggleSidebar: () => void,
 	splitHorizontal: () => void,
 	splitVertical: () => void,
 	closePane: () => void,
+	toggleLeaderPanel: () => void,
 }) => {
 
 
@@ -155,7 +169,9 @@ const EditorPane = ({ paneId, toggleSidebar, splitHorizontal, splitVertical, clo
 				<button onClick={splitHorizontal}>horizontal</button>
 				<button onClick={closePane}>close</button>
 			</div>
-			<VimEditor paneId={paneId} toggleSidebar={toggleSidebar} />
+			<VimEditor paneId={paneId}
+				toggleSidebar={toggleSidebar}
+				toggleLeaderPanel={toggleLeaderPanel} />
 		</div>
 	);
 }

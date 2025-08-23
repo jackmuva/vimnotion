@@ -7,8 +7,13 @@ export const customTheme = EditorView.theme({
 	},
 }, { dark: false });
 
-export const applyCustomVim = ({ toggleLeaderPanel, toggleSidebar }:
-	{ toggleLeaderPanel: () => void, toggleSidebar: () => void }) => {
+export const applyCustomVim = ({
+	toggleLeaderPanel,
+	toggleSidebar
+}: {
+	toggleLeaderPanel: () => void,
+	toggleSidebar: () => void,
+}) => {
 	Vim.defineEx('write', 'w', function() {
 		console.log('saving');
 	});

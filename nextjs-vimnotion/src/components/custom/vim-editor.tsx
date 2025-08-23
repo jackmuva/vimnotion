@@ -5,34 +5,24 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { LeaderPanel } from './leader-panel';
 
-export const VimEditor = ({ paneId, toggleSidebar }:
-	{ paneId: string, toggleSidebar: () => void }) => {
+export const VimEditor = ({
+	paneId,
+	toggleSidebar,
+	toggleLeaderPanel
+}: {
+	paneId: string,
+	toggleSidebar: () => void,
+	toggleLeaderPanel: () => void
+}) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
-	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
 	const [isClient, setIsClient] = useState(false);
 
-	const toggleLeaderPanel = () => {
-		console.log('toggle called in pane', paneId);
-		setLeaderPanel((prev) => !prev);
-	}
-	// Initialize client-side state
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
-
-	useEffect(() => {
-		if (leaderPanel && isClient) {
-			// Focus the button after the component has rendered
-			const button = document.getElementById(`first-leader-option-${paneId}`);
-			if (button) {
-				button.focus();
-			}
-		}
-	}, [leaderPanel, isClient]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -57,7 +47,6 @@ export const VimEditor = ({ paneId, toggleSidebar }:
 			parent: editorElement,
 		});
 
-		// Check for dark mode preference only on client side
 		if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			view.dispatch({
 				effects: theme.reconfigure(darkTheme),
@@ -72,7 +61,6 @@ export const VimEditor = ({ paneId, toggleSidebar }:
 			vimEditor.focus();
 		}
 
-		// Only add media query listener on client side
 		if (typeof window !== 'undefined' && vimEditor) {
 			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			const handleChange = (event: MediaQueryListEvent) => {
@@ -89,7 +77,6 @@ export const VimEditor = ({ paneId, toggleSidebar }:
 
 			mediaQuery.addEventListener('change', handleChange);
 
-			// Cleanup listener on unmount
 			return () => {
 				mediaQuery.removeEventListener('change', handleChange);
 			};
@@ -97,12 +84,11 @@ export const VimEditor = ({ paneId, toggleSidebar }:
 	}, [vimEditor]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2 pr-2'>
+		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2'>
 			<div className='w-full h-full relative'>
 				<div id={`vim-editor-${paneId}`}
-					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll`}>
+					className={`h-full w-full overflow-y-scroll`}>
 				</div>
-				{leaderPanel && <LeaderPanel paneId={paneId} />}
 			</div>
 		</div>
 	)
