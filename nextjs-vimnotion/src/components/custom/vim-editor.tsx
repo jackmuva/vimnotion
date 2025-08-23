@@ -7,8 +7,8 @@ import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { LeaderPanel } from './leader-panel';
 
-export const VimEditor = ({ toggleSidebar }:
-	{ toggleSidebar: () => void }) => {
+export const VimEditor = ({ paneId, toggleSidebar }:
+	{ paneId: string, toggleSidebar: () => void }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -16,6 +16,7 @@ export const VimEditor = ({ toggleSidebar }:
 	const [isClient, setIsClient] = useState(false);
 
 	const toggleLeaderPanel = () => {
+		console.log('toggle called in pane', paneId);
 		setLeaderPanel((prev) => !prev);
 	}
 	// Initialize client-side state
@@ -26,7 +27,7 @@ export const VimEditor = ({ toggleSidebar }:
 	useEffect(() => {
 		if (leaderPanel && isClient) {
 			// Focus the button after the component has rendered
-			const button = document.getElementById('first-leader-option');
+			const button = document.getElementById(`first-leader-option-${paneId}`);
 			if (button) {
 				button.focus();
 			}
@@ -38,7 +39,7 @@ export const VimEditor = ({ toggleSidebar }:
 			return;
 		}
 
-		const editorElement = document.querySelector('#vim-editor');
+		const editorElement = document.querySelector(`#vim-editor-${paneId}`);
 		if (!editorElement) {
 			return;
 		}
@@ -85,9 +86,9 @@ export const VimEditor = ({ toggleSidebar }:
 					});
 				}
 			};
-			
+
 			mediaQuery.addEventListener('change', handleChange);
-			
+
 			// Cleanup listener on unmount
 			return () => {
 				mediaQuery.removeEventListener('change', handleChange);
@@ -96,12 +97,12 @@ export const VimEditor = ({ toggleSidebar }:
 	}, [vimEditor]);
 
 	return (
-		<div className='relative h-full w-full '>
+		<div className='relative h-full w-full rounded-sm z-20 bg-background py-2'>
 			<div className='w-full h-full relative'>
-				<div id='vim-editor'
+				<div id={`vim-editor-${paneId}`}
 					className={`${leaderPanel ? "h-3/4" : "h-full"} w-full overflow-y-scroll`}>
 				</div>
-				{leaderPanel && <LeaderPanel />}
+				{leaderPanel && <LeaderPanel paneId={paneId} />}
 			</div>
 		</div>
 	)

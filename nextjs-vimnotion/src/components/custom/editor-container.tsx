@@ -19,7 +19,6 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 	const rootId = useRef<string | null>(null);
 	const [isClient, setIsClient] = useState(false);
 
-	// Initialize rootId only on client side to avoid hydration mismatch
 	useEffect(() => {
 		if (!rootId.current) {
 			rootId.current = v4();
@@ -32,6 +31,7 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 		}
 		setIsClient(true);
 	}, []);
+
 	const [paneTree, setPaneTree] = useState<PaneNode>({});
 	const [parentMap, setParentMap] = useState<any>({});
 
@@ -111,8 +111,10 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE) {
 			return (
-				<div key={paneId} className="border h-full w-full">
-					<EditorPane toggleSidebar={toggleSidebar}
+				<div key={paneId} className="h-full w-full">
+					<EditorPane
+						paneId={paneId}
+						toggleSidebar={toggleSidebar}
 						splitHorizontal={() => splitHorizontal(paneId)}
 						splitVertical={() => splitVertical(paneId)}
 						closePane={() => closePane(paneId)} />
@@ -132,17 +134,18 @@ export const EditorContainer = ({ toggleSidebar }: { toggleSidebar: () => void }
 	}
 
 	if (!isClient || !rootId.current) {
-		return <div className="h-full w-full border">Loading...</div>;
-	}else{
-	return (
-		<>
-			{hydratePanes(rootId.current)}
-		</>
-	);
+		return <div className="h-full w-full">Loading...</div>;
+	} else {
+		return (
+			<>
+				{hydratePanes(rootId.current)}
+			</>
+		);
 	}
 }
 
-const EditorPane = ({ toggleSidebar, splitHorizontal, splitVertical, closePane }: {
+const EditorPane = ({ paneId, toggleSidebar, splitHorizontal, splitVertical, closePane }: {
+	paneId: string,
 	toggleSidebar: () => void,
 	splitHorizontal: () => void,
 	splitVertical: () => void,
@@ -151,15 +154,13 @@ const EditorPane = ({ toggleSidebar, splitHorizontal, splitVertical, closePane }
 
 
 	return (
-		<div className="h-full w-full flex flex-col">
+		<div className="h-full w-full flex flex-col p-2">
 			<div className="flex space-x-2">
 				<button onClick={splitVertical}>vertical</button>
 				<button onClick={splitHorizontal}>horizontal</button>
 				<button onClick={closePane}>close</button>
 			</div>
-			<div>
-				<VimEditor toggleSidebar={toggleSidebar} />
-			</div>
+			<VimEditor paneId={paneId} toggleSidebar={toggleSidebar} />
 		</div>
 	);
 }
