@@ -28,16 +28,20 @@ export const EditorContainer = ({
 	const updateActivePane = useStore((state: any) => state.updateActivePane);
 	const [paneTree, setPaneTree] = useState<PaneNode>({});
 	const [parentMap, setParentMap] = useState<any>({});
+	const resetRoot = () => {
+		rootId.current = "root";
+		setPaneTree({
+			[rootId.current]: {
+				state: SplitState.NONE,
+				children: [],
+			}
+		});
+		setParentMap({});
+	}
 
 	useEffect(() => {
 		if (!rootId.current) {
-			rootId.current = "root";
-			setPaneTree({
-				[rootId.current]: {
-					state: SplitState.NONE,
-					children: [],
-				}
-			});
+			resetRoot();
 		}
 		setIsClient(true);
 	}, []);
@@ -97,16 +101,32 @@ export const EditorContainer = ({
 	}
 
 	const closePane = () => {
-		const activeId = useStore.getState().activePane;
-		const parentId = parentMap[activeId];
 		const newTree = { ...paneTree };
 		const newMap = { ...parentMap };
+		const activeId = useStore.getState().activePane;
+		const parentId = parentMap[activeId];
+		if (parentId === undefined) {
+			resetRoot();
+			return;
+		}
 
 		delete newTree[activeId];
+		delete newTree[parentId];
+		delete newMap[activeId];
+		delete newMap[parentId];
 
-		const parentNode = { ...newTree[parentId] };
-		parentNode.children = parentNode.children.filter(childId => childId !== activeId);
-		newTree[parentId] = parentNode;
+		const siblingId = paneTree[parentId].children.filter(childId => childId !== activeId)[0];
+		const grandparentId = parentMap[parentId];
+		if (grandparentId === undefined) {
+			rootId.current = siblingId;
+			delete newMap[siblingId];
+		} else {
+			const grandparentNode = { ...newTree[grandparentId] };
+			grandparentNode.children = grandparentNode.children.filter(childId => childId !== parentId);
+			grandparentNode.children.push(siblingId);
+			newTree[grandparentId] = grandparentNode;
+			newMap[siblingId] = grandparentId;
+		}
 
 		setPaneTree(newTree);
 		setParentMap(newMap);
@@ -138,7 +158,7 @@ export const EditorContainer = ({
 	}
 
 	if (!isClient || !rootId.current) {
-		return <div className="h-full w-full">Loading...</div>;
+		return <div className="h-full w-full text-center">Loading...</div>;
 	} else {
 		return (
 			<>
