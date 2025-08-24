@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { v4 } from "uuid";
 import { useStore } from "@/store/store";
 import { EditorPane } from "./editor-pane";
+import { Split } from "lucide-react";
 
 export enum SplitState {
 	NONE = "NONE",
@@ -46,7 +47,7 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, []);
 
-	const splitVertical = () => {
+	const splitPane = (direction: SplitState) => {
 		const childOneId = v4();
 		const childTwoId = v4();
 		const parentId = useStore.getState().activePane;
@@ -58,34 +59,7 @@ export const EditorContainer = ({
 		setPaneTree((prev: PaneNode) => ({
 			...prev,
 			[parentId]: {
-				state: SplitState.VERTICAL,
-				children: [...prev[parentId].children, childOneId, childTwoId]
-			},
-			[childOneId]: {
-				state: SplitState.NONE,
-				children: [],
-			},
-			[childTwoId]: {
-				state: SplitState.NONE,
-				children: [],
-			}
-		}));
-		updateActivePane(childTwoId);
-	}
-
-	const splitHorizontal = () => {
-		const childOneId = v4();
-		const childTwoId = v4();
-		const parentId = useStore.getState().activePane;
-		setParentMap((prev: any) => ({
-			...prev,
-			[childOneId]: parentId,
-			[childTwoId]: parentId,
-		}));
-		setPaneTree((prev: any) => ({
-			...prev,
-			[parentId]: {
-				state: SplitState.HORIZONTAL,
+				state: direction,
 				children: [...prev[parentId].children, childOneId, childTwoId]
 			},
 			[childOneId]: {
@@ -138,8 +112,8 @@ export const EditorContainer = ({
 				<div key={paneId} className="h-full w-full">
 					<EditorPane paneId={paneId}
 						toggleSidebar={toggleSidebar}
-						splitHorizontal={splitHorizontal}
-						splitVertical={splitVertical}
+						splitHorizontal={() => splitPane(SplitState.HORIZONTAL)}
+						splitVertical={() => splitPane(SplitState.VERTICAL)}
 						closePane={closePane}
 						toggleLeaderPanel={toggleLeaderPanel} />
 				</div>
