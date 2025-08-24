@@ -27,10 +27,16 @@ export const VimEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const updateActivePane = useStore((state) => state.updateActivePane);
+	const focusListener = EditorView.updateListener.of((v) => {
+		if (v.view.hasFocus) {
+			updateActivePane(paneId);
+		}
+	});
 
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
+
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -51,6 +57,7 @@ export const VimEditor = ({
 				new Compartment().of(customTheme),
 				theme.of(lightTheme),
 				markdown(),
+				focusListener,
 			],
 			parent: editorElement,
 		});
@@ -97,10 +104,6 @@ export const VimEditor = ({
 			};
 		}
 	}, [vimEditor]);
-
-	if (vimEditor?.hasFocus) {
-		updateActivePane(paneId);
-	}
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background py-1 pr-2'>

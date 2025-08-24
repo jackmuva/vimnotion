@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import { VimEditor } from "./vim-editor";
 import { v4 } from "uuid";
 import { useStore } from "@/store/store";
+import { EditorPane } from "./editor-pane";
 
-enum SplitState {
+export enum SplitState {
 	NONE = "NONE",
 	HORIZONTAL = "HORIZONTAL",
 	VERTICAL = "VERTICAL",
 }
 
-type PaneNode = {
+export type PaneNode = {
 	[id: string]: {
 		children: Array<string>,
 		state: SplitState
@@ -25,8 +25,7 @@ export const EditorContainer = ({
 }) => {
 	const rootId = useRef<string | null>(null);
 	const [isClient, setIsClient] = useState(false);
-	const activePane = useStore((state) => state.activePane);
-	const updateActivePane = useStore((state) => state.updateActivePane);
+	const updateActivePane = useStore((state: any) => state.updateActivePane);
 	const [paneTree, setPaneTree] = useState<PaneNode>({});
 	const [parentMap, setParentMap] = useState<any>({});
 
@@ -43,23 +42,20 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, []);
 
-
-	console.log(paneTree);
-	console.log(parentMap);
-
 	const splitVertical = () => {
 		const childOneId = v4();
 		const childTwoId = v4();
+		const parentId = useStore.getState().activePane;
 		setParentMap((prev: any) => ({
 			...prev,
-			[childOneId]: activePane,
-			[childTwoId]: activePane,
+			[childOneId]: parentId,
+			[childTwoId]: parentId,
 		}));
 		setPaneTree((prev: PaneNode) => ({
 			...prev,
-			[activePane]: {
+			[parentId]: {
 				state: SplitState.VERTICAL,
-				children: [...prev[activePane].children, childOneId, childTwoId]
+				children: [...prev[parentId].children, childOneId, childTwoId]
 			},
 			[childOneId]: {
 				state: SplitState.NONE,
@@ -76,16 +72,17 @@ export const EditorContainer = ({
 	const splitHorizontal = () => {
 		const childOneId = v4();
 		const childTwoId = v4();
+		const parentId = useStore.getState().activePane;
 		setParentMap((prev: any) => ({
 			...prev,
-			[childOneId]: activePane,
-			[childTwoId]: activePane,
+			[childOneId]: parentId,
+			[childTwoId]: parentId,
 		}));
 		setPaneTree((prev: any) => ({
 			...prev,
-			[activePane]: {
+			[parentId]: {
 				state: SplitState.HORIZONTAL,
-				children: [...prev[activePane].children, childOneId, childTwoId]
+				children: [...prev[parentId].children, childOneId, childTwoId]
 			},
 			[childOneId]: {
 				state: SplitState.NONE,
@@ -100,14 +97,15 @@ export const EditorContainer = ({
 	}
 
 	const closePane = () => {
-		const parentId = parentMap[activePane];
+		const activeId = useStore.getState().activePane;
+		const parentId = parentMap[activeId];
 		const newTree = { ...paneTree };
 		const newMap = { ...parentMap };
 
-		delete newTree[activePane];
+		delete newTree[activeId];
 
 		const parentNode = { ...newTree[parentId] };
-		parentNode.children = parentNode.children.filter(childId => childId !== activePane);
+		parentNode.children = parentNode.children.filter(childId => childId !== activeId);
 		newTree[parentId] = parentNode;
 
 		setPaneTree(newTree);
@@ -120,9 +118,9 @@ export const EditorContainer = ({
 				<div key={paneId} className="h-full w-full">
 					<EditorPane paneId={paneId}
 						toggleSidebar={toggleSidebar}
-						splitHorizontal={() => splitHorizontal()}
-						splitVertical={() => splitVertical()}
-						closePane={() => closePane()}
+						splitHorizontal={splitHorizontal}
+						splitVertical={splitVertical}
+						closePane={closePane}
 						toggleLeaderPanel={toggleLeaderPanel} />
 				</div>
 
@@ -150,32 +148,4 @@ export const EditorContainer = ({
 	}
 }
 
-const EditorPane = ({
-	paneId,
-	toggleSidebar,
-	splitHorizontal,
-	splitVertical,
-	closePane,
-	toggleLeaderPanel
-}: {
-	paneId: string,
-	toggleSidebar: () => void,
-	splitHorizontal: () => void,
-	splitVertical: () => void,
-	closePane: () => void,
-	toggleLeaderPanel: () => void,
-}) => {
 
-
-	return (
-		<div className="h-full w-full flex flex-col p-1">
-			<VimEditor paneId={paneId}
-				toggleSidebar={toggleSidebar}
-				toggleLeaderPanel={toggleLeaderPanel}
-				splitVertical={splitVertical}
-				splitHorizontal={splitHorizontal}
-				closePane={closePane}
-			/>
-		</div>
-	);
-}
