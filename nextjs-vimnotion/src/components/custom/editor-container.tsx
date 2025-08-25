@@ -10,10 +10,36 @@ export enum SplitState {
 	VERTICAL = "VERTICAL",
 }
 
+export enum ChildType {
+	NONE = "NONE",
+	FIRST = "FIRST",
+	SECOND = "SECOND",
+}
+
+export enum Direction {
+	NORTH = "NORTH",
+	SOUTH = "SOUTH",
+	EAST = "EAST",
+	WEST = "WEST",
+}
+
+
+export type PaneNeighbors = {
+	north: string | null,
+	south: string | null,
+	east: string | null,
+	west: string | null,
+}
+
+
 export type PaneNode = {
 	[id: string]: {
 		children: Array<string>,
-		state: SplitState
+		parent: string | null,
+		state: SplitState,
+		neighbors: PaneNeighbors,
+		childType: ChildType,
+		deleted: boolean,
 	}
 }
 
@@ -28,16 +54,23 @@ export const EditorContainer = ({
 	const [isClient, setIsClient] = useState(false);
 	const updateActivePane = useStore((state: any) => state.updateActivePane);
 	const [paneTree, setPaneTree] = useState<PaneNode>({});
-	const [parentMap, setParentMap] = useState<any>({});
 	const resetRoot = () => {
 		rootId.current = "root";
 		setPaneTree({
 			[rootId.current]: {
 				state: SplitState.NONE,
 				children: [],
+				parent: null,
+				neighbors: {
+					north: null,
+					south: null,
+					east: null,
+					west: null,
+				},
+				childType: ChildType.NONE,
+				deleted: false,
 			}
 		});
-		setParentMap({});
 	}
 
 	useEffect(() => {
@@ -47,67 +80,80 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, []);
 
+	useEffect(() => {
+		const activeId = useStore.getState().activePane;
+		const editorElement = document.getElementById(`vim-editor-${activeId}`);
+		editorElement?.focus();
+	}, [paneTree]);
+
 	const splitPane = (direction: SplitState) => {
-		const childOneId = v4();
-		const childTwoId = v4();
+		const firstChildId = v4();
+		const secondChildId = v4();
 		const parentId = useStore.getState().activePane;
-		setParentMap((prev: any) => ({
-			...prev,
-			[childOneId]: parentId,
-			[childTwoId]: parentId,
-		}));
 		setPaneTree((prev: PaneNode) => ({
 			...prev,
 			[parentId]: {
+				...prev[parentId],
 				state: direction,
-				children: [...prev[parentId].children, childOneId, childTwoId]
+				children: [...prev[parentId].children, firstChildId, secondChildId]
 			},
-			[childOneId]: {
+			[firstChildId]: {
 				state: SplitState.NONE,
 				children: [],
+				parent: parentId,
+				neighbors: {
+					north: prev[parentId].neighbors.north,
+					south: direction === SplitState.VERTICAL ? prev[parentId].neighbors.south :
+						secondChildId,
+					east: direction === SplitState.VERTICAL ? secondChildId :
+						prev[parentId].neighbors.east,
+					west: prev[parentId].neighbors.west,
+				},
+				childType: ChildType.FIRST,
+				deleted: false,
 			},
-			[childTwoId]: {
+			[secondChildId]: {
 				state: SplitState.NONE,
 				children: [],
+				parent: parentId,
+				neighbors: {
+					south: prev[parentId].neighbors.south,
+					north: direction === SplitState.VERTICAL ? prev[parentId].neighbors.north :
+						firstChildId,
+					west: direction === SplitState.VERTICAL ? firstChildId :
+						prev[parentId].neighbors.west,
+					east: prev[parentId].neighbors.east,
+				},
+				childType: ChildType.SECOND,
+				deleted: false,
 			}
 		}));
-		updateActivePane(childTwoId);
+		updateActivePane(secondChildId);
 	}
 
 	const closePane = () => {
 		const newTree = { ...paneTree };
-		const newMap = { ...parentMap };
 		const activeId = useStore.getState().activePane;
-		const parentId = parentMap[activeId];
-		if (parentId === undefined) {
+		const parentId = paneTree[activeId].parent;
+		if (parentId === undefined || parentId === null) {
 			resetRoot();
 			return;
-		}
-
-		delete newTree[activeId];
-		delete newTree[parentId];
-		delete newMap[activeId];
-		delete newMap[parentId];
-
-		const siblingId = paneTree[parentId].children.filter(childId => childId !== activeId)[0];
-		const grandparentId = parentMap[parentId];
-		if (grandparentId === undefined) {
-			rootId.current = siblingId;
-			delete newMap[siblingId];
 		} else {
-			const grandparentNode = { ...newTree[grandparentId] };
-			grandparentNode.children = grandparentNode.children.filter(childId => childId !== parentId);
-			grandparentNode.children.push(siblingId);
-			newTree[grandparentId] = grandparentNode;
-			newMap[siblingId] = grandparentId;
+			//TODO: if sibling is deleted, i want to bubble up to parent's sibling
+			const siblingId = paneTree[parentId].children.filter(childId => childId !== activeId)[0];
+			updateActivePane(siblingId);
 		}
-
+		newTree[activeId].deleted = true;
 		setPaneTree(newTree);
-		setParentMap(newMap);
+	}
+
+	//NOTE: use graph traversal to visit parent's neighbors
+	export const goToNeighbor = (direction: Direction) => {
+
 	}
 
 	const hydratePanes = (paneId: string) => {
-		if (paneTree[paneId].state === SplitState.NONE) {
+		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return (
 				<div key={paneId} className="h-full w-full">
 					<EditorPane paneId={paneId}
@@ -119,17 +165,20 @@ export const EditorContainer = ({
 				</div>
 
 			);
-		}
-		return (
-			<div key={paneId} className={`h-full w-full flex 
+		} else if (!paneTree[paneId].deleted) {
+			return (
+				<div key={paneId} className={`h-full w-full flex 
 				${paneTree[paneId].state === SplitState.HORIZONTAL ?
-					"flex-col" : ""}`}>
-				{paneTree[paneId].children.map((childId) => {
-					return hydratePanes(childId)
-				})}
-			</div>
-		)
+						"flex-col" : ""}`}>
+					{paneTree[paneId].children.map((childId) => {
+						return hydratePanes(childId)
+					})}
+				</div>
+			)
+		}
 	}
+
+	console.log(paneTree);
 
 	if (!isClient || !rootId.current) {
 		return <div className="h-full w-full text-center">Loading...</div>;
