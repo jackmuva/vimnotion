@@ -51,6 +51,7 @@ export const EditorContainer = ({
 	toggleLeaderPanel: () => void
 }) => {
 	const rootId = useRef<string | null>(null);
+	const numPanes = useRef<number>(1);
 	const [isClient, setIsClient] = useState(false);
 	const updateActivePane = useStore((state: any) => state.updateActivePane);
 	const [paneTree, setPaneTree] = useState<PaneNode>({});
@@ -80,13 +81,8 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, []);
 
-	useEffect(() => {
-		const activeId = useStore.getState().activePane;
-		const editorElement = document.getElementById(`vim-editor-${activeId}`);
-		editorElement?.focus();
-	}, [paneTree]);
-
 	const splitPane = (direction: SplitState) => {
+		numPanes.current += 1;
 		const firstChildId = v4();
 		const secondChildId = v4();
 		const parentId = useStore.getState().activePane;
@@ -132,23 +128,70 @@ export const EditorContainer = ({
 	}
 
 	const closePane = () => {
-		const newTree = { ...paneTree };
-		const activeId = useStore.getState().activePane;
-		const parentId = paneTree[activeId].parent;
-		if (parentId === undefined || parentId === null) {
+		numPanes.current -= 1;
+		if (numPanes.current <= 0) {
 			resetRoot();
 			return;
-		} else {
-			//TODO: if sibling is deleted, i want to bubble up to parent's sibling
-			const siblingId = paneTree[parentId].children.filter(childId => childId !== activeId)[0];
-			updateActivePane(siblingId);
 		}
+
+		const newTree = { ...paneTree };
+		const activeId = useStore.getState().activePane;
+		const nextActiveId = bubbleUp(activeId);
+
 		newTree[activeId].deleted = true;
+		console.log("cur id: ", nextActiveId);
+		updateActivePane(nextActiveId);
 		setPaneTree(newTree);
 	}
 
+	const bubbleUp = (paneId: string): string | null => {
+		let curId: string | null = paneId;
+		curId = getSiblingId(curId);
+		if (!curId) {
+			return null;
+		}
+		if (paneTree[curId].state === SplitState.NONE && !paneTree[curId].deleted) {
+			return curId;
+		}
+		if (!paneTree[curId].deleted) {
+			const firstChild = drillDown(paneTree[curId].children[0], 1);
+			const secondChild = drillDown(paneTree[curId].children[1], 1);
+			if (firstChild.stepsAway >= 0 || secondChild.stepsAway >= 0) {
+				if (firstChild.stepsAway < 0) return secondChild.nearestId;
+				if (secondChild.stepsAway < 0) return firstChild.nearestId;
+				return firstChild.stepsAway <= secondChild.stepsAway ?
+					firstChild.nearestId : secondChild.nearestId;
+			}
+		}
+		const parentId = paneTree[paneId].parent ?? null;
+		return parentId ? bubbleUp(parentId) : null
+	}
+
+	const drillDown = (paneId: string, curStepsAway: number): { nearestId: string, stepsAway: number } => {
+		let curId = paneId;
+		if (paneTree[paneId].state === SplitState.NONE && !paneTree[curId].deleted) {
+			return { nearestId: curId, stepsAway: curStepsAway };
+		}
+		const firstChild = drillDown(paneTree[curId].children[0], 1);
+		const secondChild = drillDown(paneTree[curId].children[1], 1);
+		if (firstChild.stepsAway < 0 && secondChild.stepsAway < 0) {
+			return { nearestId: "none", stepsAway: -1 };
+		}
+		if (firstChild.stepsAway < 0) return secondChild;
+		if (secondChild.stepsAway < 0) return firstChild;
+		return firstChild.stepsAway <= secondChild.stepsAway ? firstChild : secondChild;
+	}
+
+	const getSiblingId = (paneId: string) => {
+		const parentId = paneTree[paneId].parent;
+		if (parentId !== null && parentId !== undefined) {
+			return paneTree[parentId].children.filter(childId => childId !== paneId)[0];
+		}
+		return null;
+	}
+
 	//NOTE: use graph traversal to visit parent's neighbors
-	export const goToNeighbor = (direction: Direction) => {
+	const goToNeighbor = (direction: Direction) => {
 
 	}
 
@@ -165,7 +208,9 @@ export const EditorContainer = ({
 				</div>
 
 			);
-		} else if (!paneTree[paneId].deleted) {
+		} else if (!paneTree[paneId].deleted &&
+			(!paneTree[paneTree[paneId].children[0]].deleted ||
+				!paneTree[paneTree[paneId].children[1]].deleted)) {
 			return (
 				<div key={paneId} className={`h-full w-full flex 
 				${paneTree[paneId].state === SplitState.HORIZONTAL ?
@@ -179,6 +224,7 @@ export const EditorContainer = ({
 	}
 
 	console.log(paneTree);
+	console.log("numPanes: ", numPanes);
 
 	if (!isClient || !rootId.current) {
 		return <div className="h-full w-full text-center">Loading...</div>;
