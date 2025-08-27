@@ -26,6 +26,7 @@ export const VimEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
+	const activeId = useStore.getState().activePane;
 	const updateActivePane = useStore((state) => state.updateActivePane);
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -36,6 +37,12 @@ export const VimEditor = ({
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
+
+	useEffect(() => {
+		if (vimEditor) {
+			vimEditor.focus();
+		}
+	}, [activeId, vimEditor]);
 
 
 	useEffect(() => {
