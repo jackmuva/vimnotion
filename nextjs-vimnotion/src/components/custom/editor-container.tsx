@@ -3,45 +3,7 @@ import { v4 } from "uuid";
 import { useStore } from "@/store/store";
 import { EditorPane } from "./editor-pane";
 import { Split } from "lucide-react";
-
-export enum SplitState {
-	NONE = "NONE",
-	HORIZONTAL = "HORIZONTAL",
-	VERTICAL = "VERTICAL",
-}
-
-export enum ChildType {
-	NONE = "NONE",
-	FIRST = "FIRST",
-	SECOND = "SECOND",
-}
-
-export enum Direction {
-	NORTH = "NORTH",
-	SOUTH = "SOUTH",
-	EAST = "EAST",
-	WEST = "WEST",
-}
-
-
-export type PaneNeighbors = {
-	north: string | null,
-	south: string | null,
-	east: string | null,
-	west: string | null,
-}
-
-
-export type PaneNode = {
-	[id: string]: {
-		children: Array<string>,
-		parent: string | null,
-		state: SplitState,
-		neighbors: PaneNeighbors,
-		childType: ChildType,
-		deleted: boolean,
-	}
-}
+import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
 
 export const EditorContainer = ({
 	toggleSidebar,
@@ -139,14 +101,12 @@ export const EditorContainer = ({
 		const nextActiveId = bubbleUp(activeId);
 
 		newTree[activeId].deleted = true;
-		console.log("cur id: ", nextActiveId);
 		updateActivePane(nextActiveId);
 		setPaneTree(newTree);
 	}
 
 	const bubbleUp = (paneId: string): string | null => {
-		let curId: string | null = paneId;
-		curId = getSiblingId(curId);
+		let curId = getSiblingId(paneId);
 		if (!curId) {
 			return null;
 		}
@@ -168,12 +128,13 @@ export const EditorContainer = ({
 	}
 
 	const drillDown = (paneId: string, curStepsAway: number): { nearestId: string, stepsAway: number } => {
-		let curId = paneId;
-		if (paneTree[paneId].state === SplitState.NONE && !paneTree[curId].deleted) {
-			return { nearestId: curId, stepsAway: curStepsAway };
+		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
+			return { nearestId: paneId, stepsAway: curStepsAway };
+		} else if (paneTree[paneId].state === SplitState.NONE && paneTree[paneId].deleted) {
+			return { nearestId: "none", stepsAway: -1 }
 		}
-		const firstChild = drillDown(paneTree[curId].children[0], 1);
-		const secondChild = drillDown(paneTree[curId].children[1], 1);
+		const firstChild = drillDown(paneTree[paneId].children[0], curStepsAway + 1);
+		const secondChild = drillDown(paneTree[paneId].children[1], curStepsAway + 1);
 		if (firstChild.stepsAway < 0 && secondChild.stepsAway < 0) {
 			return { nearestId: "none", stepsAway: -1 };
 		}
@@ -224,7 +185,6 @@ export const EditorContainer = ({
 	}
 
 	console.log(paneTree);
-	console.log("numPanes: ", numPanes);
 
 	if (!isClient || !rootId.current) {
 		return <div className="h-full w-full text-center">Loading...</div>;

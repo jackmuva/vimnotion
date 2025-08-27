@@ -39,8 +39,6 @@ export const VimEditor = ({
 	}, []);
 
 	useEffect(() => {
-		console.log("fired focus");
-		console.log("active pane: ", activeId);
 		if (vimEditor) {
 			vimEditor.focus();
 		}
