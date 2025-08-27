@@ -151,9 +151,27 @@ export const EditorContainer = ({
 		return null;
 	}
 
-	//NOTE: use graph traversal to visit parent's neighbors
 	const goToNeighbor = (direction: Direction) => {
+		const currentPaneId = useStore.getState().activePane;
+		let currentId = currentPaneId;
 
+		while (currentId !== null) {
+			const currentPane = paneTree[currentId];
+
+			if (!currentPane) break;
+
+			// Check if current pane has a neighbor in the requested direction
+			const neighborId = currentPane.neighbors[direction];
+
+			if (neighborId && paneTree[neighborId] && !paneTree[neighborId].deleted) {
+				// Found a valid neighbor, switch to it
+				updateActivePane(neighborId);
+				return;
+			}
+
+			// No neighbor found at this level, move up to parent
+			currentId = currentPane.parent;
+		}
 	}
 
 	const hydratePanes = (paneId: string) => {
