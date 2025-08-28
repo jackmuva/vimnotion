@@ -5,29 +5,26 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { useStore } from '@/store/store';
+import { useEditorStore } from '@/store/editor-store';
+import { SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
 	paneId,
 	toggleSidebar,
 	toggleLeaderPanel,
-	splitHorizontal,
-	splitVertical,
-	closePane,
 }: {
 	paneId: string,
 	toggleSidebar: () => void,
 	toggleLeaderPanel: () => void,
-	splitHorizontal: () => void,
-	splitVertical: () => void,
-	closePane: () => void,
 }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const activeId = useStore.getState().activePane;
-	const updateActivePane = useStore((state) => state.updateActivePane);
+	const activeId = useEditorStore.getState().activePane;
+	const updateActivePane = useEditorStore((state) => state.updateActivePane);
+	const splitPane = useEditorStore(state => state.splitPane);
+	const closePane = useEditorStore(state => state.closePane);
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
@@ -77,9 +74,9 @@ export const VimEditor = ({
 		applyCustomVim({
 			toggleLeaderPanel: toggleLeaderPanel,
 			toggleSidebar: toggleSidebar,
-			splitVertical: splitVertical,
-			splitHorizontal: splitHorizontal,
-			closePane: closePane,
+			splitHorizontal: () => splitPane(SplitState.HORIZONTAL),
+			splitVertical: () => splitPane(SplitState.VERTICAL),
+			closePane: () => closePane()
 		});
 		setVimEditor(view);
 	}, [isClient]);
