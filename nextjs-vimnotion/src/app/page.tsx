@@ -32,6 +32,16 @@ export default function Home() {
 		}
 	}, [leaderPanel]);
 
+	useEffect(() => {
+		if (windowPanel) {
+			const button = document.getElementById(`first-window-option`);
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [windowPanel]);
+
+
 
 	useEffect(() => {
 		if (openSidebar) {

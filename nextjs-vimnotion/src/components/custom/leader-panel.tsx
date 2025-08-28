@@ -1,8 +1,28 @@
-import { useState } from "react";
-import { WindowPanel } from "./window-panel";
+import { useEffect } from "react";
 
 export const LeaderPanel = ({ closePanel, toggleWindowPanel }:
 	{ closePanel: () => void, toggleWindowPanel: () => void }) => {
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+
+		const handleWKey = (event: KeyboardEvent) => {
+			if (event.key === 'w') {
+				toggleWindowPanel();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleWKey);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keydown', handleWKey);
+		};
+	}, [closePanel]);
 	return (
 		<div id={`leader-panel`}
 			className='z-20 w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
