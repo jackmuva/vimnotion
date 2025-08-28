@@ -22,6 +22,7 @@ export const VimEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const activeId = useEditorStore.getState().activePane;
+	const numPanes = useEditorStore.getState().numPanes;
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
@@ -39,8 +40,13 @@ export const VimEditor = ({
 		if (vimEditor) {
 			vimEditor.focus();
 		}
-	}, [activeId, vimEditor]);
+	}, [numPanes, vimEditor]);
 
+	useEffect(() => {
+		if (vimEditor && activeId === paneId) {
+			vimEditor.focus();
+		}
+	}, [activeId])
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {

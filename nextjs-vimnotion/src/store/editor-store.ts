@@ -177,6 +177,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			if (!currentPane) break;
 			const neighborId = currentPane.neighbors[direction];
 			if (neighborId && paneTree[neighborId] && !paneTree[neighborId].deleted) {
+				console.log("going to ", neighborId);
 				updateActivePane(neighborId);
 				return;
 			}
