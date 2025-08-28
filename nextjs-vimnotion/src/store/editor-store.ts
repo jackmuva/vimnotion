@@ -2,14 +2,33 @@ import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
 
-export const useEditorStore = create((set, get) => ({
+type EditorState = {
+	activePane: string,
+	paneTree: PaneNode,
+	rootId: string | null,
+	numPanes: number,
+	resetPane: () => void,
+	updateActivePane: (newPane: string) => void,
+	setPaneTree: (tree: PaneNode) => void,
+	setRootId: (id: string | null) => void,
+	setNumPanes: (num: number) => void,
+	resetRoot: () => void,
+	splitPane: (direction: SplitState) => void,
+	closePane: () => void,
+	bubbleUp: (paneId: string) => string | null,
+	drillDown: (paneId: string, curStepsAway: number) => { nearestId: string, stepsAway: number },
+	getSiblingId: (paneId: string) => string | null,
+	goToNeighbor: (direction: Direction) => any
+}
+
+export const useEditorStore = create<EditorState>((set, get) => ({
 	activePane: "root",
 	paneTree: {} as PaneNode,
 	rootId: null as string | null,
 	numPanes: 1,
 
 	resetPane: () => set({ activePane: "root" }),
-	updateActivePane: (newPane: string) => set({ activePane: newPane }),
+	updateActivePane: (newPane) => set({ activePane: newPane }),
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
 	setRootId: (id: string | null) => set({ rootId: id }),
 	setNumPanes: (num: number) => set({ numPanes: num }),
@@ -92,6 +111,10 @@ export const useEditorStore = create((set, get) => ({
 		setNumPanes(numPanes);
 		const newTree = { ...paneTree };
 		const nextActiveId = get().bubbleUp(activePane);
+		if (!nextActiveId) {
+			resetRoot();
+			return;
+		}
 		newTree[activePane].deleted = true;
 		updateActivePane(nextActiveId);
 		setPaneTree(newTree);
@@ -157,6 +180,7 @@ export const useEditorStore = create((set, get) => ({
 				updateActivePane(neighborId);
 				return;
 			}
+			//@ts-expect-error can be null or string
 			currentId = currentPane.parent;
 		}
 	},
