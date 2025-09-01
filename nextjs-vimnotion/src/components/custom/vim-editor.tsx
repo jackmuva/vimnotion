@@ -5,29 +5,28 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { useStore } from '@/store/store';
+import { useEditorStore } from '@/store/editor-store';
+import { SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
 	paneId,
 	toggleSidebar,
 	toggleLeaderPanel,
-	splitHorizontal,
-	splitVertical,
-	closePane,
 }: {
 	paneId: string,
 	toggleSidebar: () => void,
 	toggleLeaderPanel: () => void,
-	splitHorizontal: () => void,
-	splitVertical: () => void,
-	closePane: () => void,
 }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const activeId = useStore.getState().activePane;
-	const updateActivePane = useStore((state) => state.updateActivePane);
+	const activeId = useEditorStore((state) => state.activePane);
+	const numPanes = useEditorStore((state) => state.numPanes);
+	const activePanel = useEditorStore((state) => state.activePanel);
+	const updateActivePane = useEditorStore((state) => state.updateActivePane);
+	const splitPane = useEditorStore(state => state.splitPane);
+	const closePane = useEditorStore(state => state.closePane);
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
@@ -42,8 +41,13 @@ export const VimEditor = ({
 		if (vimEditor) {
 			vimEditor.focus();
 		}
-	}, [activeId, vimEditor]);
+	}, [numPanes, vimEditor]);
 
+	useEffect(() => {
+		if (vimEditor && activeId === paneId && activePanel === null) {
+			vimEditor.focus();
+		}
+	}, [activeId, activePanel])
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -55,7 +59,7 @@ export const VimEditor = ({
 			return;
 		}
 
-		let view = new EditorView({
+		const view = new EditorView({
 			doc: "\n\n\n\n\n\n",
 			extensions: [
 				// make sure vim is included before other keymaps
@@ -77,9 +81,9 @@ export const VimEditor = ({
 		applyCustomVim({
 			toggleLeaderPanel: toggleLeaderPanel,
 			toggleSidebar: toggleSidebar,
-			splitVertical: splitVertical,
-			splitHorizontal: splitHorizontal,
-			closePane: closePane,
+			splitHorizontal: () => splitPane(SplitState.HORIZONTAL),
+			splitVertical: () => splitPane(SplitState.VERTICAL),
+			closePane: () => closePane()
 		});
 		setVimEditor(view);
 	}, [isClient]);

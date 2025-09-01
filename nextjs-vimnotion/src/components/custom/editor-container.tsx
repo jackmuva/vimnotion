@@ -1,9 +1,7 @@
-import { useRef, useState, useEffect } from "react";
-import { v4 } from "uuid";
-import { useStore } from "@/store/store";
+import { useState, useEffect } from "react";
+import { useEditorStore } from "@/store/editor-store";
 import { EditorPane } from "./editor-pane";
-import { Split } from "lucide-react";
-import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
+import { SplitState } from "@/types/editor-types";
 
 export const EditorContainer = ({
 	toggleSidebar,
@@ -12,159 +10,25 @@ export const EditorContainer = ({
 	toggleSidebar: () => void,
 	toggleLeaderPanel: () => void
 }) => {
-	const rootId = useRef<string | null>(null);
-	const numPanes = useRef<number>(1);
 	const [isClient, setIsClient] = useState(false);
-	const updateActivePane = useStore((state: any) => state.updateActivePane);
-	const [paneTree, setPaneTree] = useState<PaneNode>({});
-	const resetRoot = () => {
-		rootId.current = "root";
-		setPaneTree({
-			[rootId.current]: {
-				state: SplitState.NONE,
-				children: [],
-				parent: null,
-				neighbors: {
-					north: null,
-					south: null,
-					east: null,
-					west: null,
-				},
-				childType: ChildType.NONE,
-				deleted: false,
-			}
-		});
-	}
+	const paneTree = useEditorStore(state => state.paneTree);
+	const rootId = useEditorStore(state => state.rootId);
+	const resetRoot = useEditorStore(state => state.resetRoot);
 
 	useEffect(() => {
-		if (!rootId.current) {
+		if (!rootId) {
 			resetRoot();
 		}
 		setIsClient(true);
-	}, []);
+	}, [rootId, resetRoot]);
 
-	const splitPane = (direction: SplitState) => {
-		numPanes.current += 1;
-		const firstChildId = v4();
-		const secondChildId = v4();
-		const parentId = useStore.getState().activePane;
-		setPaneTree((prev: PaneNode) => ({
-			...prev,
-			[parentId]: {
-				...prev[parentId],
-				state: direction,
-				children: [...prev[parentId].children, firstChildId, secondChildId]
-			},
-			[firstChildId]: {
-				state: SplitState.NONE,
-				children: [],
-				parent: parentId,
-				neighbors: {
-					north: prev[parentId].neighbors.north,
-					south: direction === SplitState.VERTICAL ? prev[parentId].neighbors.south :
-						secondChildId,
-					east: direction === SplitState.VERTICAL ? secondChildId :
-						prev[parentId].neighbors.east,
-					west: prev[parentId].neighbors.west,
-				},
-				childType: ChildType.FIRST,
-				deleted: false,
-			},
-			[secondChildId]: {
-				state: SplitState.NONE,
-				children: [],
-				parent: parentId,
-				neighbors: {
-					south: prev[parentId].neighbors.south,
-					north: direction === SplitState.VERTICAL ? prev[parentId].neighbors.north :
-						firstChildId,
-					west: direction === SplitState.VERTICAL ? firstChildId :
-						prev[parentId].neighbors.west,
-					east: prev[parentId].neighbors.east,
-				},
-				childType: ChildType.SECOND,
-				deleted: false,
-			}
-		}));
-		updateActivePane(secondChildId);
-	}
-
-	const closePane = () => {
-		numPanes.current -= 1;
-		if (numPanes.current <= 0) {
-			resetRoot();
-			return;
-		}
-
-		const newTree = { ...paneTree };
-		const activeId = useStore.getState().activePane;
-		const nextActiveId = bubbleUp(activeId);
-
-		newTree[activeId].deleted = true;
-		updateActivePane(nextActiveId);
-		setPaneTree(newTree);
-	}
-
-	const bubbleUp = (paneId: string): string | null => {
-		let curId = getSiblingId(paneId);
-		if (!curId) {
-			return null;
-		}
-		if (paneTree[curId].state === SplitState.NONE && !paneTree[curId].deleted) {
-			return curId;
-		}
-		if (!paneTree[curId].deleted) {
-			const firstChild = drillDown(paneTree[curId].children[0], 1);
-			const secondChild = drillDown(paneTree[curId].children[1], 1);
-			if (firstChild.stepsAway >= 0 || secondChild.stepsAway >= 0) {
-				if (firstChild.stepsAway < 0) return secondChild.nearestId;
-				if (secondChild.stepsAway < 0) return firstChild.nearestId;
-				return firstChild.stepsAway <= secondChild.stepsAway ?
-					firstChild.nearestId : secondChild.nearestId;
-			}
-		}
-		const parentId = paneTree[paneId].parent ?? null;
-		return parentId ? bubbleUp(parentId) : null
-	}
-
-	const drillDown = (paneId: string, curStepsAway: number): { nearestId: string, stepsAway: number } => {
-		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
-			return { nearestId: paneId, stepsAway: curStepsAway };
-		} else if (paneTree[paneId].state === SplitState.NONE && paneTree[paneId].deleted) {
-			return { nearestId: "none", stepsAway: -1 }
-		}
-		const firstChild = drillDown(paneTree[paneId].children[0], curStepsAway + 1);
-		const secondChild = drillDown(paneTree[paneId].children[1], curStepsAway + 1);
-		if (firstChild.stepsAway < 0 && secondChild.stepsAway < 0) {
-			return { nearestId: "none", stepsAway: -1 };
-		}
-		if (firstChild.stepsAway < 0) return secondChild;
-		if (secondChild.stepsAway < 0) return firstChild;
-		return firstChild.stepsAway <= secondChild.stepsAway ? firstChild : secondChild;
-	}
-
-	const getSiblingId = (paneId: string) => {
-		const parentId = paneTree[paneId].parent;
-		if (parentId !== null && parentId !== undefined) {
-			return paneTree[parentId].children.filter(childId => childId !== paneId)[0];
-		}
-		return null;
-	}
-
-	//NOTE: use graph traversal to visit parent's neighbors
-	const goToNeighbor = (direction: Direction) => {
-
-	}
-
+	//BUG:sometimes closing panes will have an empty pane
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return (
 				<div key={paneId} className="h-full w-full">
 					<EditorPane paneId={paneId}
 						toggleSidebar={toggleSidebar}
-						splitHorizontal={() => splitPane(SplitState.HORIZONTAL)}
-						splitVertical={() => splitPane(SplitState.VERTICAL)}
-						closePane={closePane}
 						toggleLeaderPanel={toggleLeaderPanel} />
 				</div>
 
@@ -176,7 +40,7 @@ export const EditorContainer = ({
 				<div key={paneId} className={`h-full w-full flex 
 				${paneTree[paneId].state === SplitState.HORIZONTAL ?
 						"flex-col" : ""}`}>
-					{paneTree[paneId].children.map((childId) => {
+					{paneTree[paneId].children.map((childId: string) => {
 						return hydratePanes(childId)
 					})}
 				</div>
@@ -186,12 +50,12 @@ export const EditorContainer = ({
 
 	console.log(paneTree);
 
-	if (!isClient || !rootId.current) {
+	if (!isClient || !rootId) {
 		return <div className="h-full w-full text-center">Loading...</div>;
 	} else {
 		return (
 			<>
-				{hydratePanes(rootId.current)}
+				{hydratePanes(rootId)}
 			</>
 		);
 	}

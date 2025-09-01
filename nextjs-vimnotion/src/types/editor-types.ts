@@ -11,10 +11,10 @@ export enum ChildType {
 }
 
 export enum Direction {
-	NORTH = "NORTH",
-	SOUTH = "SOUTH",
-	EAST = "EAST",
-	WEST = "WEST",
+	NORTH = "north",
+	SOUTH = "south",
+	EAST = "east",
+	WEST = "west",
 }
 
 

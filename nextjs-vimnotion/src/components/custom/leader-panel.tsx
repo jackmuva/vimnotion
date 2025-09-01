@@ -1,13 +1,43 @@
-export const LeaderPanel = () => {
+import { useEffect } from "react";
+
+export const LeaderPanel = ({ closePanel, toggleWindowPanel }:
+	{ closePanel: () => void, toggleWindowPanel: () => void }) => {
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+
+		const handleWKey = (event: KeyboardEvent) => {
+			if (event.key === 'w') {
+				toggleWindowPanel();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleWKey);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keydown', handleWKey);
+		};
+	}, [closePanel, toggleWindowPanel]);
 	return (
 		<div id={`leader-panel`}
 			className='z-20 w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
-					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4'>
+					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28'>
 			<div>
 				<button id={`first-leader-option`} className="cursor-pointer">[m]</button>arkdown
 			</div>
 			<div>
-
+				<button className="cursor-pointer"
+					onClick={() => {
+						toggleWindowPanel();
+						closePanel();
+					}}>
+					[w]
+				</button>indow
 			</div>
 		</div>
 	);
