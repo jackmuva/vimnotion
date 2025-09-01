@@ -8,6 +8,8 @@ type EditorState = {
 	rootId: string | null,
 	numPanes: number,
 	activePanel: string | null,
+	cycleState: Direction,
+	setCycleState: (cycle: Direction) => void,
 	resetPane: () => void,
 	updateActivePane: (newPane: string) => void,
 	setPaneTree: (tree: PaneNode) => void,
@@ -31,6 +33,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	rootId: null as string | null,
 	numPanes: 1,
 	activePanel: null,
+	cycleState: Direction.EAST,
 
 	resetPane: () => set({ activePane: "root" }),
 
@@ -43,6 +46,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	setNumPanes: (num: number) => set({ numPanes: num }),
 
 	setActivePanel: (panel: string | null) => set({ activePanel: panel }),
+
+	setCycleState: (direction: Direction) => set({ cycleState: direction }),
 
 	resetRoot: () => {
 		const rootId = "root";
@@ -264,17 +269,27 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return resId;
 	},
 
+	//TODO: can still improve; doesnt always cycle optimally because of the cycle order
 	cycleNeighbor: () => {
-		const { goToNeighbor, activePane } = get();
-		let neighbor = null;
-		neighbor = goToNeighbor(Direction.EAST);
-		if (neighbor !== activePane) return neighbor;
-		neighbor = goToNeighbor(Direction.SOUTH);
-		if (neighbor !== activePane) return neighbor;
-		neighbor = goToNeighbor(Direction.WEST);
-		if (neighbor !== activePane) return neighbor;
-		neighbor = goToNeighbor(Direction.NORTH);
-		if (neighbor !== activePane) return neighbor;
+		const { goToNeighbor, activePane, setCycleState } = get();
+		let neighbor = activePane;
+		let numCycles = 0;
+		while (numCycles < 4) {
+			neighbor = goToNeighbor(get().cycleState);
+			if (neighbor !== activePane) {
+				return neighbor;
+			}
+			if (get().cycleState === Direction.EAST) {
+				setCycleState(Direction.SOUTH);
+			} else if (get().cycleState === Direction.SOUTH) {
+				setCycleState(Direction.WEST);
+			} else if (get().cycleState === Direction.WEST) {
+				setCycleState(Direction.NORTH);
+			} else if (get().cycleState === Direction.NORTH) {
+				setCycleState(Direction.EAST);
+			}
+			numCycles += 1;
+		}
 		return activePane;
 	}
 }))
