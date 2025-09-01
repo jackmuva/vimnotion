@@ -95,6 +95,13 @@ export const VimEditor = ({
 		}
 
 		if (typeof window !== 'undefined' && vimEditor) {
+			const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+				event.preventDefault();
+				event.returnValue = "";
+			};
+
+			window.addEventListener("beforeunload", handleBeforeUnload);
+
 			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			const handleChange = (event: MediaQueryListEvent) => {
 				if (event.matches) {
@@ -107,14 +114,14 @@ export const VimEditor = ({
 					});
 				}
 			};
-
 			mediaQuery.addEventListener('change', handleChange);
 
 			return () => {
 				mediaQuery.removeEventListener('change', handleChange);
+				window.removeEventListener("beforeunload", handleBeforeUnload);
 			};
 		}
-	}, [vimEditor]);
+	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background py-1 pr-2'>
