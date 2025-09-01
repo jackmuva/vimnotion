@@ -7,18 +7,21 @@ type EditorState = {
 	paneTree: PaneNode,
 	rootId: string | null,
 	numPanes: number,
+	activePanel: string | null,
 	resetPane: () => void,
 	updateActivePane: (newPane: string) => void,
 	setPaneTree: (tree: PaneNode) => void,
 	setRootId: (id: string | null) => void,
 	setNumPanes: (num: number) => void,
+	setActivePanel: (panel: string | null) => void,
 	resetRoot: () => void,
 	splitPane: (direction: SplitState) => void,
 	closePane: () => void,
 	bubbleUp: (paneId: string) => string | null,
 	drillDown: (paneId: string, curStepsAway: number) => { nearestId: string, stepsAway: number },
 	getSiblingId: (paneId: string) => string | null,
-	goToNeighbor: (direction: Direction) => any
+	goToNeighbor: (direction: Direction) => string,
+	cycleNeighbor: () => string,
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -26,12 +29,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	paneTree: {} as PaneNode,
 	rootId: null as string | null,
 	numPanes: 1,
+	activePanel: null,
 
 	resetPane: () => set({ activePane: "root" }),
+
 	updateActivePane: (newPane) => set({ activePane: newPane }),
+
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
+
 	setRootId: (id: string | null) => set({ rootId: id }),
+
 	setNumPanes: (num: number) => set({ numPanes: num }),
+
+	setActivePanel: (panel: string | null) => set({ activePanel: panel }),
 
 	resetRoot: () => {
 		const rootId = "root";
@@ -168,8 +178,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return null;
 	},
 
-	goToNeighbor: (direction: Direction) => {
-		const { paneTree, activePane, updateActivePane } = get();
+	goToNeighbor: (direction: Direction): string => {
+		const { paneTree, activePane } = get();
 		let currentId = activePane;
 
 		while (currentId !== null) {
@@ -177,12 +187,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			if (!currentPane) break;
 			const neighborId = currentPane.neighbors[direction];
 			if (neighborId && paneTree[neighborId] && !paneTree[neighborId].deleted) {
-				console.log("going to ", neighborId);
-				updateActivePane(neighborId);
-				return;
+				return neighborId;
 			}
 			//@ts-expect-error can be null or string
 			currentId = currentPane.parent;
 		}
+		return activePane;
 	},
+
+	cycleNeighbor: () => {
+		const { goToNeighbor, activePane } = get();
+		let neighbor = null;
+		neighbor = goToNeighbor(Direction.EAST);
+		if (neighbor !== activePane) return neighbor;
+		neighbor = goToNeighbor(Direction.SOUTH);
+		if (neighbor !== activePane) return neighbor;
+		neighbor = goToNeighbor(Direction.WEST);
+		if (neighbor !== activePane) return neighbor;
+		neighbor = goToNeighbor(Direction.NORTH);
+		if (neighbor !== activePane) return neighbor;
+		return activePane;
+	}
 }))

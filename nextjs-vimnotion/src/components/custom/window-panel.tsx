@@ -4,13 +4,19 @@ import { Direction } from "@/types/editor-types";
 
 export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 	const goToNeighbor = useEditorStore((state) => state.goToNeighbor);
+	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const setActivePane = useEditorStore((state) => state.updateActivePane);
+	const cycleNeighbor = useEditorStore((state) => state.cycleNeighbor);
 
-	const handleNavigation = (direction: Direction) => {
+	const handleNavigation = (paneId: string) => {
+		console.log("navigating to ", paneId);
 		closePanel();
-		goToNeighbor(direction);
+		setActivePanel(null);
+		setActivePane(paneId);
 	};
 
 	useEffect(() => {
+		setActivePanel("window-panel");
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				closePanel();
@@ -20,31 +26,39 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleHKey = (event: KeyboardEvent) => {
 			if (event.key === 'h') {
-				handleNavigation(Direction.WEST);
+				handleNavigation(goToNeighbor(Direction.WEST));
 			}
 		};
 		document.addEventListener('keydown', handleHKey);
 
 		const handleJKey = (event: KeyboardEvent) => {
 			if (event.key === 'j') {
-				handleNavigation(Direction.SOUTH);
+				handleNavigation(goToNeighbor(Direction.SOUTH));
 			}
 		};
 		document.addEventListener('keydown', handleJKey);
 
 		const handleKKey = (event: KeyboardEvent) => {
 			if (event.key === 'k') {
-				handleNavigation(Direction.NORTH);
+				handleNavigation(goToNeighbor(Direction.NORTH));
 			}
 		};
 		document.addEventListener('keydown', handleKKey);
 
 		const handleLKey = (event: KeyboardEvent) => {
 			if (event.key === 'l') {
-				handleNavigation(Direction.EAST);
+				handleNavigation(goToNeighbor(Direction.EAST));
 			}
 		};
 		document.addEventListener('keydown', handleLKey);
+
+		const handleWKey = (event: KeyboardEvent) => {
+			if (event.key === 'w') {
+				handleNavigation(cycleNeighbor());
+			}
+		};
+		document.addEventListener('keydown', handleWKey);
+
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
@@ -52,6 +66,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			document.removeEventListener('keydown', handleJKey);
 			document.removeEventListener('keydown', handleKKey);
 			document.removeEventListener('keydown', handleLKey);
+			document.removeEventListener('keydown', handleWKey);
 		};
 	}, [closePanel]);
 
@@ -63,7 +78,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 				<button
 					id={`first-window-option`}
 					className="cursor-pointer"
-					onClick={() => handleNavigation(Direction.WEST)}
+					onClick={() => handleNavigation(goToNeighbor(Direction.WEST))}
 				>
 					[h]
 				</button>
@@ -72,7 +87,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(Direction.SOUTH)}
+					onClick={() => handleNavigation(goToNeighbor(Direction.SOUTH))}
 				>
 					[j]
 				</button>
@@ -81,7 +96,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(Direction.NORTH)}
+					onClick={() => handleNavigation(goToNeighbor(Direction.NORTH))}
 				>
 					[k]
 				</button>
@@ -90,7 +105,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(Direction.EAST)}
+					onClick={() => handleNavigation(goToNeighbor(Direction.EAST))}
 				>
 					[l]
 				</button>
@@ -99,7 +114,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(Direction.EAST)}
+					onClick={() => handleNavigation(cycleNeighbor())}
 				>
 					[w]
 				</button>
