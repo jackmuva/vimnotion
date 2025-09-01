@@ -51,7 +51,7 @@ export default function Home() {
 
 	return (
 		<div className="bg-background-muted/20 w-dvw h-dvh flex justify-center items-center font-mono 
-      pt-14 p-10 text-lg">
+			      pt-14 px-4 text-lg">
 			<Header toggleSidebar={toggleSidebar} />
 			{openSidebar && <Sidebar />}
 			<TabContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />

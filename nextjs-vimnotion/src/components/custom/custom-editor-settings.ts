@@ -13,12 +13,14 @@ export const applyCustomVim = ({
 	splitVertical,
 	splitHorizontal,
 	closePane,
+	createNewTab,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
 	splitVertical: () => void,
 	splitHorizontal: () => void,
 	closePane: () => void,
+	createNewTab: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		console.log('saving');
@@ -35,8 +37,13 @@ export const applyCustomVim = ({
 	Vim.defineEx('vsplit shorthand', 'vs', function() {
 		splitVertical();
 	});
+
 	Vim.defineEx('vsplit', 'vsplit', function() {
 		splitVertical();
+	});
+
+	Vim.defineEx('tabnew', 'tabnew', function() {
+		createNewTab();
 	});
 
 	Vim.defineAction("toggleLeaderPanel", () => {

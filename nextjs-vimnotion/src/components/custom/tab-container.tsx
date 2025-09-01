@@ -25,17 +25,27 @@ export const TabContainer = ({
 		}
 	}, [tabs]);
 
-	console.log("tabs: ", tabs);
-	console.log(tabMap);
-
 	if (!isClient || !tabs || tabs.length === 0) {
 		return <div className="h-full w-full text-center">Loading...</div>;
 	}
 	return (
-		<>
+		<div className="h-full w-full flex flex-col space-y-0">
+			{tabs.length > 1 &&
+				<div className="flex space-x-0">
+					{tabs.map((tab, i) => {
+						return (
+							<div key={tab} className={`bg-background px-1 rounded-t-sm 
+								${tab === activeTab ? "text-green-600" :
+									"text-foreground-muted"}`}>
+								tab:{i}
+							</div>
+						)
+					})}
+				</div>
+			}
 			<EditorContainer rootId={tabMap[activeTab].root}
 				toggleLeaderPanel={toggleLeaderPanel}
 				toggleSidebar={toggleSidebar} />
-		</>
+		</div>
 	);
 }

@@ -22,11 +22,11 @@ export const VimEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const activeId = useEditorStore((state) => state.activePane);
-	const numPanes = useEditorStore((state) => state.numPanes);
 	const activePanel = useEditorStore((state) => state.activePanel);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
+	const createNewTab = useEditorStore(state => state.createNewTab);
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
@@ -41,7 +41,7 @@ export const VimEditor = ({
 		if (vimEditor) {
 			vimEditor.focus();
 		}
-	}, [numPanes, vimEditor]);
+	}, [vimEditor]);
 
 	useEffect(() => {
 		if (vimEditor && activeId === paneId && activePanel === null) {
@@ -83,7 +83,8 @@ export const VimEditor = ({
 			toggleSidebar: toggleSidebar,
 			splitHorizontal: () => splitPane(SplitState.HORIZONTAL),
 			splitVertical: () => splitPane(SplitState.VERTICAL),
-			closePane: () => closePane()
+			closePane: () => closePane(),
+			createNewTab: () => createNewTab(),
 		});
 		setVimEditor(view);
 	}, [isClient]);
@@ -124,7 +125,7 @@ export const VimEditor = ({
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background py-1 pr-2'>
+		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
 			<div id={`vim-editor-${paneId}`}
 				className={`h-full w-full overflow-y-scroll`}>
 			</div>

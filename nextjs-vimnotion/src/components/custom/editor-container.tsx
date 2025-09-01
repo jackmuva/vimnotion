@@ -45,8 +45,6 @@ export const EditorContainer = ({
 		}
 	}
 
-	console.log(paneTree);
-
 	if (!isClient) {
 		return <div className="h-full w-full text-center">Loading...</div>;
 	} else {
