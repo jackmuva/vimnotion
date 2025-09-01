@@ -59,7 +59,7 @@ export const VimEditor = ({
 			return;
 		}
 
-		let view = new EditorView({
+		const view = new EditorView({
 			doc: "\n\n\n\n\n\n",
 			extensions: [
 				// make sure vim is included before other keymaps

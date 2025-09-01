@@ -22,8 +22,7 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, [rootId, resetRoot]);
 
-
-
+	//BUG:sometimes closing panes will have an empty pane
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return (

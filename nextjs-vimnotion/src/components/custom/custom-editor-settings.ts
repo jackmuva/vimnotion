@@ -39,13 +39,13 @@ export const applyCustomVim = ({
 		splitVertical();
 	});
 
-	Vim.defineAction("toggleLeaderPanel", (cm, args) => {
+	Vim.defineAction("toggleLeaderPanel", () => {
 		toggleLeaderPanel();
 	});
 	Vim.unmap('<Space>', "false");
 	Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', {}, { context: 'normal' });
 
-	Vim.defineAction("toggleSidebar", (cm, args) => {
+	Vim.defineAction("toggleSidebar", () => {
 		toggleSidebar();
 	});
 	Vim.unmap('-', "false");

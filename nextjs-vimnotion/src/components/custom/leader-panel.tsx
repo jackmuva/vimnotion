@@ -22,7 +22,7 @@ export const LeaderPanel = ({ closePanel, toggleWindowPanel }:
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
 		};
-	}, [closePanel]);
+	}, [closePanel, toggleWindowPanel]);
 	return (
 		<div id={`leader-panel`}
 			className='z-20 w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 

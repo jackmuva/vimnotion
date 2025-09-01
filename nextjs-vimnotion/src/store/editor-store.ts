@@ -251,7 +251,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		const { paneTree, activePane, drillDownDirectionally } = get();
 
 		let currentId = activePane;
-		let childType = paneTree[activePane].childType;
+		const childType = paneTree[activePane].childType;
 		let resId = activePane;
 		while (currentId !== null) {
 			const currentPane = paneTree[currentId];
@@ -269,7 +269,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return resId;
 	},
 
-	//TODO: can still improve; doesnt always cycle optimally because of the cycle order
+	//BUG: can still improve; doesnt always cycle optimally because of the cycle order
 	cycleNeighbor: () => {
 		const { goToNeighbor, activePane, setCycleState } = get();
 		let neighbor = activePane;

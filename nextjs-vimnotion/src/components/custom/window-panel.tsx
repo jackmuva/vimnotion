@@ -9,7 +9,6 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 	const cycleNeighbor = useEditorStore((state) => state.cycleNeighbor);
 
 	const handleNavigation = (paneId: string) => {
-		console.log("navigating to ", paneId);
 		closePanel();
 		setActivePanel(null);
 		setActivePane(paneId);
@@ -68,7 +67,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			document.removeEventListener('keydown', handleLKey);
 			document.removeEventListener('keydown', handleWKey);
 		};
-	}, [closePanel]);
+	}, [closePanel, cycleNeighbor, goToNeighbor, setActivePanel]);
 
 	return (
 		<div id={`window-panel`}
