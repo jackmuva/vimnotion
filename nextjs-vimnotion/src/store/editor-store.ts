@@ -1,22 +1,20 @@
 import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
+import { TabMap } from '@/types/editor-types';
 
 type EditorState = {
 	activePane: string,
 	paneTree: PaneNode,
-	rootId: string | null,
 	numPanes: number,
 	activePanel: string | null,
 	cycleState: Direction,
 	setCycleState: (cycle: Direction) => void,
-	resetPane: () => void,
 	updateActivePane: (newPane: string) => void,
 	setPaneTree: (tree: PaneNode) => void,
-	setRootId: (id: string | null) => void,
 	setNumPanes: (num: number) => void,
 	setActivePanel: (panel: string | null) => void,
-	resetRoot: () => void,
+	newRoot: () => string,
 	splitPane: (direction: SplitState) => void,
 	closePane: () => void,
 	bubbleUp: (paneId: string) => string | null,
@@ -25,23 +23,27 @@ type EditorState = {
 	goToNeighbor: (direction: Direction) => string,
 	cycleNeighbor: () => string,
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string,
+
+	activeTab: string,
+	tabArray: Array<string>,
+	tabMap: TabMap,
+	setActiveTab: (tab: string) => void,
+	setTabArray: (tabArray: Array<string>) => void,
+	setTabMap: (map: TabMap) => void,
+	initTabMap: () => void,
+
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
-	activePane: "root",
+	activePane: "",
 	paneTree: {} as PaneNode,
-	rootId: null as string | null,
 	numPanes: 1,
 	activePanel: null,
 	cycleState: Direction.EAST,
 
-	resetPane: () => set({ activePane: "root" }),
-
 	updateActivePane: (newPane) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
-
-	setRootId: (id: string | null) => set({ rootId: id }),
 
 	setNumPanes: (num: number) => set({ numPanes: num }),
 
@@ -49,10 +51,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	setCycleState: (direction: Direction) => set({ cycleState: direction }),
 
-	resetRoot: () => {
-		const rootId = "root";
+	newRoot: () => {
+		const rootId = v4();
 		set({
-			rootId,
 			paneTree: {
 				[rootId]: {
 					state: SplitState.NONE,
@@ -70,6 +71,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			},
 			numPanes: 1
 		});
+		return rootId;
 	},
 
 	splitPane: (direction: SplitState) => {
@@ -118,17 +120,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	closePane: () => {
-		const { paneTree, activePane, updateActivePane, setPaneTree, setNumPanes, resetRoot } = get();
+		const { paneTree, activePane, updateActivePane, setPaneTree, setNumPanes, newRoot: newRoot } = get();
 		const numPanes = get().numPanes - 1;
 		if (numPanes <= 0) {
-			resetRoot();
+			newRoot();
 			return;
 		}
 		setNumPanes(numPanes);
 		const newTree = { ...paneTree };
 		const nextActiveId = get().bubbleUp(activePane);
 		if (!nextActiveId) {
-			resetRoot();
+			newRoot();
 			return;
 		}
 		newTree[activePane].deleted = true;
@@ -291,5 +293,31 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			numCycles += 1;
 		}
 		return activePane;
-	}
+	},
+
+	activeTab: "",
+	tabArray: [],
+	tabMap: {},
+
+	initTabMap: () => {
+		const newRootId = get().newRoot();
+		const tabId = v4();
+		set({
+			activeTab: tabId,
+			tabArray: [tabId],
+			tabMap: {
+				[tabId]: {
+					lastPane: newRootId,
+					root: newRootId
+				}
+			}
+		});
+	},
+
+	setActiveTab: (tab: string) => set({ activeTab: tab }),
+
+	setTabArray: (tabArray: Array<string>) => set({ tabArray: tabArray }),
+
+	setTabMap: (map: TabMap) => set({ tabMap: map }),
+
 }))

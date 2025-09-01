@@ -2,9 +2,9 @@
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar";
 import { useEffect, useState } from "react";
-import { EditorContainer } from "@/components/custom/editor-container";
 import { LeaderPanel } from "@/components/custom/leader-panel";
 import { WindowPanel } from "@/components/custom/window-panel";
+import { TabContainer } from "@/components/custom/tab-container";
 
 export default function Home() {
 	const [openSidebar, setOpenSidebar] = useState<boolean>(false);
@@ -54,7 +54,7 @@ export default function Home() {
       pt-14 p-10 text-lg">
 			<Header toggleSidebar={toggleSidebar} />
 			{openSidebar && <Sidebar />}
-			<EditorContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />
+			<TabContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />
 			{leaderPanel && <LeaderPanel closePanel={toggleLeaderPanel} toggleWindowPanel={toggleWindowPanel} />}
 			{windowPanel && <WindowPanel closePanel={toggleWindowPanel} />}
 		</div>
