@@ -31,6 +31,8 @@ type EditorState = {
 	initTabMap: () => void,
 	createNewTab: () => void,
 	selectTab: (tabIndex: number) => void,
+	nextTab: () => void,
+	prevTab: () => void,
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -343,12 +345,36 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	selectTab: (tabIndex: number) => {
-		const { tabMap, tabArray, setActiveTab, updateActivePane } = get();
+		const { tabMap, activeTab, tabArray, activePane, setTabMap, setActiveTab, updateActivePane } = get();
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
 		const tabId = tabArray[tabIndex];
 		if (!tabId) {
 			return;
 		}
 		setActiveTab(tabId);
 		updateActivePane(tabMap[tabId].lastPane);
+	},
+
+	nextTab: () => {
+		const { activeTab, tabArray, tabMap, activePane, setActiveTab, setTabMap, updateActivePane } = get();
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
+
+		let tabIndex = tabArray.indexOf(activeTab) + 1;
+		tabIndex = tabIndex >= tabArray.length ? 0 : tabIndex;
+
+		setActiveTab(tabArray[tabIndex]);
+		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
+	},
+
+	prevTab: () => {
+		const { activeTab, tabArray, tabMap, activePane, setActiveTab, setTabMap, updateActivePane } = get();
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
+
+		let tabIndex = tabArray.indexOf(activeTab) - 1;
+		tabIndex = tabIndex < 0 ? (tabArray.length - 1) : tabIndex;
+
+		setActiveTab(tabArray[tabIndex]);
+		console.log(tabIndex);
+		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
 	},
 }))

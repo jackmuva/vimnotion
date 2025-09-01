@@ -14,6 +14,8 @@ export const applyCustomVim = ({
 	splitHorizontal,
 	closePane,
 	createNewTab,
+	nextTab,
+	prevTab,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -21,6 +23,8 @@ export const applyCustomVim = ({
 	splitHorizontal: () => void,
 	closePane: () => void,
 	createNewTab: () => void,
+	nextTab: () => void,
+	prevTab: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		console.log('saving');
@@ -57,4 +61,16 @@ export const applyCustomVim = ({
 	});
 	Vim.unmap('-', "false");
 	Vim.mapCommand('-', 'action', 'toggleSidebar', {}, { context: 'normal' });
+
+	Vim.defineAction("nextTab", () => {
+		nextTab();
+	});
+	Vim.unmap('gt', "false");
+	Vim.mapCommand('gt', 'action', 'nextTab', {}, { context: 'normal' });
+
+	Vim.defineAction("prevTab", () => {
+		prevTab();
+	});
+	Vim.unmap('gT', "false");
+	Vim.mapCommand('gT', 'action', 'prevTab', {}, { context: 'normal' });
 }

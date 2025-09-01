@@ -31,12 +31,12 @@ export const TabContainer = ({
 	return (
 		<div className="h-full w-full flex flex-col space-y-0">
 			{tabs.length > 1 &&
-				<div className="flex space-x-0">
+				<div className="flex space-x-4">
 					{tabs.map((tab, i) => {
 						return (
-							<div key={tab} className={`bg-background px-1 rounded-t-sm 
-								${tab === activeTab ? "text-green-600" :
-									"text-foreground-muted"}`}>
+							<div key={tab} className={` ${tab === activeTab ?
+								"text-green-600" :
+								"text-foreground-muted/50"}`}>
 								tab:{i}
 							</div>
 						)

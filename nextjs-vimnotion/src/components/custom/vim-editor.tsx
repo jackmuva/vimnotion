@@ -27,6 +27,8 @@ export const VimEditor = ({
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
 	const createNewTab = useEditorStore(state => state.createNewTab);
+	const nextTab = useEditorStore(state => state.nextTab);
+	const prevTab = useEditorStore(state => state.prevTab);
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
@@ -85,6 +87,8 @@ export const VimEditor = ({
 			splitVertical: () => splitPane(SplitState.VERTICAL),
 			closePane: () => closePane(),
 			createNewTab: () => createNewTab(),
+			nextTab: () => nextTab(),
+			prevTab: () => prevTab(),
 		});
 		setVimEditor(view);
 	}, [isClient]);
