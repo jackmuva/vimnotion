@@ -22,6 +22,7 @@ type EditorState = {
 	getSiblingId: (paneId: string) => string | null,
 	goToNeighbor: (direction: Direction) => string,
 	cycleNeighbor: () => string,
+	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string,
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -178,21 +179,89 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return null;
 	},
 
-	goToNeighbor: (direction: Direction): string => {
-		const { paneTree, activePane } = get();
-		let currentId = activePane;
+	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => {
+		const { paneTree } = get();
+		const curPanel = paneTree[paneId];
+		let firstOption = paneId;
+		let secondOption = paneId;
 
+		if (curPanel.state === SplitState.NONE && !curPanel.deleted) {
+			return paneId;
+		}
+		//NOTE:Horizontal logic
+		if (curPanel.state === SplitState.HORIZONTAL && direction === Direction.NORTH) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.SECOND
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.FIRST
+			)[0], direction, childType);
+		} else if (curPanel.state === SplitState.HORIZONTAL && direction === Direction.SOUTH) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.FIRST
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.SECOND
+			)[0], direction, childType);
+
+		} else if (curPanel.state === SplitState.HORIZONTAL &&
+			(direction === Direction.EAST || direction === Direction.WEST)) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === childType
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType !== childType
+			)[0], direction, childType);
+		}
+
+		//NOTE:Vertical logic
+		else if (curPanel.state === SplitState.VERTICAL && direction === Direction.WEST) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.SECOND
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.FIRST
+			)[0], direction, childType);
+		} else if (curPanel.state === SplitState.VERTICAL && direction === Direction.EAST) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.FIRST
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === ChildType.SECOND
+			)[0], direction, childType);
+
+		} else if (curPanel.state === SplitState.VERTICAL &&
+			(direction === Direction.SOUTH || direction === Direction.NORTH)) {
+			firstOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType === childType
+			)[0], direction, childType);
+			secondOption = get().drillDownDirectionally(curPanel.children.filter(
+				(childId) => paneTree[childId].childType !== childType
+			)[0], direction, childType);
+		}
+		return firstOption === paneId ? secondOption : firstOption;
+	},
+
+	goToNeighbor: (direction: Direction): string => {
+		const { paneTree, activePane, drillDownDirectionally } = get();
+
+		let currentId = activePane;
+		let childType = paneTree[activePane].childType;
+		let resId = activePane;
 		while (currentId !== null) {
 			const currentPane = paneTree[currentId];
 			if (!currentPane) break;
 			const neighborId = currentPane.neighbors[direction];
-			if (neighborId && paneTree[neighborId] && !paneTree[neighborId].deleted) {
-				return neighborId;
+			if (neighborId) {
+				resId = drillDownDirectionally(neighborId, direction, childType);
+			}
+			if (resId !== activePane) {
+				return resId
 			}
 			//@ts-expect-error can be null or string
 			currentId = currentPane.parent;
 		}
-		return activePane;
+		return resId;
 	},
 
 	cycleNeighbor: () => {
