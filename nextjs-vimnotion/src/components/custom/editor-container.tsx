@@ -4,23 +4,20 @@ import { EditorPane } from "./editor-pane";
 import { SplitState } from "@/types/editor-types";
 
 export const EditorContainer = ({
+	rootId,
 	toggleSidebar,
 	toggleLeaderPanel
 }: {
+	rootId: string,
 	toggleSidebar: () => void,
 	toggleLeaderPanel: () => void
 }) => {
 	const [isClient, setIsClient] = useState(false);
 	const paneTree = useEditorStore(state => state.paneTree);
-	const rootId = useEditorStore(state => state.rootId);
-	const resetRoot = useEditorStore(state => state.resetRoot);
 
 	useEffect(() => {
-		if (!rootId) {
-			resetRoot();
-		}
 		setIsClient(true);
-	}, [rootId, resetRoot]);
+	}, []);
 
 	//BUG:sometimes closing panes will have an empty pane
 	const hydratePanes = (paneId: string) => {
@@ -48,9 +45,7 @@ export const EditorContainer = ({
 		}
 	}
 
-	console.log(paneTree);
-
-	if (!isClient || !rootId) {
+	if (!isClient) {
 		return <div className="h-full w-full text-center">Loading...</div>;
 	} else {
 		return (

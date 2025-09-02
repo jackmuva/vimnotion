@@ -1,22 +1,18 @@
 import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
+import { TabMap } from '@/types/editor-types';
 
 type EditorState = {
 	activePane: string,
 	paneTree: PaneNode,
-	rootId: string | null,
-	numPanes: number,
 	activePanel: string | null,
 	cycleState: Direction,
 	setCycleState: (cycle: Direction) => void,
-	resetPane: () => void,
 	updateActivePane: (newPane: string) => void,
 	setPaneTree: (tree: PaneNode) => void,
-	setRootId: (id: string | null) => void,
-	setNumPanes: (num: number) => void,
 	setActivePanel: (panel: string | null) => void,
-	resetRoot: () => void,
+	newRoot: () => string,
 	splitPane: (direction: SplitState) => void,
 	closePane: () => void,
 	bubbleUp: (paneId: string) => string | null,
@@ -25,57 +21,61 @@ type EditorState = {
 	goToNeighbor: (direction: Direction) => string,
 	cycleNeighbor: () => string,
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string,
+
+	activeTab: string,
+	tabArray: Array<string>,
+	tabMap: TabMap,
+	setActiveTab: (tab: string) => void,
+	setTabArray: (tabArray: Array<string>) => void,
+	setTabMap: (map: TabMap) => void,
+	initTabMap: () => void,
+	createNewTab: () => void,
+	selectTab: (tabIndex: number) => void,
+	nextTab: () => void,
+	prevTab: () => void,
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
-	activePane: "root",
+	activePane: "",
 	paneTree: {} as PaneNode,
-	rootId: null as string | null,
-	numPanes: 1,
 	activePanel: null,
 	cycleState: Direction.EAST,
-
-	resetPane: () => set({ activePane: "root" }),
 
 	updateActivePane: (newPane) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
 
-	setRootId: (id: string | null) => set({ rootId: id }),
-
-	setNumPanes: (num: number) => set({ numPanes: num }),
-
 	setActivePanel: (panel: string | null) => set({ activePanel: panel }),
 
 	setCycleState: (direction: Direction) => set({ cycleState: direction }),
 
-	resetRoot: () => {
-		const rootId = "root";
-		set({
-			rootId,
-			paneTree: {
-				[rootId]: {
-					state: SplitState.NONE,
-					children: [],
-					parent: null,
-					neighbors: {
-						north: null,
-						south: null,
-						east: null,
-						west: null,
-					},
-					childType: ChildType.NONE,
-					deleted: false,
-				}
+	newRoot: () => {
+		const rootId = v4();
+		const { paneTree, setPaneTree } = get();
+		const newPaneTree = paneTree;
+		newPaneTree[rootId] = {
+			state: SplitState.NONE,
+			children: [],
+			parent: null,
+			neighbors: {
+				north: null,
+				south: null,
+				east: null,
+				west: null,
 			},
-			numPanes: 1
-		});
+			childType: ChildType.NONE,
+			deleted: false,
+		}
+		setPaneTree(newPaneTree);
+		return rootId;
 	},
 
 	splitPane: (direction: SplitState) => {
-		const { paneTree, activePane, updateActivePane, setPaneTree, setNumPanes } = get();
-		const numPanes = get().numPanes + 1;
-		setNumPanes(numPanes);
+		const { paneTree, activePane, activeTab, tabMap, updateActivePane, setPaneTree, setTabMap } = get();
+		const newTabMap = tabMap;
+		newTabMap[activeTab].numPanes += 1;
+		setTabMap(newTabMap);
+
 		const firstChildId = v4();
 		const secondChildId = v4();
 		const parentId = activePane;
@@ -118,17 +118,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	closePane: () => {
-		const { paneTree, activePane, updateActivePane, setPaneTree, setNumPanes, resetRoot } = get();
-		const numPanes = get().numPanes - 1;
-		if (numPanes <= 0) {
-			resetRoot();
+		const { paneTree, activePane, activeTab, tabMap, setTabMap, updateActivePane, setPaneTree, newRoot } = get();
+		const newTabMap = tabMap;
+		newTabMap[activeTab].numPanes -= 1;
+		if (tabMap[activeTab].numPanes <= 0) {
+			const rootId = newRoot();
+			newTabMap[activeTab] = {
+				lastPane: rootId,
+				root: rootId,
+				numPanes: 1
+			}
+			setTabMap(newTabMap);
 			return;
 		}
-		setNumPanes(numPanes);
+		setTabMap(newTabMap);
+
 		const newTree = { ...paneTree };
 		const nextActiveId = get().bubbleUp(activePane);
 		if (!nextActiveId) {
-			resetRoot();
+			newRoot();
 			return;
 		}
 		newTree[activePane].deleted = true;
@@ -291,5 +299,81 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			numCycles += 1;
 		}
 		return activePane;
-	}
+	},
+
+	activeTab: "",
+	tabArray: [],
+	tabMap: {},
+
+	initTabMap: () => {
+		const newRootId = get().newRoot();
+		const tabId = v4();
+		set({
+			activeTab: tabId,
+			tabArray: [tabId],
+			tabMap: {
+				[tabId]: {
+					lastPane: newRootId,
+					root: newRootId,
+					numPanes: 1,
+				}
+			}
+		});
+	},
+
+	setActiveTab: (tab: string) => set({ activeTab: tab }),
+
+	setTabArray: (tabArray: Array<string>) => set({ tabArray: tabArray }),
+
+	setTabMap: (map: TabMap) => set({ tabMap: map }),
+
+	createNewTab: () => {
+		const { tabMap, tabArray, setTabArray, setActiveTab, setTabMap, newRoot, updateActivePane } = get();
+		const newTabId = v4();
+		const rootId = newRoot();
+
+		setTabArray([...tabArray, newTabId]);
+		setTabMap({
+			...tabMap, [newTabId]: {
+				numPanes: 1,
+				root: rootId,
+				lastPane: rootId,
+			}
+		});
+		setActiveTab(newTabId);
+		updateActivePane(rootId);
+	},
+
+	selectTab: (tabIndex: number) => {
+		const { tabMap, activeTab, tabArray, activePane, setTabMap, setActiveTab, updateActivePane } = get();
+		const tabId = tabArray[tabIndex];
+		if (!tabId) {
+			return;
+		}
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
+		setActiveTab(tabId);
+		updateActivePane(tabMap[tabId].lastPane);
+	},
+
+	nextTab: () => {
+		const { activeTab, tabArray, tabMap, activePane, setActiveTab, setTabMap, updateActivePane } = get();
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
+
+		let tabIndex = tabArray.indexOf(activeTab) + 1;
+		tabIndex = tabIndex >= tabArray.length ? 0 : tabIndex;
+
+		setActiveTab(tabArray[tabIndex]);
+		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
+	},
+
+	prevTab: () => {
+		const { activeTab, tabArray, tabMap, activePane, setActiveTab, setTabMap, updateActivePane } = get();
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
+
+		let tabIndex = tabArray.indexOf(activeTab) - 1;
+		tabIndex = tabIndex < 0 ? (tabArray.length - 1) : tabIndex;
+
+		setActiveTab(tabArray[tabIndex]);
+		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
+	},
 }))

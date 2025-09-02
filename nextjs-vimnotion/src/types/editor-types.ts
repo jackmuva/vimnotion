@@ -37,4 +37,10 @@ export type PaneNode = {
 	}
 }
 
-
+export type TabMap = {
+	[tabId: string]: {
+		lastPane: string,
+		root: string,
+		numPanes: number
+	}
+}
