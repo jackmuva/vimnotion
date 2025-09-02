@@ -346,11 +346,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	selectTab: (tabIndex: number) => {
 		const { tabMap, activeTab, tabArray, activePane, setTabMap, setActiveTab, updateActivePane } = get();
-		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
 		const tabId = tabArray[tabIndex];
 		if (!tabId) {
 			return;
 		}
+		setTabMap({ ...tabMap, [activeTab]: { ...tabMap[activeTab], lastPane: activePane } });
 		setActiveTab(tabId);
 		updateActivePane(tabMap[tabId].lastPane);
 	},
@@ -374,7 +374,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		tabIndex = tabIndex < 0 ? (tabArray.length - 1) : tabIndex;
 
 		setActiveTab(tabArray[tabIndex]);
-		console.log(tabIndex);
 		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
 	},
 }))

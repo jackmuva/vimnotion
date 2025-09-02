@@ -4,12 +4,6 @@
 ### nextjs
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 ### go webserver
@@ -26,7 +20,6 @@ go run main.go
   - ability to link pages, insert images, embed videos
   - how do we keep images private (to research)
 - normie view (not vimnotion)
-- neovim-like actions like tabs, search, oil, search
 - create teams
 - extensabiity with hotkeys for apis
 - websockets for collaboration
