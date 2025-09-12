@@ -12,7 +12,6 @@ type EditorState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: string | null;
-	cycleState: Direction;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
 	setActivePanel: (panel: string | null) => void;
@@ -44,7 +43,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	activePane: "",
 	paneTree: {} as PaneNode,
 	activePanel: null,
-	cycleState: Direction.EAST,
 
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
@@ -75,12 +73,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	splitPane: (direction: SplitState) => {
 		const { paneTree, activePane, activeTab, tabMap, updateActivePane, setPaneTree, setTabMap } = get();
-		const newTabMap: TabMap = tabMap;
-		newTabMap[activeTab].numPanes += 1;
-		setTabMap(newTabMap);
-
 		const firstChildId: string = v4();
 		const secondChildId: string = v4();
+
+		const newTabMap: TabMap = tabMap;
+		newTabMap[activeTab].numPanes += 1;
+		newTabMap[activeTab].panes = [...tabMap[activeTab].panes, firstChildId, secondChildId];
+		setTabMap(newTabMap);
+
 		const parentId: string = activePane;
 		const newTree = {
 			...paneTree,
@@ -280,10 +280,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	cycleNeighbor: (): string => {
-		const { activePane, paneTree } = get();
+		const { activePane, tabMap, activeTab, paneTree } = get();
 
 		const startingPane: string = activePane;
-		const paneArray: Array<string> = Object.keys(paneTree);
+		const paneArray: Array<string> = tabMap[activeTab].panes;
 		let curPane: string = startingPane;
 		let justStarting: boolean = true;
 
@@ -315,6 +315,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 					lastPane: newRootId,
 					root: newRootId,
 					numPanes: 1,
+					panes: [],
 				}
 			}
 		});
@@ -337,6 +338,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				numPanes: 1,
 				root: rootId,
 				lastPane: rootId,
+				panes: [rootId],
 			}
 		});
 		setActiveTab(newTabId);

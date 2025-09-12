@@ -41,6 +41,7 @@ export type TabMap = {
 	[tabId: string]: {
 		lastPane: string,
 		root: string,
-		numPanes: number
+		numPanes: number,
+		panes: Array<string>,
 	}
 }

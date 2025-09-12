@@ -1,4 +1,4 @@
-import { VimEditor } from "./vim-editor";
+import { VimEditor } from "./vim-editor/vim-editor";
 
 export const EditorPane = ({
 	paneId,
