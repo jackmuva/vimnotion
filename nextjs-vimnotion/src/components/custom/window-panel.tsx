@@ -25,6 +25,8 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleHKey = (event: KeyboardEvent) => {
 			if (event.key === 'h') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(Direction.WEST));
 			}
 		};
@@ -32,6 +34,8 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleJKey = (event: KeyboardEvent) => {
 			if (event.key === 'j') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(Direction.SOUTH));
 			}
 		};
@@ -39,6 +43,8 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleKKey = (event: KeyboardEvent) => {
 			if (event.key === 'k') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(Direction.NORTH));
 			}
 		};
@@ -46,6 +52,8 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleLKey = (event: KeyboardEvent) => {
 			if (event.key === 'l') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(Direction.EAST));
 			}
 		};
@@ -53,6 +61,8 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 
 		const handleWKey = (event: KeyboardEvent) => {
 			if (event.key === 'w') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				handleNavigation(cycleNeighbor());
 			}
 		};
