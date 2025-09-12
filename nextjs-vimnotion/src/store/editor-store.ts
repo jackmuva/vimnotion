@@ -3,36 +3,41 @@ import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
 
-type EditorState = {
-	activePane: string,
-	paneTree: PaneNode,
-	activePanel: string | null,
-	cycleState: Direction,
-	updateActivePane: (newPane: string) => void,
-	setPaneTree: (tree: PaneNode) => void,
-	setActivePanel: (panel: string | null) => void,
-	newRoot: () => string,
-	splitPane: (direction: SplitState) => void,
-	closePane: () => void,
-	bubbleUp: (paneId: string) => string | null,
-	drillDown: (paneId: string, curStepsAway: number) => { nearestId: string, stepsAway: number },
-	getSiblingId: (paneId: string) => string | null,
-	goToNeighbor: (direction: Direction) => string,
-	cycleNeighbor: () => string,
-	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string,
+interface DrillDownResult {
+	nearestId: string;
+	stepsAway: number;
+}
 
-	activeTab: string,
-	tabArray: Array<string>,
-	tabMap: TabMap,
-	setActiveTab: (tab: string) => void,
-	setTabArray: (tabArray: Array<string>) => void,
-	setTabMap: (map: TabMap) => void,
-	initTabMap: () => void,
-	createNewTab: () => void,
-	selectTab: (tabIndex: number) => void,
-	nextTab: () => void,
-	prevTab: () => void,
-	deleteTab: () => void,
+type EditorState = {
+	activePane: string;
+	paneTree: PaneNode;
+	activePanel: string | null;
+	cycleState: Direction;
+	updateActivePane: (newPane: string) => void;
+	setPaneTree: (tree: PaneNode) => void;
+	setActivePanel: (panel: string | null) => void;
+	newRoot: () => string;
+	splitPane: (direction: SplitState) => void;
+	closePane: () => void;
+	bubbleUp: (paneId: string) => string | null;
+	drillDown: (paneId: string, curStepsAway: number) => DrillDownResult;
+	getSiblingId: (paneId: string) => string | null;
+	goToNeighbor: (direction: Direction) => string;
+	cycleNeighbor: () => string;
+	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
+
+	activeTab: string;
+	tabArray: string[];
+	tabMap: TabMap;
+	setActiveTab: (tab: string) => void;
+	setTabArray: (tabArray: string[]) => void;
+	setTabMap: (map: TabMap) => void;
+	initTabMap: () => void;
+	createNewTab: () => void;
+	selectTab: (tabIndex: number) => void;
+	nextTab: () => void;
+	prevTab: () => void;
+	deleteTab: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -41,7 +46,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	activePanel: null,
 	cycleState: Direction.EAST,
 
-	updateActivePane: (newPane) => set({ activePane: newPane }),
+	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
 
@@ -151,8 +156,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			return curId;
 		}
 		if (!paneTree[curId].deleted) {
-			const firstChild: { nearestId: string, stepsAway: number } = get().drillDown(paneTree[curId].children[0], 1);
-			const secondChild: { nearestId: string, stepsAway: number } = get().drillDown(paneTree[curId].children[1], 1);
+			const firstChild: DrillDownResult = get().drillDown(paneTree[curId].children[0], 1);
+			const secondChild: DrillDownResult = get().drillDown(paneTree[curId].children[1], 1);
 			if (firstChild.stepsAway >= 0 || secondChild.stepsAway >= 0) {
 				if (firstChild.stepsAway < 0) return secondChild.nearestId;
 				if (secondChild.stepsAway < 0) return firstChild.nearestId;
@@ -163,15 +168,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return parentId ? get().bubbleUp(parentId) : null;
 	},
 
-	drillDown: (paneId: string, curStepsAway: number): { nearestId: string, stepsAway: number } => {
+	drillDown: (paneId: string, curStepsAway: number): DrillDownResult => {
 		const { paneTree } = get();
 		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return { nearestId: paneId, stepsAway: curStepsAway };
 		} else if (paneTree[paneId].state === SplitState.NONE && paneTree[paneId].deleted) {
 			return { nearestId: "none", stepsAway: -1 };
 		}
-		const firstChild = get().drillDown(paneTree[paneId].children[0], curStepsAway + 1);
-		const secondChild = get().drillDown(paneTree[paneId].children[1], curStepsAway + 1);
+		const firstChild: DrillDownResult = get().drillDown(paneTree[paneId].children[0], curStepsAway + 1);
+		const secondChild: DrillDownResult = get().drillDown(paneTree[paneId].children[1], curStepsAway + 1);
 		if (firstChild.stepsAway < 0 && secondChild.stepsAway < 0) {
 			return { nearestId: "none", stepsAway: -1 };
 		}
@@ -180,7 +185,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return firstChild.stepsAway <= secondChild.stepsAway ? firstChild : secondChild;
 	},
 
-	getSiblingId: (paneId: string) => {
+	getSiblingId: (paneId: string): string | null => {
 		const { paneTree } = get();
 		const parentId: string | null = paneTree[paneId].parent;
 		if (parentId !== null && parentId !== undefined) {
@@ -275,13 +280,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	cycleNeighbor: (): string => {
-		const {
-			activePane,
-			paneTree,
-		}: {
-			activePane: string,
-			paneTree: PaneNode
-		} = get();
+		const { activePane, paneTree } = get();
 
 		const startingPane: string = activePane;
 		const paneArray: Array<string> = Object.keys(paneTree);
@@ -344,9 +343,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		updateActivePane(rootId);
 	},
 
-	selectTab: (tabIndex: number) => {
+	selectTab: (tabIndex: number): void => {
 		const { tabMap, activeTab, tabArray, activePane, setTabMap, setActiveTab, updateActivePane } = get();
-		const tabId = tabArray[tabIndex];
+		const tabId: string = tabArray[tabIndex];
 		if (!tabId) {
 			return;
 		}
@@ -382,7 +381,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			setTabMap, setTabArray, prevTab } = get();
 		const newTabMap: TabMap = { ...tabMap };
 		delete newTabMap[activeTab];
-		const newTabArray = tabArray.filter(tabId => tabId !== activeTab);
+		const newTabArray: string[] = tabArray.filter(tabId => tabId !== activeTab);
 
 		if (newTabArray.length > 0) {
 			prevTab();
