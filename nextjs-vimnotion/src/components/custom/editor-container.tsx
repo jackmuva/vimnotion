@@ -23,7 +23,7 @@ export const EditorContainer = ({
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return (
-				<div key={paneId} className="h-full w-full">
+				<div key={paneId} className="h-full w-full overflow-y-scroll">
 					<EditorPane paneId={paneId}
 						toggleSidebar={toggleSidebar}
 						toggleLeaderPanel={toggleLeaderPanel} />

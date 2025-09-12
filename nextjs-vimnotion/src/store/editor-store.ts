@@ -33,6 +33,7 @@ type EditorState = {
 	selectTab: (tabIndex: number) => void,
 	nextTab: () => void,
 	prevTab: () => void,
+	deleteTab: () => void,
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -118,17 +119,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	closePane: () => {
-		const { paneTree, activePane, activeTab, tabMap, setTabMap, updateActivePane, setPaneTree, newRoot } = get();
+		const { paneTree, activePane, activeTab, tabMap,
+			setTabMap, updateActivePane, setPaneTree, newRoot,
+			deleteTab, createNewTab } = get();
 		const newTabMap = tabMap;
 		newTabMap[activeTab].numPanes -= 1;
 		if (tabMap[activeTab].numPanes <= 0) {
-			const rootId = newRoot();
-			newTabMap[activeTab] = {
-				lastPane: rootId,
-				root: rootId,
-				numPanes: 1
+			deleteTab();
+			if (Object.keys(tabMap).length === 0) {
+				createNewTab();
 			}
-			setTabMap(newTabMap);
 			return;
 		}
 		setTabMap(newTabMap);
@@ -375,5 +375,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 		setActiveTab(tabArray[tabIndex]);
 		updateActivePane(tabMap[tabArray[tabIndex]].lastPane);
+	},
+
+	deleteTab: () => {
+		const { tabArray, tabMap, activeTab,
+			setTabMap, setTabArray, prevTab } = get();
+		const newTabMap: TabMap = { ...tabMap };
+		delete newTabMap[activeTab];
+		const newTabArray = tabArray.filter(tabId => tabId !== activeTab);
+
+		if (newTabArray.length > 0) {
+			prevTab();
+		}
+		setTabMap(newTabMap);
+		setTabArray(newTabArray);
 	},
 }))
