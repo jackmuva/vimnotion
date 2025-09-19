@@ -31,11 +31,26 @@ export const VimEditor = ({
 	const prevTab = useEditorStore(state => state.prevTab);
 
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
+	const updatePaneById = useEditorStore((state) => state.updatePaneById);
 	const pane: PaneNode = getPane(paneId);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
+		}
+	});
+
+	const docChangeListener = EditorView.updateListener.of((v) => {
+		if (v.docChanged) {
+			console.log(v.state.doc.toString());
+			const currentPane = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					buffer: v.state.doc.toString()
+				}
+			};
+			updatePaneById(updatedPane);
 		}
 	});
 
@@ -75,6 +90,7 @@ export const VimEditor = ({
 				theme.of(lightTheme),
 				markdown(),
 				focusListener,
+				docChangeListener,
 			],
 			parent: editorElement,
 		});

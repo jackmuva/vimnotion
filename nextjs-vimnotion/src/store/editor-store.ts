@@ -107,7 +107,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				childType: ChildType.FIRST,
 				deleted: false,
 				editorType: EditorType.VIM,
-				buffer: "\n\n\n\n\n\n",
+				buffer: paneTree[parentId].buffer,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
