@@ -6,7 +6,7 @@ import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { useEditorStore } from '@/store/editor-store';
-import { SplitState } from '@/types/editor-types';
+import { PaneNode, SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
 	paneId,
@@ -29,6 +29,10 @@ export const VimEditor = ({
 	const createNewTab = useEditorStore(state => state.createNewTab);
 	const nextTab = useEditorStore(state => state.nextTab);
 	const prevTab = useEditorStore(state => state.prevTab);
+
+	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
+	const pane: PaneNode = getPane(paneId);
+
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
@@ -62,7 +66,7 @@ export const VimEditor = ({
 		}
 
 		const view = new EditorView({
-			doc: "\n\n\n\n\n\n",
+			doc: pane[paneId].buffer,
 			extensions: [
 				// make sure vim is included before other keymaps
 				vim(),

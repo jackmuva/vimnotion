@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { v4 } from "uuid";
-import { PaneNode, SplitState, Direction, ChildType } from "@/types/editor-types";
+import { PaneNode, SplitState, Direction, ChildType, EditorType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
 
 interface DrillDownResult {
@@ -24,6 +24,9 @@ type EditorState = {
 	goToNeighbor: (direction: Direction) => string;
 	cycleNeighbor: () => string;
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
+
+	getPaneById: (paneId: string) => PaneNode;
+	updatePaneById: (pane: PaneNode) => void;
 
 	activeTab: string;
 	tabArray: string[];
@@ -66,6 +69,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			},
 			childType: ChildType.NONE,
 			deleted: false,
+			editorType: EditorType.VIM,
+			buffer: "\n\n\n\n\n\n",
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -101,6 +106,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				},
 				childType: ChildType.FIRST,
 				deleted: false,
+				editorType: EditorType.VIM,
+				buffer: "\n\n\n\n\n\n",
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -114,6 +121,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				},
 				childType: ChildType.SECOND,
 				deleted: false,
+				editorType: EditorType.VIM,
+				buffer: "\n\n\n\n\n\n",
 			}
 		};
 		setPaneTree(newTree);
@@ -319,6 +328,22 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				}
 			}
 		});
+	},
+
+	getPaneById: (paneId: string) => {
+		const { paneTree } = get();
+		return {
+			[paneId]: paneTree[paneId]
+		}
+	},
+
+	updatePaneById: (paneNode: PaneNode) => {
+		const { paneTree } = get();
+		const paneId = Object.keys(paneNode);
+		if (!paneId) return;
+		const newTree = paneTree;
+		newTree[paneId[0]] = paneNode[paneId[0]];
+		set({ paneTree: newTree });
 	},
 
 	setActiveTab: (tab: string): void => set({ activeTab: tab }),
