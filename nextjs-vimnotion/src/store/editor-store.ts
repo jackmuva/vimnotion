@@ -302,6 +302,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			paneIndex = paneIndex >= paneArray.length ? 0 : paneIndex;
 			curPane = paneArray[paneIndex];
 
+			//NOTE:Think of intended behavior when pane is a markdown editor
 			if (paneTree[curPane].state === SplitState.NONE && !paneTree[curPane].deleted) {
 				return curPane;
 			}
