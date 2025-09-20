@@ -205,12 +205,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType): string => {
 		const { paneTree, goToNeighbor } = get();
+		console.log("pane tree", paneTree);
 		const curPanel = paneTree[paneId];
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
 
 		if (curPanel.deleted || curPanel.editorType === EditorType.MARKDOWN) {
-			return curPanel.neighbors[direction] ? goToNeighbor(curPanel.neighbors[direction], direction) : paneId;
+			return curPanel.neighbors[direction] ? get().drillDownDirectionally(curPanel.neighbors[direction], direction, childType) : paneId;
 		}
 
 		if (curPanel.state === SplitState.NONE) {
@@ -259,7 +260,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.FIRST
 			)[0], direction, childType);
-			console.log("is first option unavailable? ", firstOption === paneId);
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
