@@ -42,12 +42,11 @@ export const VimEditor = ({
 
 	const docChangeListener = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			console.log(v.state.doc.toString());
 			const currentPane = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {
 					...currentPane[paneId],
-					buffer: v.state.doc.toString()
+					buffer: v.state.doc.toString(),
 				}
 			};
 			updatePaneById(updatedPane);

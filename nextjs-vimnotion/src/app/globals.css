@@ -31,3 +31,127 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+[id^="md-editor-"] {
+  & h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  & h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  & h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  & h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Lists */
+  & ul, & ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+
+  & ul {
+    list-style-type: disc;
+  }
+
+  & ol {
+    list-style-type: decimal;
+  }
+
+  & li {
+    margin-bottom: 0.25rem;
+  }
+
+  & li > ul, & li > ol {
+    margin-top: 0.25rem;
+  }
+
+  /* Paragraphs and text */
+  & p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Links */
+  & a {
+    color: #3b82f6; /* blue-500 */
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  & a:hover {
+    color: #2563eb; /* blue-600 */
+  }
+
+  /* Code blocks */
+  & code {
+    font-family: var(--font-mono, monospace);
+    background-color: var(--background-muted);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  & pre {
+    background-color: var(--background-muted);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  & pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  /* Blockquotes */
+  & blockquote {
+    border-left: 4px solid var(--background-muted);
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 1rem 0;
+  }
+
+  /* Tables */
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+
+  & th, & td {
+    padding: 0.5rem;
+    border: 1px solid var(--background-muted);
+  }
+
+  & th {
+    background-color: var(--background-muted);
+    font-weight: 600;
+  }
+
+  /* Horizontal rule */
+  & hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--background-muted);
+    margin: 1.5rem 0;
+  }
+}

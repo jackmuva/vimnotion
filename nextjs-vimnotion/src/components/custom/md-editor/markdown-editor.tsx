@@ -1,6 +1,8 @@
 import { useEditorStore } from "@/store/editor-store";
 import { EditorType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
+import { useEffect } from "react";
+import Markdown from "react-markdown";
 
 export const MarkdownEditor = ({
 	paneId
@@ -21,6 +23,13 @@ export const MarkdownEditor = ({
 		updatePane(updateNode);
 	}
 
+	useEffect(() => {
+		const links = document.getElementsByTagName('a');
+		for (const link of links) {
+			link.setAttribute('target', '_blank');
+		}
+	}, [pane[paneId].buffer])
+
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col justify-start items-start space-y-2 p-2'>
@@ -35,7 +44,9 @@ export const MarkdownEditor = ({
 			</h1>
 			<div id={`md-editor-${paneId}`}
 				className={`h-full w-full overflow-y-scroll`}>
-				{pane[paneId].buffer}
+				<Markdown>
+					{pane[paneId].buffer}
+				</Markdown>
 			</div>
 		</div>
 	);

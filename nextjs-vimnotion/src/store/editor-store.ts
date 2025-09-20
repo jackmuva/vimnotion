@@ -21,9 +21,9 @@ type EditorState = {
 	bubbleUp: (paneId: string) => string | null;
 	drillDown: (paneId: string, curStepsAway: number) => DrillDownResult;
 	getSiblingId: (paneId: string) => string | null;
-	goToNeighbor: (direction: Direction) => string;
-	cycleNeighbor: () => string;
+	goToNeighbor: (paneId: string, direction: Direction) => string;
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
+	cycleNeighbor: () => string;
 
 	getPaneById: (paneId: string) => PaneNode;
 	updatePaneById: (pane: PaneNode) => void;
@@ -204,23 +204,30 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType): string => {
-		const { paneTree } = get();
+		const { paneTree, goToNeighbor } = get();
 		const curPanel = paneTree[paneId];
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
 
-		if (curPanel.state === SplitState.NONE && !curPanel.deleted) {
+		if (curPanel.deleted || curPanel.editorType === EditorType.MARKDOWN) {
+			return curPanel.neighbors[direction] ? goToNeighbor(curPanel.neighbors[direction], direction) : paneId;
+		}
+
+		if (curPanel.state === SplitState.NONE) {
 			return paneId;
 		}
+
 		//NOTE:Horizontal logic
-		if (curPanel.state === SplitState.HORIZONTAL && direction === Direction.NORTH) {
+		if (curPanel.state === SplitState.HORIZONTAL
+			&& direction === Direction.NORTH) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.FIRST
 			)[0], direction, childType);
-		} else if (curPanel.state === SplitState.HORIZONTAL && direction === Direction.SOUTH) {
+		} else if (curPanel.state === SplitState.HORIZONTAL
+			&& direction === Direction.SOUTH) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.FIRST
 			)[0], direction, childType);
@@ -228,8 +235,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
 
-		} else if (curPanel.state === SplitState.HORIZONTAL &&
-			(direction === Direction.EAST || direction === Direction.WEST)) {
+		} else if (curPanel.state === SplitState.HORIZONTAL
+			&& (direction === Direction.EAST || direction === Direction.WEST)) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === childType
 			)[0], direction, childType);
@@ -239,23 +246,26 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		}
 
 		//NOTE:Vertical logic
-		else if (curPanel.state === SplitState.VERTICAL && direction === Direction.WEST) {
+		else if (curPanel.state === SplitState.VERTICAL
+			&& direction === Direction.WEST) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.FIRST
 			)[0], direction, childType);
-		} else if (curPanel.state === SplitState.VERTICAL && direction === Direction.EAST) {
+		} else if (curPanel.state === SplitState.VERTICAL
+			&& direction === Direction.EAST) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.FIRST
 			)[0], direction, childType);
+			console.log("is first option unavailable? ", firstOption === paneId);
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
 
-		} else if (curPanel.state === SplitState.VERTICAL &&
-			(direction === Direction.SOUTH || direction === Direction.NORTH)) {
+		} else if (curPanel.state === SplitState.VERTICAL
+			&& (direction === Direction.SOUTH || direction === Direction.NORTH)) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === childType
 			)[0], direction, childType);
@@ -266,12 +276,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		return firstOption === paneId ? secondOption : firstOption;
 	},
 
-	goToNeighbor: (direction: Direction): string => {
-		const { paneTree, activePane, drillDownDirectionally } = get();
+	goToNeighbor: (paneId: string, direction: Direction): string => {
+		const { paneTree, drillDownDirectionally } = get();
 
-		let currentId: string = activePane;
-		const childType: ChildType = paneTree[activePane].childType;
-		let resId: string = activePane;
+		let currentId: string = paneId;
+		const childType: ChildType = paneTree[paneId].childType;
+		let resId: string = paneId;
 		while (currentId !== null) {
 			const currentPane = paneTree[currentId];
 			if (!currentPane) break;
@@ -279,7 +289,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			if (neighborId) {
 				resId = drillDownDirectionally(neighborId, direction, childType);
 			}
-			if (resId !== activePane) {
+			if (resId !== paneId) {
 				return resId
 			}
 			//@ts-expect-error can be null or string
@@ -302,8 +312,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			paneIndex = paneIndex >= paneArray.length ? 0 : paneIndex;
 			curPane = paneArray[paneIndex];
 
-			//NOTE:Think of intended behavior when pane is a markdown editor
-			if (paneTree[curPane].state === SplitState.NONE && !paneTree[curPane].deleted) {
+			if (paneTree[curPane].state === SplitState.NONE
+				&& !paneTree[curPane].deleted
+				&& paneTree[curPane].editorType === EditorType.VIM) {
 				return curPane;
 			}
 		}
