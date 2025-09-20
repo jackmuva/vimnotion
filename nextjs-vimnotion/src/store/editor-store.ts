@@ -342,7 +342,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		const { paneTree } = get();
 		const paneId = Object.keys(paneNode);
 		if (!paneId) return;
-		const newTree = paneTree;
+		const newTree = { ...paneTree };
 		newTree[paneId[0]] = paneNode[paneId[0]];
 		set({ paneTree: newTree });
 	},
