@@ -3,10 +3,11 @@ import { useEffect } from "react";
 import { Direction } from "@/types/editor-types";
 
 export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
-	const goToNeighbor = useEditorStore((state) => state.goToNeighbor);
-	const setActivePanel = useEditorStore((state) => state.setActivePanel);
-	const setActivePane = useEditorStore((state) => state.updateActivePane);
-	const cycleNeighbor = useEditorStore((state) => state.cycleNeighbor);
+	const activePane: string = useEditorStore((state) => state.activePane);
+	const goToNeighbor: (id: string, direction: Direction) => string = useEditorStore((state) => state.goToNeighbor);
+	const setActivePanel: (panel: string | null) => void = useEditorStore((state) => state.setActivePanel);
+	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
+	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
 	const handleNavigation = (paneId: string) => {
 		closePanel();
@@ -27,7 +28,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			if (event.key === 'h') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				handleNavigation(goToNeighbor(Direction.WEST));
+				handleNavigation(goToNeighbor(activePane, Direction.WEST));
 			}
 		};
 		document.addEventListener('keydown', handleHKey);
@@ -36,7 +37,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			if (event.key === 'j') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				handleNavigation(goToNeighbor(Direction.SOUTH));
+				handleNavigation(goToNeighbor(activePane, Direction.SOUTH));
 			}
 		};
 		document.addEventListener('keydown', handleJKey);
@@ -45,7 +46,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			if (event.key === 'k') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				handleNavigation(goToNeighbor(Direction.NORTH));
+				handleNavigation(goToNeighbor(activePane, Direction.NORTH));
 			}
 		};
 		document.addEventListener('keydown', handleKKey);
@@ -54,7 +55,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			if (event.key === 'l') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				handleNavigation(goToNeighbor(Direction.EAST));
+				handleNavigation(goToNeighbor(activePane, Direction.EAST));
 			}
 		};
 		document.addEventListener('keydown', handleLKey);
@@ -87,7 +88,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 				<button
 					id={`first-window-option`}
 					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(Direction.WEST))}
+					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.WEST))}
 				>
 					[h]
 				</button>
@@ -96,7 +97,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(Direction.SOUTH))}
+					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.SOUTH))}
 				>
 					[j]
 				</button>
@@ -105,7 +106,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(Direction.NORTH))}
+					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.NORTH))}
 				>
 					[k]
 				</button>
@@ -114,7 +115,7 @@ export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 			<div>
 				<button
 					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(Direction.EAST))}
+					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.EAST))}
 				>
 					[l]
 				</button>

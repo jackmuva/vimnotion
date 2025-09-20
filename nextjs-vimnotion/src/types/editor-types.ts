@@ -4,6 +4,11 @@ export enum SplitState {
 	VERTICAL = "VERTICAL",
 }
 
+export enum EditorType {
+	VIM = "VIM",
+	MARKDOWN = "MARKDOWN",
+}
+
 export enum ChildType {
 	NONE = "NONE",
 	FIRST = "FIRST",
@@ -34,6 +39,8 @@ export type PaneNode = {
 		neighbors: PaneNeighbors,
 		childType: ChildType,
 		deleted: boolean,
+		editorType: EditorType,
+		buffer: string,
 	}
 }
 
