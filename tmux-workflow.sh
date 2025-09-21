@@ -16,7 +16,7 @@ then
     tmux send-keys -t 'next-server' 'cd nextjs-vimnotion' C-m 'npm run dev' C-m
 
     tmux new-window -t $SESSION:2 -n 'go-server'
-    tmux send-keys -t 'go-server' 'cd go-vimnotion' C-m
+    tmux send-keys -t 'go-server' 'cd go-vimnotion' C-m 'go run main.go' C-m
 
     tmux new-window -t $SESSION:3 -n 'opencode'
     tmux send-keys -t 'opencode' 'opencode' C-m
