@@ -21,7 +21,6 @@ func ConnectTurso() *sql.DB {
 		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", urlBuffer.String(), err)
 	}
 
-	// defer db.Close()
 	db.SetConnMaxIdleTime(9 * time.Second)
 
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS User (email TEXT PRIMARY KEY, name TEXT)")
