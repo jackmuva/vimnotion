@@ -6,8 +6,8 @@ export const Sidebar = ({
 }: {
 	closeSidebar: () => void,
 }) => {
-	const { data, isLoading } = useSWR(`/api/personal-directory`, async () => {
-		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/personal-directory`,
+	const { data, isLoading } = useSWR(`/api/directory`, async () => {
+		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
 			{
 				credentials: 'include'
 			});

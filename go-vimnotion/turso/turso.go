@@ -13,19 +13,18 @@ import (
 func ConnectTurso() *sql.DB {
 	var urlBuffer strings.Builder
 	urlBuffer.WriteString(utils.GetEnv().TursoDatabaseUrl)
-	urlBuffer.WriteString("?")
+	urlBuffer.WriteString("?authToken=")
 	urlBuffer.WriteString(utils.GetEnv().TursoAuthToken)
 
 	db, err := sql.Open("libsql", urlBuffer.String())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", urlBuffer.String(), err)
-		os.Exit(1)
 	}
-	defer db.Close()
 
+	// defer db.Close()
 	db.SetConnMaxIdleTime(9 * time.Second)
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS Users (email TEXT PRIMARY KEY, name TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS User (email TEXT PRIMARY KEY, name TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
@@ -34,7 +33,7 @@ func ConnectTurso() *sql.DB {
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObjects(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
@@ -60,10 +59,9 @@ type VnObject struct {
 }
 
 func GetUser(db *sql.DB, email string) []User {
-	rows, err := db.Query("SELECT * FROM Users WHERE email='?'", email)
+	rows, err := db.Query("SELECT * FROM User WHERE email=?", email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
-		os.Exit(1)
 	}
 	defer rows.Close()
 
@@ -87,10 +85,9 @@ func GetUser(db *sql.DB, email string) []User {
 }
 
 func GetDirectoryStructure(db *sql.DB, email string) []DirectoryStructure {
-	rows, err := db.Query("SELECT * FROM DirectoryStructure WHERE email='?'", email)
+	rows, err := db.Query("SELECT * FROM DirectoryStructure WHERE email=?", email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
-		os.Exit(1)
 	}
 	defer rows.Close()
 
@@ -113,7 +110,7 @@ func GetDirectoryStructure(db *sql.DB, email string) []DirectoryStructure {
 }
 
 func GetVnObjectById(db *sql.DB, id string) []VnObject {
-	rows, err := db.Query("SELECT * FROM VnObjects WHERE id='?'", id)
+	rows, err := db.Query("SELECT * FROM VnObject WHERE id=?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 	}
