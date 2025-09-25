@@ -25,3 +25,5 @@ go run main.go
 - websockets for collaboration
   - but also multi-tab/window behavior
 - router for vimnotion versions
+- version history
+  - trash
