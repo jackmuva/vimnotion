@@ -32,7 +32,7 @@ func ConnectTurso() *sql.DB {
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateData TEXT, contents TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
@@ -51,10 +51,11 @@ type DirectoryStructure struct {
 }
 
 type VnObject struct {
-	Id       string
-	Name     string
-	IsFile   bool
-	Contents string
+	Id         string
+	Name       string
+	IsFile     bool
+	Contents   string
+	UpdateDate string
 }
 
 func GetUser(db *sql.DB, email string) []User {
@@ -148,8 +149,8 @@ func InsertDirectoryStructure(db *sql.DB, dirStruct DirectoryStructure) {
 }
 
 func InsertVnObject(db *sql.DB, vnObject VnObject) {
-	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents ) VALUES(?, ?)",
-		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents)
+	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?)",
+		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 	}
@@ -164,8 +165,8 @@ func UpdateDirectoryStructure(db *sql.DB, dirStruct DirectoryStructure) {
 }
 
 func UpdateVnObject(db *sql.DB, vnObject VnObject) {
-	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=? WHERE id=?",
-		vnObject.Name, vnObject.Contents, vnObject.Id)
+	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=?, updateDate=? WHERE id=?",
+		vnObject.Name, vnObject.Contents, vnObject.Id, vnObject.UpdateDate)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
 	}

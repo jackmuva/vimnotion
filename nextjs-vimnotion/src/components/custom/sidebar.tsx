@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import useSWR from 'swr'
 
 export const Sidebar = ({
+	openSidebar,
 	closeSidebar,
 }: {
+	openSidebar: boolean,
 	closeSidebar: () => void,
 }) => {
 	const { data, isLoading } = useSWR(`/api/directory`, async () => {
@@ -27,6 +29,16 @@ export const Sidebar = ({
 		};
 	}, []);
 
+	useEffect(() => {
+		if (openSidebar) {
+			const button = document.getElementById('sidebar');
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [openSidebar, data]);
+
+	console.log(data);
 
 	return (
 		<div className={`h-full w-96 pt-24 p-4 bg-background-muted flex flex-col 

@@ -61,19 +61,11 @@ export default function Home() {
 		}
 	}, [windowPanel]);
 
-
-
-	useEffect(() => {
-		if (openSidebar) {
-			document.getElementById('sidebar')?.focus()
-		}
-	}, [openSidebar]);
-
 	return (
 		<div className="bg-background-muted/20 w-dvw h-dvh flex justify-center items-center font-custom
 			      pt-14 px-4 text-lg">
 			<Header toggleSidebar={toggleSidebar} />
-			{openSidebar && <Sidebar closeSidebar={toggleSidebar} />}
+			{openSidebar && <Sidebar closeSidebar={toggleSidebar} openSidebar={openSidebar} />}
 			<TabContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />
 			{leaderPanel && <LeaderPanel closePanel={toggleLeaderPanel} toggleWindowPanel={toggleWindowPanel} />}
 			{windowPanel && <WindowPanel closePanel={toggleWindowPanel} />}

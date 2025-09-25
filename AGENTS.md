@@ -1,23 +1,23 @@
 # Agent Guidelines for vimnotion
 
 ## Build/Lint/Test Commands
-- **Frontend (Next.js)**: `cd nextjs-vimnotion && npm run dev` (dev), `npm run build` (build), `npm run lint` (lint)
-- **Backend (Go)**: `cd go-vimnotion && go run main.go` (run), `go build` (build), `go test ./...` (test all)
+- **Frontend (Next.js 15.5.2)**: `cd nextjs-vimnotion && npm run dev --turbopack` (dev), `npm run build` (build), `npm run lint` (lint)
+- **Backend (Go 1.24.4)**: `cd go-vimnotion && go run main.go` (run), `go build` (build), `go test ./...` (test all)
 - **Single test**: `go test -run TestName` or `go test ./path/to/package -run TestName`
+- **Linting**: ESLint with Next.js core web vitals and TypeScript rules
 
 ## Code Style Guidelines
-- **TypeScript**: Strict mode enabled, target ES2017, use functional React components with hooks
-- **Imports**: Standard library → third-party → local imports; use `@/` path alias for src/
+- **TypeScript**: Strict mode, ES2017 target, functional React components with hooks
+- **Imports**: Standard library → third-party → local imports; use `@/*` path alias for src/
 - **Naming**: camelCase for variables/functions, PascalCase for components/types/interfaces
-- **React**: Use functional components, prefer hooks over class components
-- **Go**: Follow standard Go formatting (`go fmt`), use meaningful variable names
-- **Error handling**: Go uses standard error patterns; React uses try/catch where appropriate
-- **Types**: Use explicit types, avoid `any`, leverage TypeScript's strict mode
-- **Linting**: ESLint with Next.js rules - run `npm run lint` before commits
+- **React**: Functional components only, prefer hooks over class components
+- **Go**: Standard Go formatting (`go fmt`), meaningful variable names, idiomatic error handling
+- **Types**: Explicit types, avoid `any`, leverage TypeScript strict mode
+- **State Management**: Zustand for React frontend state management
 
 ## Project Structure
-- Frontend: `nextjs-vimnotion/` (Next.js 15, React 19, TypeScript)
-- Backend: `go-vimnotion/` (Go 1.24.4, Gin-like HTTP server)
-- State management: Zustand for React frontend</content>
+- Frontend: `nextjs-vimnotion/` (Next.js 15.5.2, React 19.1.0, TypeScript 5)
+- Backend: `go-vimnotion/` (Go 1.24.4, HTTP server with Turso DB)
+- Key Dependencies: CodeMirror for editor, Tailwind CSS, Zustand for state</content>
 </xai:function_call name="bash">
 <parameter name="command">cd /Users/jackmu/Documents/vimnotion && git add AGENTS.md
