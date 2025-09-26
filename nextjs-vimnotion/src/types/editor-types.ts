@@ -41,6 +41,7 @@ export type PaneNode = {
 		deleted: boolean,
 		editorType: EditorType,
 		buffer: string,
+		fileId: string,
 	}
 }
 

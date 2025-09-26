@@ -70,7 +70,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			childType: ChildType.NONE,
 			deleted: false,
 			editorType: EditorType.VIM,
-			buffer: "\n\n\n\n\n\n",
+			buffer: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+			fileId: v4(),
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -87,7 +88,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		setTabMap(newTabMap);
 
 		const parentId: string = activePane;
-		const newTree = {
+		const newTree: PaneNode = {
 			...paneTree,
 			[parentId]: {
 				...paneTree[parentId],
@@ -108,6 +109,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				deleted: false,
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
+				fileId: paneTree[parentId].fileId,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -122,7 +124,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				childType: ChildType.SECOND,
 				deleted: false,
 				editorType: EditorType.VIM,
-				buffer: "\n\n\n\n\n\n",
+				buffer: paneTree[parentId].buffer,
+				fileId: paneTree[parentId].fileId,
 			}
 		};
 		setPaneTree(newTree);

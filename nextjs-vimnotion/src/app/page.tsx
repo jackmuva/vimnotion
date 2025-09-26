@@ -1,12 +1,14 @@
 'use client';
 import { Header } from "@/components/custom/header";
-import { Sidebar } from "@/components/custom/sidebar";
+import { Sidebar } from "@/components/custom/sidebar/sidebar";
+import { SidebarData } from "@/types/data-types";
 import { useEffect, useState } from "react";
 import { LeaderPanel } from "@/components/custom/leader-panel";
 import { WindowPanel } from "@/components/custom/window-panel";
 import { TabContainer } from "@/components/custom/tab-container";
 import { useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
+import useSWR from "swr";
 
 export default function Home() {
 	const [openSidebar, setOpenSidebar] = useState<boolean>(false);
@@ -61,11 +63,23 @@ export default function Home() {
 		}
 	}, [windowPanel]);
 
+	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
+		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
+			{
+				credentials: 'include'
+			});
+		return await req.json();
+	});
+
+
+
+
 	return (
 		<div className="bg-background-muted/20 w-dvw h-dvh flex justify-center items-center font-custom
 			      pt-14 px-4 text-lg">
 			<Header toggleSidebar={toggleSidebar} />
-			{openSidebar && <Sidebar closeSidebar={toggleSidebar} openSidebar={openSidebar} />}
+			{openSidebar && <Sidebar closeSidebar={toggleSidebar} openSidebar={openSidebar}
+				sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />
 			{leaderPanel && <LeaderPanel closePanel={toggleLeaderPanel} toggleWindowPanel={toggleWindowPanel} />}
 			{windowPanel && <WindowPanel closePanel={toggleWindowPanel} />}
