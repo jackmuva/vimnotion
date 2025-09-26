@@ -75,7 +75,7 @@ export default function Home() {
 
 
 	return (
-		<div className="bg-background-muted/20 w-dvw h-dvh flex justify-center items-center font-custom
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-custom
 			      pt-14 px-4 text-lg">
 			<Header toggleSidebar={toggleSidebar} />
 			{openSidebar && <Sidebar closeSidebar={toggleSidebar} openSidebar={openSidebar}

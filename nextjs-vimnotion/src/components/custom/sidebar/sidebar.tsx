@@ -38,7 +38,7 @@ export const Sidebar = ({
 	}, [openSidebar, sidebarData]);
 
 	return (
-		<div className={`h-full w-96 pt-24 p-4 bg-background-muted flex flex-col 
+		<div className={`h-full w-96 pt-24 p-4 bg-secondary-background flex flex-col 
 			items-center z-30 absolute top-0 left-0 
 			${(sidebarData && sidebarData.StatusCode === 401) ? 'justify-center' : 'justify-start'}`}>
 			{sidebarData?.StatusCode === 401 &&

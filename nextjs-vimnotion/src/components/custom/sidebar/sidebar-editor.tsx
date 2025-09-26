@@ -1,9 +1,11 @@
-import { basicSetup, EditorView } from "codemirror";
+import { EditorView } from "codemirror";
+import { history } from "@codemirror/commands";
+import { dropCursor } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import { Compartment } from '@codemirror/state';
 import { vim } from "@replit/codemirror-vim";
 import { customTheme } from '../vim-editor/custom-editor-settings';
-import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
+import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 
 
 export const SidebarEditor = ({
@@ -16,6 +18,7 @@ export const SidebarEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 
+
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
@@ -24,7 +27,27 @@ export const SidebarEditor = ({
 		if (vimEditor) {
 			vimEditor.focus();
 		}
-	}, [vimEditor]);
+
+		if (typeof window !== 'undefined' && vimEditor) {
+			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			const handleChange = (event: MediaQueryListEvent) => {
+				if (event.matches) {
+					vimEditor?.dispatch({
+						effects: theme.reconfigure(darkTheme),
+					});
+				} else {
+					vimEditor?.dispatch({
+						effects: theme.reconfigure(lightTheme),
+					});
+				}
+			};
+			mediaQuery.addEventListener('change', handleChange);
+
+			return () => {
+				mediaQuery.removeEventListener('change', handleChange);
+			};
+		}
+	}, [vimEditor, theme]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -39,18 +62,18 @@ export const SidebarEditor = ({
 		const view = new EditorView({
 			doc: "hi\n\n",
 			extensions: [
-				// make sure vim is included before other keymaps
 				vim(),
-				basicSetup,
+				history(),
+				dropCursor(),
 				new Compartment().of(customTheme),
-				theme.of(darkTheme),
+				theme.of(lightTheme),
 			],
 			parent: editorElement,
 		});
 
 		if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			view.dispatch({
-				effects: theme.reconfigure(lightTheme),
+				effects: theme.reconfigure(darkTheme),
 			});
 		}
 		setVimEditor(view);
@@ -58,7 +81,7 @@ export const SidebarEditor = ({
 
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
+		<div className='relative h-full w-full rounded-sm z-20 bg-secondary-background'>
 			<div id={`sidebar-editor`}
 				className={`h-full w-full overflow-y-scroll`}>
 			</div>
