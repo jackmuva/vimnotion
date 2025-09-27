@@ -1,22 +1,22 @@
-import { useEditorStore } from "@/store/editor-store";
+import { PanelType, useEditorStore } from "@/store/editor-store";
 import { useEffect } from "react";
 import { Direction } from "@/types/editor-types";
 
 export const WindowPanel = ({ closePanel }: { closePanel: () => void }) => {
 	const activePane: string = useEditorStore((state) => state.activePane);
 	const goToNeighbor: (id: string, direction: Direction) => string = useEditorStore((state) => state.goToNeighbor);
-	const setActivePanel: (panel: string | null) => void = useEditorStore((state) => state.setActivePanel);
+	const setActivePanel: (panel: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
 	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
 	const handleNavigation = (paneId: string) => {
 		closePanel();
-		setActivePanel(null);
+		setActivePanel(PanelType.MAIN);
 		setActivePane(paneId);
 	};
 
 	useEffect(() => {
-		setActivePanel("window-panel");
+		setActivePanel(PanelType.LEADER);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				closePanel();

@@ -5,7 +5,7 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { useEditorStore } from '@/store/editor-store';
+import { PanelType, useEditorStore } from '@/store/editor-store';
 import { PaneNode, SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
@@ -21,8 +21,8 @@ export const VimEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const activeId = useEditorStore((state) => state.activePane);
-	const activePanel = useEditorStore((state) => state.activePanel);
+	const activeId: string = useEditorStore((state) => state.activePane);
+	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
@@ -64,7 +64,7 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId && activePanel === null) {
+		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
 	}, [activeId, activePanel])

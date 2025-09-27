@@ -8,13 +8,19 @@ interface DrillDownResult {
 	stepsAway: number;
 }
 
+export enum PanelType {
+	LEADER = "LEADER",
+	SIDEBAR = "SIDEBAR",
+	MAIN = "MAIN",
+}
+
 type EditorState = {
 	activePane: string;
 	paneTree: PaneNode;
-	activePanel: string | null;
+	activePanel: PanelType;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
-	setActivePanel: (panel: string | null) => void;
+	setActivePanel: (panel: PanelType) => void;
 	newRoot: () => string;
 	splitPane: (direction: SplitState) => void;
 	closePane: () => void;
@@ -45,13 +51,13 @@ type EditorState = {
 export const useEditorStore = create<EditorState>((set, get) => ({
 	activePane: "",
 	paneTree: {} as PaneNode,
-	activePanel: null,
+	activePanel: PanelType.MAIN,
 
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
 
-	setActivePanel: (panel: string | null) => set({ activePanel: panel }),
+	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
 
 	newRoot: () => {
 		const rootId = v4();

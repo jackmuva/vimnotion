@@ -1,12 +1,12 @@
 'use client';
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar/sidebar";
-import { SidebarData } from "@/types/data-types";
+import { SidebarData } from "@/types/sidebar-types";
 import { useEffect, useState } from "react";
 import { LeaderPanel } from "@/components/custom/leader-panel";
 import { WindowPanel } from "@/components/custom/window-panel";
 import { TabContainer } from "@/components/custom/tab-container";
-import { useEditorStore } from "@/store/editor-store";
+import { PanelType, useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
 
@@ -18,18 +18,18 @@ export default function Home() {
 
 	const toggleWindowPanel = () => {
 		if (windowPanel) {
-			setActivePanel(null);
+			setActivePanel(PanelType.MAIN);
 		} else {
-			setActivePanel("window");
+			setActivePanel(PanelType.LEADER);
 		}
 		setWindowPanel((prev) => !prev);
 	}
 
 	const toggleLeaderPanel = () => {
 		if (leaderPanel) {
-			setActivePanel(null);
+			setActivePanel(PanelType.MAIN);
 		} else {
-			setActivePanel("leader");
+			setActivePanel(PanelType.LEADER);
 		}
 
 		setLeaderPanel((prev) => !prev);
@@ -37,9 +37,9 @@ export default function Home() {
 
 	const toggleSidebar = () => {
 		if (openSidebar) {
-			setActivePanel(null);
+			setActivePanel(PanelType.MAIN);
 		} else {
-			setActivePanel("sidebar");
+			setActivePanel(PanelType.SIDEBAR);
 		}
 
 		setOpenSidebar((prev) => !prev);

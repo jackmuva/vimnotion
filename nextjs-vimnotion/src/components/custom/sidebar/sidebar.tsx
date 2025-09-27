@@ -1,4 +1,4 @@
-import { SidebarData } from '@/types/data-types';
+import { SidebarData } from '@/types/sidebar-types';
 import { useEffect } from 'react';
 import { SidebarEditor } from './sidebar-editor';
 
