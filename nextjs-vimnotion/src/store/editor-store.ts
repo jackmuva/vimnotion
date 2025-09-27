@@ -15,6 +15,14 @@ export enum PanelType {
 }
 
 type EditorState = {
+	openSidebar: boolean;
+	openLeaderPanel: boolean;
+	openWindowPanel: boolean;
+
+	toggleSidebar: () => void;
+	toggleLeaderPanel: () => void;
+	toggleWindowPanel: () => void;
+
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
@@ -54,6 +62,43 @@ type EditorState = {
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
+	openSidebar: false,
+	openLeaderPanel: false,
+	openWindowPanel: false,
+
+	toggleSidebar: () => {
+		const openSidebar = get().openSidebar;
+		if (openSidebar) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.SIDEBAR);
+		}
+
+		set({ openSidebar: !openSidebar });
+
+	},
+
+	toggleWindowPanel: () => {
+		const windowPanel = get().openWindowPanel;
+		if (windowPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+		set({ openWindowPanel: !windowPanel });
+	},
+
+	toggleLeaderPanel: () => {
+		const leaderPanel = get().openLeaderPanel;
+		if (leaderPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+
+		set({ openLeaderPanel: !leaderPanel });
+	},
+
 	activePane: "",
 	paneTree: {} as PaneNode,
 	activePanel: PanelType.MAIN,
@@ -223,7 +268,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType): string => {
 		const { paneTree, goToNeighbor } = get();
-		console.log("pane tree", paneTree);
 		const curPanel = paneTree[paneId];
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;

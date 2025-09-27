@@ -11,42 +11,10 @@ import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
 
 export default function Home() {
-	const [openSidebar, setOpenSidebar] = useState<boolean>(false);
-	const [leaderPanel, setLeaderPanel] = useState<boolean>(false);
-	const [windowPanel, setWindowPanel] = useState<boolean>(false);
-	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
+	const windowPanel = useEditorStore((state) => state.openWindowPanel);
+	const { openSidebar, openLeaderPanel, openWindowPanel } = useEditorStore((state) => state);
 
-	const toggleWindowPanel = () => {
-		if (windowPanel) {
-			setActivePanel(PanelType.MAIN);
-		} else {
-			setActivePanel(PanelType.LEADER);
-		}
-		setWindowPanel((prev) => !prev);
-	}
-
-	const toggleLeaderPanel = () => {
-		if (leaderPanel) {
-			setActivePanel(PanelType.MAIN);
-		} else {
-			setActivePanel(PanelType.LEADER);
-		}
-
-		setLeaderPanel((prev) => !prev);
-	}
-
-	const toggleSidebar = () => {
-		console.log('toggling');
-		console.log(openSidebar);
-		if (openSidebar) {
-			console.log('switching back to main');
-			setActivePanel(PanelType.MAIN);
-		} else {
-			setActivePanel(PanelType.SIDEBAR);
-		}
-
-		setOpenSidebar((prev) => !prev);
-	}
 
 	useEffect(() => {
 		if (leaderPanel) {
@@ -77,13 +45,12 @@ export default function Home() {
 	return (
 		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-custom
 			      pt-14 px-4 text-lg">
-			<Header toggleSidebar={toggleSidebar} />
-			{openSidebar && <Sidebar closeSidebar={toggleSidebar} openSidebar={openSidebar}
-				sidebarData={data} sidebarDataIsLoading={isLoading} />}
-			<TabContainer toggleSidebar={toggleSidebar} toggleLeaderPanel={toggleLeaderPanel} />
-			{leaderPanel && <LeaderPanel closePanel={toggleLeaderPanel} toggleWindowPanel={toggleWindowPanel} />}
-			{windowPanel && <WindowPanel closePanel={toggleWindowPanel} />}
-			<LeaderButton toggleLeaderPanel={toggleLeaderPanel} />
+			<Header />
+			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
+			<TabContainer />
+			{openLeaderPanel && <LeaderPanel />}
+			{openWindowPanel && <WindowPanel />}
+			<LeaderButton />
 		</div>
 	);
 }

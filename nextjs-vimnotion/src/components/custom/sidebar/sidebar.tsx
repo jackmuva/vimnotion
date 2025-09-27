@@ -1,19 +1,18 @@
 import { SidebarData } from '@/types/sidebar-types';
 import { useEffect } from 'react';
 import { SidebarEditor } from './sidebar-editor';
+import { useEditorStore } from '@/store/editor-store';
 
 
 
 export const Sidebar = ({
-	openSidebar,
 	sidebarData,
 	sidebarDataIsLoading,
 }: {
-	openSidebar: boolean,
-	closeSidebar: () => void,
 	sidebarData: SidebarData | undefined,
 	sidebarDataIsLoading: boolean,
 }) => {
+	const { openSidebar } = useEditorStore((state) => state);
 	useEffect(() => {
 		if (openSidebar) {
 			const button = document.getElementById('sidebar');

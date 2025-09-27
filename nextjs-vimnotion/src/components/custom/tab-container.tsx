@@ -3,17 +3,14 @@ import { EditorContainer } from "./editor-container";
 import { useEffect, useState } from "react";
 
 export const TabContainer = ({
-	toggleSidebar,
-	toggleLeaderPanel
 }: {
-	toggleSidebar: () => void,
-	toggleLeaderPanel: () => void
-}) => {
+	}) => {
 	const tabs = useEditorStore(state => state.tabArray);
 	const activeTab = useEditorStore(state => state.activeTab);
 	const initTabMap = useEditorStore(state => state.initTabMap);
 	const tabMap = useEditorStore(state => state.tabMap);
 	const [isClient, setIsClient] = useState(false);
+	const { toggleSidebar, toggleLeaderPanel } = useEditorStore((state) => state);
 
 	useEffect(() => {
 		setIsClient(true);

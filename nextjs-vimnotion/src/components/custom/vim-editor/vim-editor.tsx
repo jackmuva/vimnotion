@@ -65,7 +65,6 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		console.log('trigger refocus');
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
