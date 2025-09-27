@@ -6,7 +6,6 @@ import { SidebarEditor } from './sidebar-editor';
 
 export const Sidebar = ({
 	openSidebar,
-	closeSidebar,
 	sidebarData,
 	sidebarDataIsLoading,
 }: {
@@ -15,19 +14,6 @@ export const Sidebar = ({
 	sidebarData: SidebarData | undefined,
 	sidebarDataIsLoading: boolean,
 }) => {
-	// useEffect(() => {
-	// 	const handleKeyDown = (event: KeyboardEvent) => {
-	// 		if (event.key === 'Escape') {
-	// 			closeSidebar();
-	// 		}
-	// 	};
-	// 	document.addEventListener('keydown', handleKeyDown);
-	//
-	// 	return () => {
-	// 		document.removeEventListener('keydown', handleKeyDown);
-	// 	};
-	// }, []);
-
 	useEffect(() => {
 		if (openSidebar) {
 			const button = document.getElementById('sidebar');
@@ -53,7 +39,7 @@ export const Sidebar = ({
 				<div className='animate-bounce'>loading...</div>
 			}
 			{!sidebarDataIsLoading && sidebarData && sidebarData.StatusCode === 200 &&
-				<SidebarEditor />
+				<SidebarEditor data={sidebarData} />
 			}
 		</div>
 	);

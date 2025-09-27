@@ -6,18 +6,22 @@ import { Compartment } from '@codemirror/state';
 import { vim } from "@replit/codemirror-vim";
 import { customTheme } from '../vim-editor/custom-editor-settings';
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
+import { SidebarData } from "@/types/sidebar-types";
+import { useEditorStore } from "@/store/editor-store";
 
 
 export const SidebarEditor = ({
-
+	data,
 }: {
-
-	}) => {
+	data: SidebarData,
+}) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-
+	const directory = JSON.parse(data.Data!);
+	const { location, setLocation } = useEditorStore((state) => state);
+	const sidebarBuffer = Object.keys(directory[location]).join("\n");
 
 	useEffect(() => {
 		setIsClient(true);
@@ -60,7 +64,7 @@ export const SidebarEditor = ({
 		}
 
 		const view = new EditorView({
-			doc: "hi\n\n",
+			doc: sidebarBuffer,
 			extensions: [
 				vim(),
 				history(),

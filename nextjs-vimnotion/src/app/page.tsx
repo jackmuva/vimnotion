@@ -36,7 +36,10 @@ export default function Home() {
 	}
 
 	const toggleSidebar = () => {
+		console.log('toggling');
+		console.log(openSidebar);
 		if (openSidebar) {
+			console.log('switching back to main');
 			setActivePanel(PanelType.MAIN);
 		} else {
 			setActivePanel(PanelType.SIDEBAR);
@@ -70,9 +73,6 @@ export default function Home() {
 			});
 		return await req.json();
 	});
-
-
-
 
 	return (
 		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-custom

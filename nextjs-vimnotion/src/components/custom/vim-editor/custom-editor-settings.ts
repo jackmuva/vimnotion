@@ -42,6 +42,8 @@ export const applyCustomVim = ({
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			closePane();
+		} else if (activePanel === PanelType.SIDEBAR) {
+			toggleSidebar();
 		}
 	});
 

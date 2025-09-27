@@ -18,6 +18,7 @@ type EditorState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
+
 	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
@@ -47,13 +48,18 @@ type EditorState = {
 	nextTab: () => void;
 	prevTab: () => void;
 	deleteTab: () => void;
+
+	location: string;
+	setLocation: (location: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
 	activePane: "",
 	paneTree: {} as PaneNode,
 	activePanel: PanelType.MAIN,
+	location: "root",
 
+	setLocation: (location: string) => set({ location: location }),
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
