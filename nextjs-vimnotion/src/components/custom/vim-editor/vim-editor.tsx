@@ -23,6 +23,7 @@ export const VimEditor = ({
 	const [isClient, setIsClient] = useState(false);
 	const activeId: string = useEditorStore((state) => state.activePane);
 	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+	const getActivePanel: () => PanelType = useEditorStore((state) => state.getActivePanel);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
@@ -108,6 +109,7 @@ export const VimEditor = ({
 			createNewTab: () => createNewTab(),
 			nextTab: () => nextTab(),
 			prevTab: () => prevTab(),
+			getActivePanel: () => getActivePanel(),
 		});
 		setVimEditor(view);
 	}, [isClient]);

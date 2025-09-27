@@ -1,6 +1,6 @@
 import { EditorView } from 'codemirror';
 import { Vim } from "@replit/codemirror-vim"
-import { PanelType, useEditorStore } from '@/store/editor-store';
+import { PanelType } from '@/store/editor-store';
 
 export const customTheme = EditorView.theme({
 	"&": {
@@ -17,6 +17,7 @@ export const applyCustomVim = ({
 	createNewTab,
 	nextTab,
 	prevTab,
+	getActivePanel,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -26,9 +27,10 @@ export const applyCustomVim = ({
 	createNewTab: () => void,
 	nextTab: () => void,
 	prevTab: () => void,
+	getActivePanel: () => PanelType,
 }) => {
 	Vim.defineEx('write', 'w', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
@@ -37,42 +39,42 @@ export const applyCustomVim = ({
 	});
 
 	Vim.defineEx('quit', 'q', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			closePane();
 		}
 	});
 
 	Vim.defineEx('split', 'split', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			splitHorizontal();
 		}
 	});
 
 	Vim.defineEx('vsplit shorthand', 'vs', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			splitVertical();
 		}
 	});
 
 	Vim.defineEx('vsplit', 'vsplit', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			splitVertical();
 		}
 	});
 
 	Vim.defineEx('tabnew', 'tabnew', function() {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			createNewTab();
 		}
 	});
 
 	Vim.defineAction("toggleLeaderPanel", () => {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			toggleLeaderPanel();
 		}
@@ -81,7 +83,7 @@ export const applyCustomVim = ({
 	Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', {}, { context: 'normal' });
 
 	Vim.defineAction("toggleSidebar", () => {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			toggleSidebar();
 		}
@@ -90,7 +92,7 @@ export const applyCustomVim = ({
 	Vim.mapCommand('-', 'action', 'toggleSidebar', {}, { context: 'normal' });
 
 	Vim.defineAction("nextTab", () => {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			nextTab();
 		}
@@ -99,7 +101,7 @@ export const applyCustomVim = ({
 	Vim.mapCommand('gt', 'action', 'nextTab', {}, { context: 'normal' });
 
 	Vim.defineAction("prevTab", () => {
-		const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			prevTab();
 		}

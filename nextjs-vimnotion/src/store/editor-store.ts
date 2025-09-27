@@ -18,6 +18,7 @@ type EditorState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
+	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
 	setActivePanel: (panel: PanelType) => void;
@@ -56,6 +57,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
+
+	getActivePanel: () => { return get().activePanel },
 
 	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
 
