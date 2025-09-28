@@ -116,7 +116,11 @@ export const applyCustomVim = ({
 		if (activePanel === PanelType.MAIN) {
 			toggleSidebar();
 		} else if (activePanel === PanelType.SIDEBAR) {
-			console.log('back a dir');
+			const location = getLocation();
+			const locationArr = location.split("/");
+			locationArr.pop();
+			locationArr.pop();
+			setLocation(locationArr.join("/") + "/");
 		}
 	});
 	Vim.unmap('-', "false");

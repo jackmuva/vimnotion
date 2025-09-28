@@ -2,9 +2,7 @@ import { useEditorStore } from "@/store/editor-store";
 import { EditorType, PaneNode } from "@/types/editor-types";
 import { useEffect } from "react";
 
-export const LeaderPanel = ({
-}: {
-	}) => {
+export const LeaderPanel = () => {
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const activePane: string = useEditorStore((state) => state.activePane);
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePaneById);

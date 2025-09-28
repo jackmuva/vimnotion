@@ -23,9 +23,9 @@ export const SidebarEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
+	const lastContentRef = useRef<string>("");
 	const directory: DirectoryTree = JSON.parse(data.Data!);
 	const { location, setOilLine } = useEditorStore((state) => state);
-	console.log("location:", location);
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
 		let curDir: DirectoryTree = dir;
@@ -85,6 +85,24 @@ export const SidebarEditor = ({
 	}, [vimEditor, theme]);
 
 	useEffect(() => {
+		if (!isClient || vimEditor === null) {
+			return;
+		}
+
+		const newContent = getSidebarBuffer(location.split("/"), directory);
+		if (newContent !== lastContentRef.current) {
+			lastContentRef.current = newContent;
+			vimEditor.dispatch({
+				changes: {
+					from: 0,
+					to: vimEditor.state.doc.length,
+					insert: newContent
+				}
+			});
+		}
+	}, [directory, location, isClient, vimEditor]);
+
+	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
@@ -136,7 +154,7 @@ export const SidebarEditor = ({
 			});
 		}
 		setVimEditor(view);
-	}, [isClient, location, directory]);
+	}, [isClient]);
 
 
 	return (

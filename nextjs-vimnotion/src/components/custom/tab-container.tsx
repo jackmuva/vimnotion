@@ -2,9 +2,7 @@ import { useEditorStore } from "@/store/editor-store";
 import { EditorContainer } from "./editor-container";
 import { useEffect, useState } from "react";
 
-export const TabContainer = ({
-}: {
-	}) => {
+export const TabContainer = () => {
 	const tabs = useEditorStore(state => state.tabArray);
 	const activeTab = useEditorStore(state => state.activeTab);
 	const initTabMap = useEditorStore(state => state.initTabMap);
