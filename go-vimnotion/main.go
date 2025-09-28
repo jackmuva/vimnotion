@@ -42,7 +42,7 @@ func githubCallback(db *sql.DB) http.HandlerFunc {
 		if len(user) == 0 {
 			turso.InsertUser(db, turso.User{Email: userData.Email, Name: userData.Name})
 			turso.InsertDirectoryStructure(db, turso.DirectoryStructure{Email: userData.Email,
-				Structure: "{\"root\":{\"trash/\":{}}}"})
+				Structure: "{\"root/\": {\"type\":\"DIRECTORY\",\"children\":{\"trash/\":{\"type\":\"DIRECTORY\",\"children\":{}}}}}"})
 		}
 
 		jwt := oauth.CreateJwt(userData)

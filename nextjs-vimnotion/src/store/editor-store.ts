@@ -58,7 +58,11 @@ type EditorState = {
 	deleteTab: () => void;
 
 	location: string;
+	getLocation: () => string;
 	setLocation: (location: string) => void;
+	oilLine: string;
+	getOilLine: () => string;
+	setOilLine: (line: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -102,9 +106,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	activePane: "",
 	paneTree: {} as PaneNode,
 	activePanel: PanelType.MAIN,
-	location: "root",
 
-	setLocation: (location: string) => set({ location: location }),
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
@@ -490,4 +492,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		setTabMap(newTabMap);
 		setTabArray(newTabArray);
 	},
+
+	location: "root/",
+	getLocation: () => get().location,
+	setLocation: (location: string) => set({ location: location }),
+
+	oilLine: "",
+	getOilLine: (): string => get().oilLine,
+	setOilLine: (line: string): void => set({ oilLine: line }),
 }))

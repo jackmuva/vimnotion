@@ -11,7 +11,11 @@ npm run dev
 go run main.go
 ```
 
-## Todos
+## Granular Todos
+1. `enter` and `-` in sidebar editor
+2. lcs to detech changes in sidebar buffer
+
+## High-level Todos
 - search experience
   - sqlite with full-text search, indexed db with incremental sync
   - in sqlite, keep a json string with directory structure;
@@ -22,8 +26,6 @@ go run main.go
 - normie view (not vimnotion)
 - create teams
 - extensabiity with hotkeys for apis
-- websockets for collaboration
-  - but also multi-tab/window behavior
 - router for vimnotion versions
 - version history
   - trash

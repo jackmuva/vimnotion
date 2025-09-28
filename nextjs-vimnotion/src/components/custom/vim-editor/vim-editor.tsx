@@ -30,10 +30,10 @@ export const VimEditor = ({
 	const createNewTab = useEditorStore(state => state.createNewTab);
 	const nextTab = useEditorStore(state => state.nextTab);
 	const prevTab = useEditorStore(state => state.prevTab);
-
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePaneById = useEditorStore((state) => state.updatePaneById);
 	const pane: PaneNode = getPane(paneId);
+	const { getLocation, setLocation, getOilLine } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -110,6 +110,9 @@ export const VimEditor = ({
 			nextTab: () => nextTab(),
 			prevTab: () => prevTab(),
 			getActivePanel: () => getActivePanel(),
+			getLocation: () => getLocation(),
+			getOilLine: () => getOilLine(),
+			setLocation: (loc: string) => setLocation(loc),
 		});
 		setVimEditor(view);
 	}, [isClient]);

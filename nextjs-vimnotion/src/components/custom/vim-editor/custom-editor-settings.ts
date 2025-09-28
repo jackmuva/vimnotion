@@ -18,6 +18,9 @@ export const applyCustomVim = ({
 	nextTab,
 	prevTab,
 	getActivePanel,
+	setLocation,
+	getLocation,
+	getOilLine,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -28,6 +31,9 @@ export const applyCustomVim = ({
 	nextTab: () => void,
 	prevTab: () => void,
 	getActivePanel: () => PanelType,
+	setLocation: (loc: string) => void,
+	getLocation: () => string,
+	getOilLine: () => string,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
@@ -44,6 +50,17 @@ export const applyCustomVim = ({
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			toggleSidebar();
+		}
+	});
+
+	Vim.defineEx('wquit', 'wq', function() {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			closePane();
+			console.log('saving');
+		} else if (activePanel === PanelType.SIDEBAR) {
+			toggleSidebar();
+			console.log("saving sidebar");
 		}
 	});
 
@@ -75,6 +92,16 @@ export const applyCustomVim = ({
 		}
 	});
 
+	Vim.defineAction("goIntoDir", () => {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.SIDEBAR) {
+			setLocation(getLocation() + getOilLine());
+		}
+	});
+	Vim.unmap('<CR>', "false");
+	Vim.mapCommand('<CR>', 'action', 'goIntoDir', {}, { context: 'normal' });
+
+
 	Vim.defineAction("toggleLeaderPanel", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
@@ -88,6 +115,8 @@ export const applyCustomVim = ({
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			toggleSidebar();
+		} else if (activePanel === PanelType.SIDEBAR) {
+			console.log('back a dir');
 		}
 	});
 	Vim.unmap('-', "false");

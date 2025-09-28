@@ -9,11 +9,9 @@ export enum DirectoryObjectType {
 	DIRECTORY = "DIRECTORY",
 }
 
-export type DirectoryObject = {
-	type: DirectoryObjectType;
-	children: DirectoryTree;
-}
-
 export type DirectoryTree = {
-	[objectId: string]: DirectoryObject;
+	[objectId: string]: {
+		type: DirectoryObjectType;
+		children: DirectoryTree;
+	}
 }
