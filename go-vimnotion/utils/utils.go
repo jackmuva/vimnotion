@@ -2,10 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"os"
 	"sync"
-
-	"github.com/joho/godotenv"
 )
 
 type EnvVars struct {

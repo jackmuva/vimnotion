@@ -6,12 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"io"
 	"net"
 	"net/http"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
 	"vimnotion.com/server/middleware"
 	"vimnotion.com/server/oauth"
 	"vimnotion.com/server/oauth/github"
