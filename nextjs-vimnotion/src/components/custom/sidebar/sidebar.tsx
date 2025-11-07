@@ -13,6 +13,7 @@ export const Sidebar = ({
 	sidebarDataIsLoading: boolean,
 }) => {
 	const { openSidebar } = useEditorStore((state) => state);
+
 	useEffect(() => {
 		if (openSidebar) {
 			const button = document.getElementById('sidebar');

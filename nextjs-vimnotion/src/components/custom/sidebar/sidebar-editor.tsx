@@ -12,6 +12,13 @@ import { customTheme } from '../vim-editor/custom-editor-settings';
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
+import { 
+	parseBufferToEntries, 
+	parseTreeToEntries, 
+	detectOperations,
+	formatOperationsForDisplay,
+	applyOperationsToTree
+} from "@/utils/sidebar-operations";
 
 
 export const SidebarEditor = ({
@@ -25,7 +32,19 @@ export const SidebarEditor = ({
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
 	const directory: DirectoryTree = JSON.parse(data.Data!);
-	const { location, setOilLine } = useEditorStore((state) => state);
+	const { 
+		location, 
+		setOilLine,
+		originalSidebarBuffer,
+		currentSidebarBuffer,
+		setOriginalSidebarBuffer,
+		setCurrentSidebarBuffer,
+		setPendingOperations,
+		setShowOperationConfirmation,
+		showOperationConfirmation,
+		pendingOperations,
+		clearSidebarOperations,
+	} = useEditorStore((state) => state);
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
 		let curDir: DirectoryTree = dir;
@@ -52,6 +71,10 @@ export const SidebarEditor = ({
 			}
 			setOilLine(res);
 		}
+
+		// Track current buffer content for change detection
+		const currentContent = v.state.doc.toString();
+		setCurrentSidebarBuffer(currentContent);
 	});
 
 	useEffect(() => {
@@ -92,6 +115,10 @@ export const SidebarEditor = ({
 		const newContent = getSidebarBuffer(location.split("/"), directory);
 		if (newContent !== lastContentRef.current) {
 			lastContentRef.current = newContent;
+			// Store the original buffer state when location changes
+			setOriginalSidebarBuffer(newContent);
+			setCurrentSidebarBuffer(newContent);
+			clearSidebarOperations();
 			vimEditor.dispatch({
 				changes: {
 					from: 0,
@@ -100,7 +127,70 @@ export const SidebarEditor = ({
 				}
 			});
 		}
-	}, [directory, location, isClient, vimEditor]);
+	}, [directory, location, isClient, vimEditor, setOriginalSidebarBuffer, setCurrentSidebarBuffer, clearSidebarOperations]);
+
+	/**
+	 * Handle save operation (Ctrl+S in Vim or custom keybinding)
+	 * Detects changes and shows confirmation
+	 */
+	const handleSidebarSave = () => {
+		if (!vimEditor) return;
+
+		const originalEntries = parseBufferToEntries(originalSidebarBuffer);
+		const currentEntries = parseBufferToEntries(currentSidebarBuffer);
+
+		// Check if there are any changes
+		if (JSON.stringify(originalEntries) === JSON.stringify(currentEntries)) {
+			console.log("No changes detected");
+			return;
+		}
+
+		// Detect operations
+		const summary = detectOperations(originalEntries, currentEntries);
+		setPendingOperations(summary.operations);
+
+		// Show confirmation dialog
+		setShowOperationConfirmation(true);
+	};
+
+	/**
+	 * Confirm and apply pending operations
+	 */
+	const confirmOperations = () => {
+		if (pendingOperations.length === 0) {
+			setShowOperationConfirmation(false);
+			return;
+		}
+
+		// Apply operations to the directory tree
+		const updatedTree = applyOperationsToTree(directory, pendingOperations);
+		
+		// TODO: Send updated tree to backend via API
+		console.log("Applying operations:", pendingOperations);
+		console.log("Updated tree:", updatedTree);
+
+		// Clear operations and close confirmation
+		setShowOperationConfirmation(false);
+		clearSidebarOperations();
+	};
+
+	/**
+	 * Discard pending operations
+	 */
+	const discardOperations = () => {
+		// Reset current buffer to original state
+		if (vimEditor) {
+			vimEditor.dispatch({
+				changes: {
+					from: 0,
+					to: vimEditor.state.doc.length,
+					insert: originalSidebarBuffer
+				}
+			});
+		}
+		setShowOperationConfirmation(false);
+		clearSidebarOperations();
+	};
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -111,6 +201,17 @@ export const SidebarEditor = ({
 		if (!editorElement) {
 			return;
 		}
+
+		const sidebarVimCustomizations = keymap.of([
+			{
+				key: "Ctrl-s",
+				run: (target) => {
+					handleSidebarSave();
+					return true;
+				},
+				preventDefault: true,
+			},
+		]);
 
 		const view = new EditorView({
 			doc: getSidebarBuffer(location.split("/"), directory),
@@ -141,6 +242,7 @@ export const SidebarEditor = ({
 					...completionKeymap,
 					...lintKeymap
 				]),
+				sidebarVimCustomizations,
 				new Compartment().of(customTheme),
 				theme.of(lightTheme),
 				cursorChangeListener,
@@ -162,6 +264,34 @@ export const SidebarEditor = ({
 			<div id={`sidebar-editor`}
 				className={`h-full w-full overflow-y-scroll`}>
 			</div>
+
+			{/* Confirmation Dialog for Pending Operations */}
+			{showOperationConfirmation && pendingOperations.length > 0 && (
+				<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 rounded-sm'>
+					<div className='bg-secondary-background border border-border rounded-lg p-6 max-w-2xl max-h-96 overflow-y-auto shadow-lg'>
+						<h2 className='text-lg font-bold mb-4'>Confirm Sidebar Operations</h2>
+
+						<div className='bg-primary-background p-4 rounded mb-4 font-mono text-sm whitespace-pre-wrap overflow-x-auto'>
+							{formatOperationsForDisplay(pendingOperations)}
+						</div>
+
+						<div className='flex gap-4'>
+							<button
+								onClick={confirmOperations}
+								className='px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition'
+							>
+								Confirm (Ctrl+Y)
+							</button>
+							<button
+								onClick={discardOperations}
+								className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition'
+							>
+								Discard (Ctrl+N)
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 
 	);

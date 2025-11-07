@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType, EditorType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
+import { SidebarOperation, OperationSummary } from '@/utils/sidebar-operations';
 
 interface DrillDownResult {
 	nearestId: string;
@@ -63,6 +64,19 @@ type EditorState = {
 	oilLine: string;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
+
+	// Sidebar operations (oil-like functionality)
+	originalSidebarBuffer: string;
+	currentSidebarBuffer: string;
+	pendingOperations: SidebarOperation[];
+	showOperationConfirmation: boolean;
+
+	setOriginalSidebarBuffer: (buffer: string) => void;
+	setCurrentSidebarBuffer: (buffer: string) => void;
+	setPendingOperations: (operations: SidebarOperation[]) => void;
+	setShowOperationConfirmation: (show: boolean) => void;
+	clearSidebarOperations: () => void;
+	getSidebarOperationSummary: () => OperationSummary;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -500,4 +514,34 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	oilLine: "",
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => set({ oilLine: line }),
+
+	// Sidebar operations state
+	originalSidebarBuffer: "",
+	currentSidebarBuffer: "",
+	pendingOperations: [],
+	showOperationConfirmation: false,
+
+	setOriginalSidebarBuffer: (buffer: string) => set({ originalSidebarBuffer: buffer }),
+
+	setCurrentSidebarBuffer: (buffer: string) => set({ currentSidebarBuffer: buffer }),
+
+	setPendingOperations: (operations: SidebarOperation[]) => set({ pendingOperations: operations }),
+
+	setShowOperationConfirmation: (show: boolean) => set({ showOperationConfirmation: show }),
+
+	clearSidebarOperations: () => set({
+		originalSidebarBuffer: "",
+		currentSidebarBuffer: "",
+		pendingOperations: [],
+		showOperationConfirmation: false,
+	}),
+
+	getSidebarOperationSummary: (): OperationSummary => {
+		const { pendingOperations } = get();
+		return {
+			operations: pendingOperations,
+			hasConflicts: false,
+			conflictMessages: [],
+		};
+	},
 }))
