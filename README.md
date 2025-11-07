@@ -29,4 +29,5 @@ go run main.go
 - router for vimnotion versions
 - version history
   - trash
+- local md downloads
 
