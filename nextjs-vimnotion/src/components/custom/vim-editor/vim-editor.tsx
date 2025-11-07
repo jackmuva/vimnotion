@@ -5,7 +5,7 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { useEditorStore } from '@/store/editor-store';
+import { PanelType, useEditorStore } from '@/store/editor-store';
 import { PaneNode, SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
@@ -21,18 +21,19 @@ export const VimEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const activeId = useEditorStore((state) => state.activePane);
-	const activePanel = useEditorStore((state) => state.activePanel);
+	const activeId: string = useEditorStore((state) => state.activePane);
+	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
+	const getActivePanel: () => PanelType = useEditorStore((state) => state.getActivePanel);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const splitPane = useEditorStore(state => state.splitPane);
 	const closePane = useEditorStore(state => state.closePane);
 	const createNewTab = useEditorStore(state => state.createNewTab);
 	const nextTab = useEditorStore(state => state.nextTab);
 	const prevTab = useEditorStore(state => state.prevTab);
-
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePaneById = useEditorStore((state) => state.updatePaneById);
 	const pane: PaneNode = getPane(paneId);
+	const { getLocation, setLocation, getOilLine } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -64,7 +65,7 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId && activePanel === null) {
+		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
 	}, [activeId, activePanel])
@@ -108,6 +109,10 @@ export const VimEditor = ({
 			createNewTab: () => createNewTab(),
 			nextTab: () => nextTab(),
 			prevTab: () => prevTab(),
+			getActivePanel: () => getActivePanel(),
+			getLocation: () => getLocation(),
+			getOilLine: () => getOilLine(),
+			setLocation: (loc: string) => setLocation(loc),
 		});
 		setVimEditor(view);
 	}, [isClient]);

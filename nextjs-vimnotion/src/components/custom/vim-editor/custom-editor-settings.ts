@@ -1,5 +1,6 @@
 import { EditorView } from 'codemirror';
 import { Vim } from "@replit/codemirror-vim"
+import { PanelType } from '@/store/editor-store';
 
 export const customTheme = EditorView.theme({
 	"&": {
@@ -16,6 +17,10 @@ export const applyCustomVim = ({
 	createNewTab,
 	nextTab,
 	prevTab,
+	getActivePanel,
+	setLocation,
+	getLocation,
+	getOilLine,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -25,51 +30,116 @@ export const applyCustomVim = ({
 	createNewTab: () => void,
 	nextTab: () => void,
 	prevTab: () => void,
+	getActivePanel: () => PanelType,
+	setLocation: (loc: string) => void,
+	getLocation: () => string,
+	getOilLine: () => string,
 }) => {
 	Vim.defineEx('write', 'w', function() {
-		console.log('saving');
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			console.log('saving');
+		} else if (activePanel === PanelType.SIDEBAR) {
+			console.log("saving sidebar");
+		}
 	});
 
 	Vim.defineEx('quit', 'q', function() {
-		closePane();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			closePane();
+		} else if (activePanel === PanelType.SIDEBAR) {
+			toggleSidebar();
+		}
+	});
+
+	Vim.defineEx('wquit', 'wq', function() {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			closePane();
+			console.log('saving');
+		} else if (activePanel === PanelType.SIDEBAR) {
+			toggleSidebar();
+			console.log("saving sidebar");
+		}
 	});
 
 	Vim.defineEx('split', 'split', function() {
-		splitHorizontal();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			splitHorizontal();
+		}
 	});
 
 	Vim.defineEx('vsplit shorthand', 'vs', function() {
-		splitVertical();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			splitVertical();
+		}
 	});
 
 	Vim.defineEx('vsplit', 'vsplit', function() {
-		splitVertical();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			splitVertical();
+		}
 	});
 
 	Vim.defineEx('tabnew', 'tabnew', function() {
-		createNewTab();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			createNewTab();
+		}
 	});
 
+	Vim.defineAction("goIntoDir", () => {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.SIDEBAR) {
+			setLocation(getLocation() + getOilLine());
+		}
+	});
+	Vim.unmap('<CR>', "false");
+	Vim.mapCommand('<CR>', 'action', 'goIntoDir', {}, { context: 'normal' });
+
+
 	Vim.defineAction("toggleLeaderPanel", () => {
-		toggleLeaderPanel();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			toggleLeaderPanel();
+		}
 	});
 	Vim.unmap('<Space>', "false");
 	Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', {}, { context: 'normal' });
 
 	Vim.defineAction("toggleSidebar", () => {
-		toggleSidebar();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			toggleSidebar();
+		} else if (activePanel === PanelType.SIDEBAR) {
+			const location = getLocation();
+			const locationArr = location.split("/");
+			locationArr.pop();
+			locationArr.pop();
+			setLocation(locationArr.join("/") + "/");
+		}
 	});
 	Vim.unmap('-', "false");
 	Vim.mapCommand('-', 'action', 'toggleSidebar', {}, { context: 'normal' });
 
 	Vim.defineAction("nextTab", () => {
-		nextTab();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			nextTab();
+		}
 	});
 	Vim.unmap('gt', "false");
 	Vim.mapCommand('gt', 'action', 'nextTab', {}, { context: 'normal' });
 
 	Vim.defineAction("prevTab", () => {
-		prevTab();
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			prevTab();
+		}
 	});
 	Vim.unmap('gT', "false");
 	Vim.mapCommand('gT', 'action', 'prevTab', {}, { context: 'normal' });

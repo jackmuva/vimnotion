@@ -8,13 +8,29 @@ interface DrillDownResult {
 	stepsAway: number;
 }
 
+export enum PanelType {
+	LEADER = "LEADER",
+	SIDEBAR = "SIDEBAR",
+	MAIN = "MAIN",
+}
+
 type EditorState = {
+	openSidebar: boolean;
+	openLeaderPanel: boolean;
+	openWindowPanel: boolean;
+
+	toggleSidebar: () => void;
+	toggleLeaderPanel: () => void;
+	toggleWindowPanel: () => void;
+
 	activePane: string;
 	paneTree: PaneNode;
-	activePanel: string | null;
+	activePanel: PanelType;
+
+	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
-	setActivePanel: (panel: string | null) => void;
+	setActivePanel: (panel: PanelType) => void;
 	newRoot: () => string;
 	splitPane: (direction: SplitState) => void;
 	closePane: () => void;
@@ -40,18 +56,64 @@ type EditorState = {
 	nextTab: () => void;
 	prevTab: () => void;
 	deleteTab: () => void;
+
+	location: string;
+	getLocation: () => string;
+	setLocation: (location: string) => void;
+	oilLine: string;
+	getOilLine: () => string;
+	setOilLine: (line: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
+	openSidebar: false,
+	openLeaderPanel: false,
+	openWindowPanel: false,
+
+	toggleSidebar: () => {
+		const openSidebar = get().openSidebar;
+		if (openSidebar) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.SIDEBAR);
+		}
+
+		set({ openSidebar: !openSidebar });
+
+	},
+
+	toggleWindowPanel: () => {
+		const windowPanel = get().openWindowPanel;
+		if (windowPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+		set({ openWindowPanel: !windowPanel });
+	},
+
+	toggleLeaderPanel: () => {
+		const leaderPanel = get().openLeaderPanel;
+		if (leaderPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+
+		set({ openLeaderPanel: !leaderPanel });
+	},
+
 	activePane: "",
 	paneTree: {} as PaneNode,
-	activePanel: null,
+	activePanel: PanelType.MAIN,
 
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
 
-	setActivePanel: (panel: string | null) => set({ activePanel: panel }),
+	getActivePanel: () => { return get().activePanel },
+
+	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
 
 	newRoot: () => {
 		const rootId = v4();
@@ -70,7 +132,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			childType: ChildType.NONE,
 			deleted: false,
 			editorType: EditorType.VIM,
-			buffer: "\n\n\n\n\n\n",
+			buffer: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+			fileId: v4(),
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -87,7 +150,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		setTabMap(newTabMap);
 
 		const parentId: string = activePane;
-		const newTree = {
+		const newTree: PaneNode = {
 			...paneTree,
 			[parentId]: {
 				...paneTree[parentId],
@@ -108,6 +171,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				deleted: false,
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
+				fileId: paneTree[parentId].fileId,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -122,7 +186,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				childType: ChildType.SECOND,
 				deleted: false,
 				editorType: EditorType.VIM,
-				buffer: "\n\n\n\n\n\n",
+				buffer: paneTree[parentId].buffer,
+				fileId: paneTree[parentId].fileId,
 			}
 		};
 		setPaneTree(newTree);
@@ -205,7 +270,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType): string => {
 		const { paneTree, goToNeighbor } = get();
-		console.log("pane tree", paneTree);
 		const curPanel = paneTree[paneId];
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
@@ -428,4 +492,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		setTabMap(newTabMap);
 		setTabArray(newTabArray);
 	},
+
+	location: "root/",
+	getLocation: () => get().location,
+	setLocation: (location: string) => set({ location: location }),
+
+	oilLine: "",
+	getOilLine: (): string => get().oilLine,
+	setOilLine: (line: string): void => set({ oilLine: line }),
 }))
