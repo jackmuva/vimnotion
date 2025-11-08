@@ -31,7 +31,6 @@ export const SidebarEditor = () => {
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
 	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap } = useEditorStore((state) => state);
-	console.log(location);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {

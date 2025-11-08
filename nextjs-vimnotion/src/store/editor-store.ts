@@ -73,8 +73,8 @@ type EditorState = {
 	setSidebarBuffer: (buffer: string) => void;
 	sidebarBufferMap: { [id: string]: string };
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
-	proposedSidebarBufferMap: { [id: string]: string };
-	setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
+	// proposedSidebarBufferMap: { [id: string]: string };
+	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
 
 	evaluateOilBufferChanges: () => void;
 	evaluateAllOilBufferChanges: () => void;
@@ -525,12 +525,21 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	sidebarBuffer: "",
 	setSidebarBuffer: (buffer: string) => set({ sidebarBuffer: buffer }),
 	sidebarBufferMap: {},
-	proposedSidebarBufferMap: {},
+	// proposedSidebarBufferMap: {},
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
-	setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
+	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
 
 	evaluateOilBufferChanges: () => {
 		console.log("new sidebuffer", get().sidebarBuffer);
+		console.log("buffermap: ", get().sidebarBufferMap);
+		console.log("directory state: ", get().directoryState);
+		console.log("location", get().location);
+
+		let newBuffer = get().sidebarBuffer;
+		for (const fn of Object.keys(get().sidebarBufferMap)) {
+			newBuffer = newBuffer.replace(fn + "\n", "");
+		}
+		console.log("new buffer: ", newBuffer);
 	},
 	evaluateAllOilBufferChanges: () => { }
 }))
