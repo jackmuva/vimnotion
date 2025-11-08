@@ -1,21 +1,21 @@
 package models
 
 type User struct {
-	Email string
-	Name  string
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 type DirectoryStructure struct {
-	Email     string
-	Structure string
+	Email     string `json:"email"`
+	Structure string `json:"structure"`
 }
 
 type VnObject struct {
-	Id         string
-	Name       string
-	IsFile     bool
-	Contents   string
-	UpdateDate string
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	IsFile     bool   `json:"isFile"`
+	Contents   string `json:"contents"`
+	UpdateDate string `json:"updateDate"`
 }
 
 type UserData struct {

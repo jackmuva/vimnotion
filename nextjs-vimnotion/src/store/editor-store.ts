@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType, EditorType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
+import { DirectoryTree } from '@/types/sidebar-types';
 
 interface DrillDownResult {
 	nearestId: string;
@@ -57,12 +58,22 @@ type EditorState = {
 	prevTab: () => void;
 	deleteTab: () => void;
 
+	directoryState: DirectoryTree;
+	setDirectoryState: (tree: DirectoryTree) => void;
+	proposedDirectoryState: DirectoryTree;
+	setProposedDirectoryState: (tree: DirectoryTree) => void;
+
 	location: string;
 	getLocation: () => string;
 	setLocation: (location: string) => void;
 	oilLine: string;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
+	sidebarBuffer: string;
+	setSidebarBuffer: (buffer: string) => void;
+
+	evaluateOilBufferChanges: () => void;
+	evaluateAllOilBufferChanges: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -493,11 +504,21 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		setTabArray(newTabArray);
 	},
 
-	location: "root/",
+	directoryState: {},
+	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
+	proposedDirectoryState: {},
+	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
+
+	location: "",
 	getLocation: () => get().location,
 	setLocation: (location: string) => set({ location: location }),
 
 	oilLine: "",
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => set({ oilLine: line }),
+	sidebarBuffer: "",
+	setSidebarBuffer: (buffer: string) => set({ sidebarBuffer: buffer }),
+
+	evaluateOilBufferChanges: () => { },
+	evaluateAllOilBufferChanges: () => { }
 }))

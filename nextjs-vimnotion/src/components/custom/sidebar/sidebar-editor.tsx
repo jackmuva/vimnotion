@@ -1,5 +1,5 @@
 import { EditorView, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLine, keymap } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
+import { EditorState, Extension } from "@codemirror/state";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
@@ -24,8 +24,14 @@ export const SidebarEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
-	const directory: DirectoryTree = JSON.parse(data.Data!);
-	const { location, setOilLine } = useEditorStore((state) => state);
+	const { location, setOilLine, directoryState, } = useEditorStore((state) => state);
+	console.log("location: ", location);
+
+	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
+		if (v.docChanged) {
+			console.log("sidebar buffer: ", v.state.doc.toString());
+		}
+	});
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
 		let curDir: DirectoryTree = dir;
@@ -89,7 +95,7 @@ export const SidebarEditor = ({
 			return;
 		}
 
-		const newContent = getSidebarBuffer(location.split("/"), directory);
+		const newContent = getSidebarBuffer(location.split("/"), directoryState);
 		if (newContent !== lastContentRef.current) {
 			lastContentRef.current = newContent;
 			vimEditor.dispatch({
@@ -100,7 +106,7 @@ export const SidebarEditor = ({
 				}
 			});
 		}
-	}, [directory, location, isClient, vimEditor]);
+	}, [directoryState, location, isClient, vimEditor]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -113,7 +119,7 @@ export const SidebarEditor = ({
 		}
 
 		const view = new EditorView({
-			doc: getSidebarBuffer(location.split("/"), directory),
+			doc: getSidebarBuffer(location.split("/"), directoryState),
 			extensions: [
 				vim(),
 				highlightActiveLineGutter(),
@@ -144,6 +150,7 @@ export const SidebarEditor = ({
 				new Compartment().of(customTheme),
 				theme.of(lightTheme),
 				cursorChangeListener,
+				bufferChangeListener,
 			],
 			parent: editorElement,
 		});
@@ -155,7 +162,6 @@ export const SidebarEditor = ({
 		}
 		setVimEditor(view);
 	}, [isClient]);
-
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-secondary-background'>

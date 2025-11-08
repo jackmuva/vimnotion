@@ -34,7 +34,7 @@ func ConnectTurso() *sql.DB {
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateData TEXT, contents TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 	}
@@ -133,7 +133,7 @@ func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) {
 }
 
 func InsertVnObject(db *sql.DB, vnObject models.VnObject) {
-	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?)",
+	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?, ?, ?)",
 		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)

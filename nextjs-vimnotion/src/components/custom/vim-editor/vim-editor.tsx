@@ -33,7 +33,8 @@ export const VimEditor = ({
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePaneById = useEditorStore((state) => state.updatePaneById);
 	const pane: PaneNode = getPane(paneId);
-	const { getLocation, setLocation, getOilLine } = useEditorStore((state) => state);
+	const { getLocation, setLocation, getOilLine,
+		evaluateOilBufferChanges, evaluateAllOilBufferChanges } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -113,6 +114,8 @@ export const VimEditor = ({
 			getLocation: () => getLocation(),
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
+			evaluateOilBufferChanges: () => evaluateOilBufferChanges(),
+			evaluateAllOilBufferChanges: () => evaluateAllOilBufferChanges(),
 		});
 		setVimEditor(view);
 	}, [isClient]);

@@ -21,6 +21,8 @@ export const applyCustomVim = ({
 	setLocation,
 	getLocation,
 	getOilLine,
+	evaluateOilBufferChanges,
+	evaluateAllOilBufferChanges,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -34,13 +36,15 @@ export const applyCustomVim = ({
 	setLocation: (loc: string) => void,
 	getLocation: () => string,
 	getOilLine: () => string,
+	evaluateOilBufferChanges: () => void,
+	evaluateAllOilBufferChanges: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
-			console.log("saving sidebar");
+			evaluateAllOilBufferChanges();
 		}
 	});
 
@@ -59,8 +63,8 @@ export const applyCustomVim = ({
 			closePane();
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
+			evaluateAllOilBufferChanges();
 			toggleSidebar();
-			console.log("saving sidebar");
 		}
 	});
 
@@ -95,6 +99,7 @@ export const applyCustomVim = ({
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.SIDEBAR) {
+			evaluateOilBufferChanges();
 			setLocation(getLocation() + getOilLine());
 		}
 	});
@@ -116,6 +121,7 @@ export const applyCustomVim = ({
 		if (activePanel === PanelType.MAIN) {
 			toggleSidebar();
 		} else if (activePanel === PanelType.SIDEBAR) {
+			evaluateOilBufferChanges();
 			const location = getLocation();
 			const locationArr = location.split("/");
 			locationArr.pop();

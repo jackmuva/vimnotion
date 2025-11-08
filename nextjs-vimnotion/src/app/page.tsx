@@ -1,19 +1,19 @@
 'use client';
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar/sidebar";
-import { SidebarData } from "@/types/sidebar-types";
-import { useEffect, useState } from "react";
+import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
+import { useEffect } from "react";
 import { LeaderPanel } from "@/components/custom/leader-panel";
 import { WindowPanel } from "@/components/custom/window-panel";
 import { TabContainer } from "@/components/custom/tab-container";
-import { PanelType, useEditorStore } from "@/store/editor-store";
+import { useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
-	const { openSidebar, openLeaderPanel, openWindowPanel } = useEditorStore((state) => state);
+	const { openSidebar, openLeaderPanel, openWindowPanel, setDirectoryState, setLocation } = useEditorStore((state) => state);
 
 
 	useEffect(() => {
@@ -41,6 +41,14 @@ export default function Home() {
 			});
 		return await req.json();
 	});
+
+	useEffect(() => {
+		if (data && data.StatusCode === 200) {
+			const directory: DirectoryTree = JSON.parse(data.Data!);
+			setDirectoryState(directory);
+			setLocation(Object.keys(directory)[0]);
+		}
+	}, [data]);
 
 	return (
 		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-custom
