@@ -1,4 +1,14 @@
-import { EditorView, highlightActiveLineGutter, highlightSpecialChars, drawSelection, dropCursor, rectangularSelection, crosshairCursor, highlightActiveLine, keymap } from "@codemirror/view";
+import {
+	EditorView,
+	highlightActiveLineGutter,
+	highlightSpecialChars,
+	drawSelection,
+	dropCursor,
+	rectangularSelection,
+	crosshairCursor,
+	highlightActiveLine,
+	keymap
+} from "@codemirror/view";
 import { EditorState, Extension } from "@codemirror/state";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "@codemirror/language";
@@ -10,26 +20,22 @@ import { Compartment } from '@codemirror/state';
 import { vim } from "@replit/codemirror-vim";
 import { customTheme } from '../vim-editor/custom-editor-settings';
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
-import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
+import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
 
 
-export const SidebarEditor = ({
-	data,
-}: {
-	data: SidebarData,
-}) => {
+export const SidebarEditor = () => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
-	const { location, setOilLine, directoryState, } = useEditorStore((state) => state);
-	console.log("location: ", location);
+	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap } = useEditorStore((state) => state);
+	console.log(location);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			console.log("sidebar buffer: ", v.state.doc.toString());
+			setSidebarBuffer(v.state.doc.toString());
 		}
 	});
 
@@ -40,7 +46,12 @@ export const SidebarEditor = ({
 				curDir = curDir[loc + "/"].children;
 			}
 		}
-		return Object.keys(curDir).join("\n");
+		const bufferMap: { [id: string]: string } = {};
+		for (const fn of Object.keys(curDir)) {
+			bufferMap[fn.split("|")[1]] = fn;
+		}
+		setSidebarBufferMap(bufferMap);
+		return Object.keys(bufferMap).join("\n");
 	}
 
 	const cursorChangeListener = EditorView.updateListener.of((v) => {

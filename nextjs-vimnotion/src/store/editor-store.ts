@@ -71,6 +71,10 @@ type EditorState = {
 	setOilLine: (line: string) => void;
 	sidebarBuffer: string;
 	setSidebarBuffer: (buffer: string) => void;
+	sidebarBufferMap: { [id: string]: string };
+	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
+	proposedSidebarBufferMap: { [id: string]: string };
+	setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
 
 	evaluateOilBufferChanges: () => void;
 	evaluateAllOilBufferChanges: () => void;
@@ -280,7 +284,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	},
 
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType): string => {
-		const { paneTree, goToNeighbor } = get();
+		const { paneTree } = get();
 		const curPanel = paneTree[paneId];
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
@@ -515,10 +519,18 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	oilLine: "",
 	getOilLine: (): string => get().oilLine,
-	setOilLine: (line: string): void => set({ oilLine: line }),
+	setOilLine: (line: string): void => {
+		set({ oilLine: get().sidebarBufferMap[line] })
+	},
 	sidebarBuffer: "",
 	setSidebarBuffer: (buffer: string) => set({ sidebarBuffer: buffer }),
+	sidebarBufferMap: {},
+	proposedSidebarBufferMap: {},
+	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
+	setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
 
-	evaluateOilBufferChanges: () => { },
+	evaluateOilBufferChanges: () => {
+		console.log("new sidebuffer", get().sidebarBuffer);
+	},
 	evaluateAllOilBufferChanges: () => { }
 }))
