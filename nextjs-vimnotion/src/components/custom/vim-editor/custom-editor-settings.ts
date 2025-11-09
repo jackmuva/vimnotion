@@ -1,12 +1,22 @@
 import { EditorView } from 'codemirror';
 import { Vim } from "@replit/codemirror-vim"
 import { PanelType } from '@/store/editor-store';
+import { Prec } from '@codemirror/state';
 
 export const customTheme = EditorView.theme({
 	"&": {
 		minHeight: "100%",
 	},
 }, { dark: false });
+
+export const lightCursorTheme = Prec.highest(
+	EditorView.theme({
+		".cm-fat-cursor": {
+			background: "#d2d7c6",
+		},
+	})
+);
+
 
 export const applyCustomVim = ({
 	toggleLeaderPanel,
