@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { applyCustomVim, customTheme, lightCursorTheme } from './custom-editor-settings';
+import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { PanelType, useEditorStore } from '@/store/editor-store';
 import { PaneNode, SplitState } from '@/types/editor-types';
 
@@ -85,10 +85,9 @@ export const VimEditor = ({
 			doc: pane[paneId].buffer,
 			extensions: [
 				// make sure vim is included before other keymaps
-				lightCursorTheme,
+				customTheme,
 				vim(),
 				basicSetup,
-				new Compartment().of(customTheme),
 				theme.of(lightTheme),
 				markdown(),
 				focusListener,

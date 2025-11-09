@@ -18,7 +18,7 @@ import { lintKeymap } from "@codemirror/lint";
 import { useEffect, useRef, useState } from "react";
 import { Compartment } from '@codemirror/state';
 import { vim } from "@replit/codemirror-vim";
-import { customTheme, lightCursorTheme } from '../vim-editor/custom-editor-settings';
+import { customTheme } from '../vim-editor/custom-editor-settings';
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
@@ -132,7 +132,7 @@ export const SidebarEditor = () => {
 		const view = new EditorView({
 			doc: getSidebarBuffer(location.split("/"), directoryState),
 			extensions: [
-				lightCursorTheme,
+				customTheme,
 				vim(),
 				highlightActiveLineGutter(),
 				highlightSpecialChars(),
@@ -159,7 +159,6 @@ export const SidebarEditor = () => {
 					...completionKeymap,
 					...lintKeymap
 				]),
-				new Compartment().of(customTheme),
 				theme.of(lightTheme),
 				cursorChangeListener,
 				bufferChangeListener,
