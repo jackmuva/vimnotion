@@ -2,6 +2,7 @@ import { SidebarData } from '@/types/sidebar-types';
 import { useEffect } from 'react';
 import { SidebarEditor } from './sidebar-editor';
 import { useEditorStore } from '@/store/editor-store';
+import Image from 'next/image';
 
 
 
@@ -31,14 +32,14 @@ export const Sidebar = ({
 				hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-fit 
 				space-x-2" href={`https://github.com/login/oauth/authorize?scope=read:user,user:email&
 						client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}>
-					<img src={"./github-logo.png"} className="h-8 w-8" />
+					<Image alt="github logo" src={"/github-logo.png"} height={20} width={20} />
 					<p>login to save pages</p>
 				</a>}
 			{sidebarDataIsLoading &&
 				<div className='animate-bounce'>loading...</div>
 			}
 			{!sidebarDataIsLoading && sidebarData && sidebarData.StatusCode === 200 &&
-				<SidebarEditor data={sidebarData} />
+				<SidebarEditor />
 			}
 		</div>
 	);

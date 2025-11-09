@@ -51,8 +51,7 @@ export default function Home() {
 	}, [data]);
 
 	return (
-		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-custom
-			      pt-14 px-4 text-lg">
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-custom text-lg">
 			<Header />
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer />
