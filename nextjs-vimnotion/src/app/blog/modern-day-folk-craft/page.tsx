@@ -109,7 +109,7 @@ export default async function ArticlePage() {
 				<div>
 					What I do agree with, and what I think Yanagi is referring to, is extrinsic motivation&#39;s role in craft.
 					Extrinsic motivation like money and approval will run dry. But intrinsic motivation like the pursuit of excellence,
-					of beauty, of personal-development, do not desecrate mingei in my opinion. Pursuing not just uiltiy, but beauty
+					of beauty, of personal-development, do not desecrate mingei in my opinion. Pursuing not just utiltiy, but beauty
 					and improvement, this does not conflict Yanagi&#39;s dream of a &quot;Kingdom of Beauty,&quot; where beauty can be in the hands of
 					the common folk. If anything, it brings that dream closer.
 				</div>
@@ -126,7 +126,7 @@ export default async function ArticlePage() {
 					But I don&#39;t think that in every era there was a large open source community passionate and active in making and&nbsp;
 					<strong>sharing</strong> the fruits of their labor. I don&#39;t think that in every era, there were this many people -
 					both hobbyists and big corporate employees alike - sharing best practices in forums and blogs about software quality
-					and developer experience, pushing the boundaries of the utlity that all mingei speaks to.
+					and developer experience, pushing the boundaries of the utility that all mingei speaks to.
 				</div>
 				<div>
 					It&#39;s one of the reasons, I love programming and do it whenever I can.
