@@ -12,6 +12,6 @@ export enum DirectoryObjectType {
 export type DirectoryTree = {
 	[objectId: string]: {
 		type: DirectoryObjectType;
-		children: DirectoryTree;
+		children: DirectoryTree[];
 	}
 }

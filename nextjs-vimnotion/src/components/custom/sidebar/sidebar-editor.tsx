@@ -50,7 +50,7 @@ export const SidebarEditor = () => {
 			bufferMap[fn.split("|")[1]] = fn;
 		}
 		setSidebarBufferMap(bufferMap);
-		return Object.keys(bufferMap).join("\n");
+		return Object.keys(bufferMap).join("\n") + "\n\n\n";
 	}
 
 	const cursorChangeListener = EditorView.updateListener.of((v) => {

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { v4 } from "uuid";
 import { PaneNode, SplitState, Direction, ChildType, EditorType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
-import { DirectoryTree } from '@/types/sidebar-types';
+import { DirectoryObjectType, DirectoryTree } from '@/types/sidebar-types';
 
 interface DrillDownResult {
 	nearestId: string;
@@ -147,7 +147,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			childType: ChildType.NONE,
 			deleted: false,
 			editorType: EditorType.VIM,
-			buffer: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+			buffer: "\n\n\n\n\n\n\n",
 			fileId: v4(),
 		}
 		setPaneTree(newPaneTree);
@@ -530,16 +530,54 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
 
 	evaluateOilBufferChanges: () => {
-		console.log("new sidebuffer", get().sidebarBuffer);
-		console.log("buffermap: ", get().sidebarBufferMap);
-		console.log("directory state: ", get().directoryState);
-		console.log("location", get().location);
 
 		let newBuffer = get().sidebarBuffer;
-		for (const fn of Object.keys(get().sidebarBufferMap)) {
-			newBuffer = newBuffer.replace(fn + "\n", "");
+		const toDelete = { ...get().sidebarBufferMap };
+		const newDirectoryState = { ...get().directoryState };
+
+		//NOTE:gets leaf at location
+		let leafAtLocation: { type: DirectoryObjectType, children: DirectoryTree } | null = null;
+		const locationArray = get().location.split("/");
+		locationArray.pop();
+		if (locationArray.length > 0) {
+			leafAtLocation = newDirectoryState[locationArray[0] + "/"];
+		} else {
+			return null;
 		}
-		console.log("new buffer: ", newBuffer);
+		for (const loc of locationArray.slice(1)) {
+			leafAtLocation = leafAtLocation.children[loc + "/"];
+		}
+
+		//NOTE:removes existing keys so newBuffer is only new files
+		const newBufferLines: { [line: string]: boolean } = {};
+		newBuffer.split("\n").forEach((line) => {
+			newBufferLines[line] = true;
+		});
+		for (const fn of Object.keys(get().sidebarBufferMap)) {
+			if (fn in newBufferLines) {
+				delete newBufferLines[fn];
+				delete toDelete[fn];
+			}
+		}
+
+		//NOTE:new files
+		for (const fn of Object.keys(newBufferLines)) {
+			const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
+				type: fn.at(fn.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
+				children: {},
+			}
+			if (leafAtLocation && fn) {
+				leafAtLocation.children[v4() + "|" + fn] = newTree;
+			} else if (fn) {
+				newDirectoryState[v4() + "|" + fn] = newTree;
+			}
+		}
+
+		//NOTE:delete old files
+		for (const fn of Object.keys(toDelete)) {
+			delete leafAtLocation.children[toDelete[fn]];
+		}
+		console.log("new state: ", newDirectoryState);
 	},
-	evaluateAllOilBufferChanges: () => { }
+	evaluateAllOilBufferChanges: () => { },
 }))
