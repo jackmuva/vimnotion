@@ -62,6 +62,8 @@ type EditorState = {
 	setDirectoryState: (tree: DirectoryTree) => void;
 	proposedDirectoryState: DirectoryTree;
 	setProposedDirectoryState: (tree: DirectoryTree) => void;
+	editingDirectory: boolean;
+	setEditingDirectory: (isEdit: boolean) => void;
 
 	location: string;
 	getLocation: () => string;
@@ -512,6 +514,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	proposedDirectoryState: {},
 	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
+	editingDirectory: false,
+	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
 
 	location: "",
 	getLocation: () => get().location,
@@ -530,7 +534,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
 
 	evaluateOilBufferChanges: () => {
-
 		let newBuffer = get().sidebarBuffer;
 		const toDelete = { ...get().sidebarBufferMap };
 		const newDirectoryState = { ...get().directoryState };
@@ -544,6 +547,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		} else {
 			return null;
 		}
+		console.log("location: ", get().location);
 		for (const loc of locationArray.slice(1)) {
 			leafAtLocation = leafAtLocation.children[loc + "/"];
 		}
@@ -578,6 +582,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			delete leafAtLocation.children[toDelete[fn]];
 		}
 		console.log("new state: ", newDirectoryState);
+		get().setEditingDirectory(true);
+		get().setProposedDirectoryState(newDirectoryState);
 	},
 	evaluateAllOilBufferChanges: () => { },
 }))
