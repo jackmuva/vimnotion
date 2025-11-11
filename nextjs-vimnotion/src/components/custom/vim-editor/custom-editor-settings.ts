@@ -141,7 +141,7 @@ export const applyCustomVim = ({
 			const locationArr = location.split("/");
 			locationArr.pop();
 			locationArr.pop();
-			setLocation(locationArr.join("/") + "/");
+			setLocation(locationArr && locationArr.length > 0 ? locationArr.join("/") + "/" : "");
 		}
 	});
 	Vim.unmap('-', "false");

@@ -524,6 +524,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	oilLine: "",
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => {
+		console.log("oil line: ", get().sidebarBufferMap[line]);
 		set({ oilLine: get().sidebarBufferMap[line] })
 	},
 	sidebarBuffer: "",
@@ -547,7 +548,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		} else {
 			return null;
 		}
-		console.log("location: ", get().location);
 		for (const loc of locationArray.slice(1)) {
 			leafAtLocation = leafAtLocation.children[loc + "/"];
 		}
@@ -581,7 +581,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 		for (const fn of Object.keys(toDelete)) {
 			delete leafAtLocation.children[toDelete[fn]];
 		}
-		console.log("new state: ", newDirectoryState);
 		get().setEditingDirectory(true);
 		get().setProposedDirectoryState(newDirectoryState);
 	},

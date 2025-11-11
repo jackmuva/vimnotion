@@ -31,7 +31,7 @@ export const SidebarEditor = () => {
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
 	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap, editingDirectory, proposedDirectoryState } = useEditorStore((state) => state);
-	console.log("location in editor: ", location);
+	console.log("raw location string: ", location);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -40,9 +40,12 @@ export const SidebarEditor = () => {
 	});
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
+		console.log("location array in editor: ", locArr);
+		console.log("directory state in editor: ", dir);
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (loc && curDir[loc + "/"].children !== undefined) {
+				console.log("recursing...");
 				curDir = curDir[loc + "/"].children;
 			}
 		}
@@ -50,6 +53,7 @@ export const SidebarEditor = () => {
 		for (const fn of Object.keys(curDir)) {
 			bufferMap[fn.split("|")[1]] = fn;
 		}
+		console.log("buffer map in editor: ", bufferMap);
 		setSidebarBufferMap(bufferMap);
 		return Object.keys(bufferMap).join("\n") + "\n\n\n";
 	}
