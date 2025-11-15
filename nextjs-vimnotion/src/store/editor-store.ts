@@ -531,7 +531,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
 
 	evaluateOilBufferChanges: () => {
-		let newBuffer = get().sidebarBuffer;
+		const newBuffer = get().sidebarBuffer;
 		const toDelete = { ...get().sidebarBufferMap };
 		const newDirectoryState = { ...get().directoryState };
 		const newBufferMap = { ...get().sidebarBufferMap };
