@@ -63,8 +63,8 @@ export type EditorState = {
 	oilLine: string;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
-	sidebarBuffer: string;
-	setSidebarBuffer: (buffer: string) => void;
+	sidebarBufferHistory: string[];
+	setSidebarBufferHistory: (buffer: string) => void;
 	sidebarBufferMap: { [id: string]: string };
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
 

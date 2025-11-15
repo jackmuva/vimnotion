@@ -29,19 +29,17 @@ export const SidebarEditor = () => {
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap,
+	const { location, setOilLine, directoryState, setSidebarBufferHistory, setSidebarBufferMap,
 		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges } = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			setSidebarBuffer(v.state.doc.toString());
+			setSidebarBufferHistory(v.state.doc.toString());
 			evaluateOilBufferChanges();
 		}
 	});
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
-		console.log('location array: ', locArr);
-		console.log('dir tree: ', dir);
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (loc && curDir[loc + "/"].children !== undefined) {
@@ -52,9 +50,10 @@ export const SidebarEditor = () => {
 		for (const fn of Object.keys(curDir)) {
 			bufferMap[fn.split("|")[1]] = fn;
 		}
-		console.log("buffer map in editor: ", bufferMap);
 		setSidebarBufferMap(bufferMap);
-		return Object.keys(bufferMap).join("\n") + "\n\n\n";
+		const buffer = Object.keys(bufferMap).join("\n") + "\n\n\n";
+		setSidebarBufferHistory(buffer)
+		return buffer;
 	}
 
 	const cursorChangeListener = EditorView.updateListener.of((v) => {
@@ -109,7 +108,6 @@ export const SidebarEditor = () => {
 		if (!isClient || vimEditor === null) {
 			return;
 		}
-		console.log("getting new buffer");
 		const newContent = getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState);
 		vimEditor.dispatch({
 			changes: {
