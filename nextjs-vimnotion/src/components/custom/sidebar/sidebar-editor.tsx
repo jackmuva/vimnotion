@@ -29,7 +29,6 @@ export const SidebarEditor = () => {
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const lastContentRef = useRef<string>("");
 	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap,
 		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges } = useEditorStore((state) => state);
 
@@ -112,16 +111,13 @@ export const SidebarEditor = () => {
 		}
 		console.log("getting new buffer");
 		const newContent = getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState);
-		if (newContent !== lastContentRef.current) {
-			lastContentRef.current = newContent;
-			vimEditor.dispatch({
-				changes: {
-					from: 0,
-					to: vimEditor.state.doc.length,
-					insert: newContent
-				}
-			});
-		}
+		vimEditor.dispatch({
+			changes: {
+				from: 0,
+				to: vimEditor.state.doc.length,
+				insert: newContent
+			}
+		});
 	}, [directoryState, location, isClient, vimEditor]);
 
 	useEffect(() => {
