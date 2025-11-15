@@ -75,8 +75,6 @@ type EditorState = {
 	setSidebarBuffer: (buffer: string) => void;
 	sidebarBufferMap: { [id: string]: string };
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
-	// proposedSidebarBufferMap: { [id: string]: string };
-	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
 
 	evaluateOilBufferChanges: () => void;
 	evaluateAllOilBufferChanges: () => void;
@@ -530,14 +528,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	sidebarBuffer: "",
 	setSidebarBuffer: (buffer: string) => set({ sidebarBuffer: buffer }),
 	sidebarBufferMap: {},
-	// proposedSidebarBufferMap: {},
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
-	// setProposedSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ proposedSidebarBufferMap: bufferMap }),
 
 	evaluateOilBufferChanges: () => {
 		let newBuffer = get().sidebarBuffer;
 		const toDelete = { ...get().sidebarBufferMap };
 		const newDirectoryState = { ...get().directoryState };
+		const newBufferMap = { ...get().sidebarBufferMap };
 
 		//NOTE:gets leaf at location
 		let leafAtLocation: { type: DirectoryObjectType, children: DirectoryTree } | null = null;
@@ -566,23 +563,28 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 		//NOTE:new files
 		for (const fn of Object.keys(newBufferLines)) {
+			if (!fn) continue;
 			const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
 				type: fn.at(fn.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 				children: {},
 			}
+			const uuid: string = v4();
+			newBufferMap[fn] = uuid + "|" + fn;
 			if (leafAtLocation && fn) {
-				leafAtLocation.children[v4() + "|" + fn] = newTree;
+				leafAtLocation.children[uuid + "|" + fn] = newTree;
 			} else if (fn) {
-				newDirectoryState[v4() + "|" + fn] = newTree;
+				newDirectoryState[uuid + "|" + fn] = newTree;
 			}
 		}
 
 		//NOTE:delete old files
 		for (const fn of Object.keys(toDelete)) {
 			delete leafAtLocation.children[toDelete[fn]];
+			delete newBufferMap[fn];
 		}
 		get().setEditingDirectory(true);
 		get().setProposedDirectoryState(newDirectoryState);
+		get().setSidebarBufferMap(newBufferMap);
 	},
 	evaluateAllOilBufferChanges: () => { },
 }))

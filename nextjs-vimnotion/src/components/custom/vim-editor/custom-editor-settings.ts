@@ -36,7 +36,6 @@ export const applyCustomVim = ({
 	setLocation,
 	getLocation,
 	getOilLine,
-	evaluateOilBufferChanges,
 	evaluateAllOilBufferChanges,
 }: {
 	toggleLeaderPanel: () => void,
@@ -51,7 +50,6 @@ export const applyCustomVim = ({
 	setLocation: (loc: string) => void,
 	getLocation: () => string,
 	getOilLine: () => string,
-	evaluateOilBufferChanges: () => void,
 	evaluateAllOilBufferChanges: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
@@ -114,7 +112,6 @@ export const applyCustomVim = ({
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.SIDEBAR) {
-			evaluateOilBufferChanges();
 			setLocation(getLocation() + getOilLine());
 		}
 	});
@@ -136,7 +133,6 @@ export const applyCustomVim = ({
 		if (activePanel === PanelType.MAIN) {
 			toggleSidebar();
 		} else if (activePanel === PanelType.SIDEBAR) {
-			evaluateOilBufferChanges();
 			const location = getLocation();
 			const locationArr = location.split("/");
 			locationArr.pop();

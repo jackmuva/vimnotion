@@ -30,12 +30,13 @@ export const SidebarEditor = () => {
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const lastContentRef = useRef<string>("");
-	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap, editingDirectory, proposedDirectoryState } = useEditorStore((state) => state);
-	console.log("raw location string: ", location);
+	const { location, setOilLine, directoryState, setSidebarBuffer, setSidebarBufferMap,
+		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges } = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
 			setSidebarBuffer(v.state.doc.toString());
+			evaluateOilBufferChanges();
 		}
 	});
 
@@ -45,7 +46,6 @@ export const SidebarEditor = () => {
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (loc && curDir[loc + "/"].children !== undefined) {
-				console.log("recursing...");
 				curDir = curDir[loc + "/"].children;
 			}
 		}
@@ -122,7 +122,7 @@ export const SidebarEditor = () => {
 				}
 			});
 		}
-	}, [directoryState, location, isClient, vimEditor, editingDirectory, proposedDirectoryState]);
+	}, [directoryState, location, isClient, vimEditor]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
