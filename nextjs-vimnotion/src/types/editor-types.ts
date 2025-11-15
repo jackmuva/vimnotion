@@ -1,3 +1,10 @@
+export enum PanelType {
+	LEADER = "LEADER",
+	SIDEBAR = "SIDEBAR",
+	MAIN = "MAIN",
+}
+
+
 export enum SplitState {
 	NONE = "NONE",
 	HORIZONTAL = "HORIZONTAL",

@@ -1,7 +1,7 @@
 import { EditorView } from 'codemirror';
 import { Vim } from "@replit/codemirror-vim"
-import { PanelType } from '@/store/editor-store';
 import { Prec } from '@codemirror/state';
+import { PanelType } from '@/types/editor-types';
 
 export const customTheme = Prec.highest(
 	EditorView.theme({

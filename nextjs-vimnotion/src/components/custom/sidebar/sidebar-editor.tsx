@@ -41,8 +41,8 @@ export const SidebarEditor = () => {
 	});
 
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
-		console.log("location array in editor: ", locArr);
-		console.log("directory state in editor: ", dir);
+		console.log('location array: ', locArr);
+		console.log('dir tree: ', dir);
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (loc && curDir[loc + "/"].children !== undefined) {
@@ -110,7 +110,7 @@ export const SidebarEditor = () => {
 		if (!isClient || vimEditor === null) {
 			return;
 		}
-
+		console.log("getting new buffer");
 		const newContent = getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState);
 		if (newContent !== lastContentRef.current) {
 			lastContentRef.current = newContent;

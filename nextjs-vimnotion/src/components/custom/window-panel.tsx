@@ -1,6 +1,6 @@
-import { PanelType, useEditorStore } from "@/store/editor-store";
+import { useEditorStore } from "@/store/editor-store";
 import { useEffect } from "react";
-import { Direction } from "@/types/editor-types";
+import { Direction, PanelType } from "@/types/editor-types";
 
 export const WindowPanel = () => {
 	const activePane: string = useEditorStore((state) => state.activePane);

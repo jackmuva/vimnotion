@@ -5,8 +5,8 @@ import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
-import { PanelType, useEditorStore } from '@/store/editor-store';
-import { PaneNode, SplitState } from '@/types/editor-types';
+import { useEditorStore } from '@/store/editor-store';
+import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
 
 export const VimEditor = ({
 	paneId,
