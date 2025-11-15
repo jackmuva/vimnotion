@@ -3,17 +3,18 @@ import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar/sidebar";
 import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
 import { useEffect } from "react";
-import { LeaderPanel } from "@/components/custom/leader-panel";
-import { WindowPanel } from "@/components/custom/window-panel";
+import { LeaderPanel } from "@/components/custom/leader-panels/leader-panel";
+import { WindowPanel } from "@/components/custom/leader-panels/window-panel";
 import { TabContainer } from "@/components/custom/tab-container";
 import { useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
+import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-confirmation";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
-	const { openSidebar, openLeaderPanel, openWindowPanel, setDirectoryState, setLocation } = useEditorStore((state) => state);
+	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState, setLocation } = useEditorStore((state) => state);
 
 
 	useEffect(() => {
@@ -58,6 +59,7 @@ export default function Home() {
 			{openLeaderPanel && <LeaderPanel />}
 			{openWindowPanel && <WindowPanel />}
 			<LeaderButton />
+			{directoryConfirmation && <DirectoryConfirmation />}
 		</div>
 	);
 }

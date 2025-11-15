@@ -58,6 +58,7 @@ export type EditorState = {
 	sidebarBufferHistory: string[];
 	sidebarBufferMap: { [id: string]: string };
 	lastDeleted: DirectoryTree | null;
+	directoryConfirmation: boolean;
 
 	setDirectoryState: (tree: DirectoryTree) => void;
 	setProposedDirectoryState: (tree: DirectoryTree) => void;
@@ -74,6 +75,7 @@ export type EditorState = {
 
 	evaluateOilBufferChanges: () => void;
 	evaluateAllOilBufferChanges: () => void;
+	setDirectoryConfirmation: (open: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({

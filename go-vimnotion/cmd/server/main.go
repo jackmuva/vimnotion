@@ -20,7 +20,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handlers.Healthcheck)
 	mux.HandleFunc("/oauth/github/callback", handlers.GithubCallback(tursoDb))
-	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.GetPersonalDirectory(tursoDb)))
+	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.HandlePersonalDirectory(tursoDb)))
 	corsHandler := middleware.EnableCors(mux)
 
 	ctx := context.Background()
