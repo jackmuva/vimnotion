@@ -51,22 +51,26 @@ export type EditorState = {
 	deleteTab: () => void;
 
 	directoryState: DirectoryTree;
-	setDirectoryState: (tree: DirectoryTree) => void;
 	proposedDirectoryState: DirectoryTree;
-	setProposedDirectoryState: (tree: DirectoryTree) => void;
 	editingDirectory: boolean;
+	location: string;
+	oilLine: string;
+	sidebarBufferHistory: string[];
+	sidebarBufferMap: { [id: string]: string };
+	lastDeleted: DirectoryTree | null;
+
+	setDirectoryState: (tree: DirectoryTree) => void;
+	setProposedDirectoryState: (tree: DirectoryTree) => void;
 	setEditingDirectory: (isEdit: boolean) => void;
 
-	location: string;
 	getLocation: () => string;
 	setLocation: (location: string) => void;
-	oilLine: string;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
-	sidebarBufferHistory: string[];
-	setSidebarBufferHistory: (buffer: string) => void;
-	sidebarBufferMap: { [id: string]: string };
+	pushSidebarBufferHistory: (buffer: string) => void;
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
+
+	setLastDeleted: (delTree: DirectoryTree) => void;
 
 	evaluateOilBufferChanges: () => void;
 	evaluateAllOilBufferChanges: () => void;

@@ -10,38 +10,47 @@ export const createDirectorySlice = (
 	get: () => EditorState
 ) => ({
 	directoryState: {},
-	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	proposedDirectoryState: {},
-	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
 	editingDirectory: false,
+	location: "",
+	oilLine: "",
+	sidebarBufferHistory: [],
+	sidebarBufferMap: {},
+	lastDeleted: null,
+
+	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
+	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
 	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
 
-	location: "",
 	getLocation: () => get().location,
 	setLocation: (location: string) => set({ location: location }),
 
-	oilLine: "",
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => {
 		console.log("oil line: ", get().sidebarBufferMap[line]);
 		set({ oilLine: get().sidebarBufferMap[line] })
 	},
-	sidebarBufferHistory: [],
-	setSidebarBufferHistory: (buffer: string) => {
+	pushSidebarBufferHistory: (buffer: string) => {
 		let bufferHistory: string[] = get().sidebarBufferHistory;
 		bufferHistory.push(buffer);
 		if (bufferHistory.length > 2) bufferHistory = bufferHistory.slice(-2);
 		set({ sidebarBufferHistory: bufferHistory })
 	},
-	sidebarBufferMap: {},
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
 
+	setLastDeleted: (delTree: DirectoryTree) => {
+		console.log("setting deleted: ", delTree);
+		set({ lastDeleted: delTree })
+	},
+
+	//TODO:Copy functionality
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
 		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);
 		const toDelete: { [id: string]: string } = { ...get().sidebarBufferMap };
 		const newDirectoryState: DirectoryTree = { ...get().directoryState };
-		const newBufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
+		const bufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
+		const lastDeleted: DirectoryTree | null = get().lastDeleted
 
 		//NOTE:gets leaf at location
 		let leafAtLocation: { type: DirectoryObjectType, children: DirectoryTree } | null = null;
@@ -73,8 +82,8 @@ export const createDirectorySlice = (
 		const newBufferLines: string[] = newBuffer!.split("\n");
 		const oldBufferLines: string[] = oldBuffer!.split("\n");
 		for (let i = 0; i < newBufferLines.length; i++) {
-			if (newBufferLines[i] && i < oldBufferLines.length && newBufferMap[oldBufferLines[i]]) {
-				newBufferMap[newBufferLines[i]] = newBufferMap[oldBufferLines[i]].split("|")[0] + "|" + newBufferLines[i];
+			if (newBufferLines[i] && i < oldBufferLines.length && bufferMap[oldBufferLines[i]]) {
+				bufferMap[newBufferLines[i]] = bufferMap[oldBufferLines[i]].split("|")[0] + "|" + newBufferLines[i];
 				renames[newBufferLines[i]] = oldBufferLines[i];
 			}
 		}
@@ -82,15 +91,19 @@ export const createDirectorySlice = (
 		//NOTE:new files
 		for (const fn of Object.keys(newBufferLinesMap)) {
 			if (!fn) continue;
-			if (fn in renames) {
+			if (lastDeleted && fn === Object.keys(lastDeleted)[0].split("|")[1]) {
+				const fullId: string = Object.keys(lastDeleted)[0];
+				leafAtLocation.children[fullId] = lastDeleted[fullId];
+				bufferMap[fullId.split("|")[1]] = fullId;
+			} else if (fn in renames) {
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-					type: leafAtLocation.children[newBufferMap[renames[fn]]].type,
-					children: leafAtLocation.children[newBufferMap[renames[fn]]].children,
+					type: leafAtLocation.children[bufferMap[renames[fn]]].type,
+					children: leafAtLocation.children[bufferMap[renames[fn]]].children,
 				}
 				if (leafAtLocation && fn) {
-					leafAtLocation.children[newBufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
+					leafAtLocation.children[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
 				} else if (fn) {
-					newDirectoryState[newBufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
+					newDirectoryState[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
 				}
 			} else {
 				console.log("new file");
@@ -99,7 +112,7 @@ export const createDirectorySlice = (
 					children: {},
 				}
 				const uuid: string = v4();
-				newBufferMap[fn] = uuid + "|" + fn;
+				bufferMap[fn] = uuid + "|" + fn;
 				if (leafAtLocation && fn) {
 					leafAtLocation.children[uuid + "|" + fn] = newTree;
 				} else if (fn) {
@@ -110,12 +123,13 @@ export const createDirectorySlice = (
 
 		//NOTE:delete old files
 		for (const fn of Object.keys(toDelete)) {
+			get().setLastDeleted({ [toDelete[fn]]: { ...leafAtLocation.children[toDelete[fn]] } });
 			delete leafAtLocation.children[toDelete[fn]];
-			delete newBufferMap[fn];
+			delete bufferMap[fn];
 		}
 		get().setEditingDirectory(true);
 		get().setProposedDirectoryState(newDirectoryState);
-		get().setSidebarBufferMap(newBufferMap);
+		get().setSidebarBufferMap(bufferMap);
 	},
 	evaluateAllOilBufferChanges: () => { },
 });
