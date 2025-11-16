@@ -15,3 +15,16 @@ export type DirectoryTree = {
 		children: DirectoryTree;
 	}
 }
+
+export type DirectoryChanges = {
+	created: {
+		objectLocation: string
+	}[],
+	deleted: {
+		objectLocation: string
+	}[],
+	moved: {
+		oldLocation: string,
+		newLocation: string,
+	}[],
+}

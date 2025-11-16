@@ -1,9 +1,15 @@
 import { useEditorStore } from "@/store/editor-store";
+import { DirectoryChanges } from "@/types/sidebar-types";
 import { useEffect } from "react";
 
 export const DirectoryConfirmation = () => {
-	const { setDirectoryConfirmation, proposedDirectoryState, directoryState,
-		toggleSidebar } = useEditorStore((state) => state);
+	const { setDirectoryConfirmation,
+		toggleSidebar, detectAllDirectoryChanges } = useEditorStore((state) => state);
+
+	useEffect(() => {
+		const changes: DirectoryChanges = detectAllDirectoryChanges();
+		console.log("changes: ", changes);
+	}, []);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { PaneNode, SplitState, Direction, ChildType, PanelType } from "@/types/editor-types";
 import { TabMap } from '@/types/editor-types';
-import { DirectoryTree } from '@/types/sidebar-types';
+import { DirectoryChanges, DirectoryTree } from '@/types/sidebar-types';
 import { createToggleSlice } from './slices/toggle-store';
 import { createPanelSlice, DrillDownResult } from './slices/panel-store';
 import { createTabSlice } from './slices/tab-store';
@@ -70,11 +70,11 @@ export type EditorState = {
 	setOilLine: (line: string) => void;
 	pushSidebarBufferHistory: (buffer: string) => void;
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
-
 	setLastDeleted: (delTree: DirectoryTree) => void;
-
 	evaluateOilBufferChanges: () => void;
 	setDirectoryConfirmation: (open: boolean) => void;
+	detectAllDirectoryChanges: () => DirectoryChanges;
+	constructLocationMapHelper: (treeRoot: DirectoryTree) => { [uuid: string]: string };
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({

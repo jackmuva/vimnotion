@@ -1,4 +1,4 @@
-import { DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
+import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 
@@ -92,6 +92,7 @@ export const createDirectorySlice = (
 		//NOTE:new files
 		for (const fn of Object.keys(newBufferLinesMap)) {
 			if (!fn) continue;
+			//NOTE:Cutting
 			if (lastDeleted && fn === Object.keys(lastDeleted)[0].split("|")[1]) {
 				const fullId: string = Object.keys(lastDeleted)[0];
 				leafAtLocation.children[fullId] = lastDeleted[fullId];
@@ -131,6 +132,65 @@ export const createDirectorySlice = (
 		get().setEditingDirectory(true);
 		get().setProposedDirectoryState(newDirectoryState);
 		get().setSidebarBufferMap(bufferMap);
+	},
+
+	detectAllDirectoryChanges: (): DirectoryChanges => {
+		const res: DirectoryChanges = {
+			created: [],
+			deleted: [],
+			moved: [],
+		}
+		const oldState: DirectoryTree = get().directoryState;
+		const newState: DirectoryTree = get().proposedDirectoryState;
+
+		const oldLocationMap = get().constructLocationMapHelper(oldState);
+		const newLocationMap = get().constructLocationMapHelper(newState);
+
+		console.log("old map: ", oldLocationMap);
+		console.log("new map: ", newLocationMap);
+
+		for (const uuid of Object.keys(oldLocationMap)) {
+			if (uuid in newLocationMap) {
+				if (newLocationMap[uuid] !== oldLocationMap[uuid]) {
+					res.moved.push({ oldLocation: oldLocationMap[uuid], newLocation: newLocationMap[uuid] });
+				}
+			} else {
+				res.deleted.push({ objectLocation: oldLocationMap[uuid] });
+			}
+		}
+
+		for (const uuid of Object.keys(newLocationMap)) {
+			if (!(uuid in oldLocationMap)) {
+				res.created.push({ objectLocation: newLocationMap[uuid] });
+			}
+		}
+
+		return res;
+	},
+
+	constructLocationMapHelper: (treeRoot: DirectoryTree): { [uuid: string]: string } => {
+		const res: { [uuid: string]: string } = {};
+		let q: DirectoryTree[] = [];
+		let location: string[] = [];
+
+		for (const key of Object.keys(treeRoot)) {
+			q.push({ [key]: treeRoot[key] });
+			location.push("");
+		}
+
+		while (q.length > 0) {
+			const tree: DirectoryTree | undefined = q.shift();
+			const loc: string | undefined = location.shift();
+
+			const key = Object.keys(tree!)[0]!;
+			const locString: string = loc + "||" + key;
+			res[key.split("|")[0]] = locString;
+			for (const childKey of Object.keys(tree![key].children)) {
+				q.push({ [childKey]: tree![key].children[childKey] });
+				location.push(locString);
+			}
+		}
+		return res;
 	},
 
 	setDirectoryConfirmation: (open: boolean) => set({ directoryConfirmation: open }),
