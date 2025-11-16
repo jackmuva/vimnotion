@@ -33,7 +33,7 @@ export const VimEditor = ({
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePaneById = useEditorStore((state) => state.updatePaneById);
 	const pane: PaneNode = getPane(paneId);
-	const { getLocation, setLocation, getOilLine, evaluateAllOilBufferChanges } = useEditorStore((state) => state);
+	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -113,7 +113,7 @@ export const VimEditor = ({
 			getLocation: () => getLocation(),
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
-			evaluateAllOilBufferChanges: () => evaluateAllOilBufferChanges(),
+			evaluateAllOilBufferChanges: () => setDirectoryConfirmation(true),
 		});
 		setVimEditor(view);
 	}, [isClient]);
@@ -159,6 +159,5 @@ export const VimEditor = ({
 				className={`h-full w-full overflow-y-scroll`}>
 			</div>
 		</div>
-	)
-
+	);
 }

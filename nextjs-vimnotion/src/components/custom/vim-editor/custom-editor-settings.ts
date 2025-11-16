@@ -77,7 +77,6 @@ export const applyCustomVim = ({
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
 			evaluateAllOilBufferChanges();
-			toggleSidebar();
 		}
 	});
 

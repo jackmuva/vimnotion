@@ -17,7 +17,7 @@ export const createDirectorySlice = (
 	sidebarBufferHistory: [],
 	sidebarBufferMap: {},
 	lastDeleted: null,
-	directoryConfirmation: true,
+	directoryConfirmation: false,
 
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
@@ -132,7 +132,6 @@ export const createDirectorySlice = (
 		get().setProposedDirectoryState(newDirectoryState);
 		get().setSidebarBufferMap(bufferMap);
 	},
-	evaluateAllOilBufferChanges: () => { },
 
 	setDirectoryConfirmation: (open: boolean) => set({ directoryConfirmation: open }),
 });

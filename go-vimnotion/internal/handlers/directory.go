@@ -13,10 +13,13 @@ import (
 
 func HandlePersonalDirectory(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			GetPersonalDirectory(db)
-		} else if r.Method == "PUT" {
-			UpdatePersonalDirectory(db)
+		switch r.Method {
+		case http.MethodGet:
+			GetPersonalDirectory(db)(w, r)
+		case http.MethodPut:
+			UpdatePersonalDirectory(db)(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
 }
@@ -92,7 +95,9 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 		}
 		err = json.NewDecoder(r.Body).Decode(&structure)
 		if err != nil {
+			http.Error(w, "Unable to read body", http.StatusBadRequest)
 			fmt.Printf("unable to read body: %s\n", err)
+			return
 		}
 
 		repository.UpdateDirectoryStructure(db, models.DirectoryStructure{

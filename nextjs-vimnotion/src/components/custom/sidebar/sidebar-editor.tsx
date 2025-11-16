@@ -30,7 +30,7 @@ export const SidebarEditor = () => {
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const { location, setOilLine, directoryState, pushSidebarBufferHistory, setSidebarBufferMap,
-		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges } = useEditorStore((state) => state);
+		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges, directoryConfirmation } = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -102,7 +102,7 @@ export const SidebarEditor = () => {
 				mediaQuery.removeEventListener('change', handleChange);
 			};
 		}
-	}, [vimEditor, theme]);
+	}, [vimEditor, theme, directoryConfirmation]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor === null) {

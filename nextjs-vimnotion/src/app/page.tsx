@@ -35,6 +35,16 @@ export default function Home() {
 		}
 	}, [windowPanel]);
 
+	useEffect(() => {
+		if (directoryConfirmation) {
+			const button = document.getElementById(`first-confirmation-option`);
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [directoryConfirmation]);
+
+
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
 			{

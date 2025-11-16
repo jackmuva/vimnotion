@@ -74,7 +74,6 @@ export type EditorState = {
 	setLastDeleted: (delTree: DirectoryTree) => void;
 
 	evaluateOilBufferChanges: () => void;
-	evaluateAllOilBufferChanges: () => void;
 	setDirectoryConfirmation: (open: boolean) => void;
 }
 
