@@ -12,8 +12,8 @@ go run main.go
 ```
 
 ## Granular Todos
-1. `enter` and `-` in sidebar editor
-2. lcs to detech changes in sidebar buffer
+1. Save and Load buffers from sidebar
+2. start search
 
 ## High-level Todos
 - search experience
