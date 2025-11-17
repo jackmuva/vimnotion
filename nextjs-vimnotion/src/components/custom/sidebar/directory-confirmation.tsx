@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export const DirectoryConfirmation = () => {
 	const { setDirectoryConfirmation,
-		toggleSidebar, detectAllDirectoryChanges, openSidebar } = useEditorStore((state) => state);
+		toggleSidebar, detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState } = useEditorStore((state) => state);
 	const [changes, setChanges] = useState<DirectoryChanges>({
 		created: [],
 		deleted: [],
@@ -17,7 +17,7 @@ export const DirectoryConfirmation = () => {
 			setDirectoryConfirmation(false);
 		}
 		setChanges(newChanges);
-	}, [detectAllDirectoryChanges, toggleSidebar, openSidebar]);
+	}, [detectAllDirectoryChanges]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -40,6 +40,7 @@ export const DirectoryConfirmation = () => {
 			if (event.key === 'y') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
+				setDirectoryState(structuredClone(proposedDirectoryState));
 				toggleSidebar();
 				setDirectoryConfirmation(false);
 			}
@@ -93,6 +94,9 @@ export const DirectoryConfirmation = () => {
 					<button id={`first-confirmation-option`}
 						className="cursor-pointer"
 						onClick={() => {
+							setDirectoryState(structuredClone(proposedDirectoryState));
+							toggleSidebar();
+							setDirectoryConfirmation(false);
 						}}>
 						[y]
 					</button>es
