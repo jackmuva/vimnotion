@@ -14,7 +14,7 @@ import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-con
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
-	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState, setLocation } = useEditorStore((state) => state);
+	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState, setProposedDirectoryState, setLocation } = useEditorStore((state) => state);
 
 
 	useEffect(() => {
@@ -57,6 +57,7 @@ export default function Home() {
 		if (data && data.StatusCode === 200) {
 			const directory: DirectoryTree = JSON.parse(data.Data!);
 			setDirectoryState(directory);
+			setProposedDirectoryState(structuredClone(directory));
 			setLocation(Object.keys(directory)[0]);
 		}
 	}, [data]);

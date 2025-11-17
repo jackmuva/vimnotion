@@ -1,15 +1,23 @@
 import { useEditorStore } from "@/store/editor-store";
 import { DirectoryChanges } from "@/types/sidebar-types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const DirectoryConfirmation = () => {
 	const { setDirectoryConfirmation,
-		toggleSidebar, detectAllDirectoryChanges } = useEditorStore((state) => state);
+		toggleSidebar, detectAllDirectoryChanges, openSidebar } = useEditorStore((state) => state);
+	const [changes, setChanges] = useState<DirectoryChanges>({
+		created: [],
+		deleted: [],
+		moved: [],
+	});
 
 	useEffect(() => {
-		const changes: DirectoryChanges = detectAllDirectoryChanges();
-		console.log("changes: ", changes);
-	}, []);
+		const newChanges: DirectoryChanges = detectAllDirectoryChanges();
+		if (newChanges.created.length === 0 && newChanges.deleted.length === 0 && newChanges.moved.length === 0) {
+			setDirectoryConfirmation(false);
+		}
+		setChanges(newChanges);
+	}, [detectAllDirectoryChanges, toggleSidebar, openSidebar]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -51,7 +59,33 @@ export const DirectoryConfirmation = () => {
 		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
 			z-30 bg-secondary-background shadow-2xl h-96 max-w-11/12 w-[700px] p-4 
 			flex flex-col justify-between">
-			<div className="w-full">
+			<div className="w-full flex flex-col">
+				{changes.created.map((newObj, i) => {
+					return (
+						<div className="flex gap-4" key={i}>
+							<div className="text-blue-500">CREATE</div>
+							<div>{newObj.objectLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
+						</div>
+					);
+				})}
+				{changes.moved.map((movedObj, i) => {
+					return (
+						<div className="flex gap-4" key={i}>
+							<div className="text-yellow-500">MOVED</div>
+							<div>{movedObj.oldLocation.split("||").map((str) => str.split("|")[1]).join("")}
+								{" -> "}
+								{movedObj.newLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
+						</div>
+					);
+				})}
+				{changes.deleted.map((oldObj, i) => {
+					return (
+						<div className="flex gap-4" key={i}>
+							<div className="text-red-500">DELETE</div>
+							<div>{oldObj.objectLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
+						</div>
+					);
+				})}
 
 			</div>
 			<div className="w-full flex gap-8 justify-center">

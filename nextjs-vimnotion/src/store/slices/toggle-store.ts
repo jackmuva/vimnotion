@@ -15,6 +15,8 @@ export const createToggleSlice = (
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
 		if (openSidebar) {
+			get().setProposedDirectoryState(structuredClone(get().directoryState));
+			get().setEditingDirectory(false);
 			get().setActivePanel(PanelType.MAIN);
 		} else {
 			get().setActivePanel(PanelType.SIDEBAR);

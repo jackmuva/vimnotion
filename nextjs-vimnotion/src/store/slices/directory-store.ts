@@ -40,7 +40,6 @@ export const createDirectorySlice = (
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
 
 	setLastDeleted: (delTree: DirectoryTree) => {
-		console.log("setting deleted: ", delTree);
 		set({ lastDeleted: delTree })
 	},
 
@@ -49,22 +48,25 @@ export const createDirectorySlice = (
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
 		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);
 		const toDelete: { [id: string]: string } = { ...get().sidebarBufferMap };
-		const newDirectoryState: DirectoryTree = { ...get().directoryState };
+		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
 		const bufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
 		const lastDeleted: DirectoryTree | null = get().lastDeleted
+		let atRoot: boolean = false;
 
 		//NOTE:gets leaf at location
 		let leafAtLocation: { type: DirectoryObjectType, children: DirectoryTree } | null = null;
 		const locationArray = get().location.split("/");
 		locationArray.pop();
 		if (locationArray.length > 0) {
-			leafAtLocation = newDirectoryState[locationArray[0] + "/"];
+			leafAtLocation = proposedDirectoryState[locationArray[0] + "/"];
+			for (const loc of locationArray.slice(1)) {
+				leafAtLocation = leafAtLocation.children[loc + "/"];
+			}
 		} else {
-			return null;
+			atRoot = true;
+			leafAtLocation = { type: DirectoryObjectType.DIRECTORY, children: { ...proposedDirectoryState } }
 		}
-		for (const loc of locationArray.slice(1)) {
-			leafAtLocation = leafAtLocation.children[loc + "/"];
-		}
+
 
 		//NOTE:removes existing keys so newBuffer is only new files
 		const newBufferLinesMap: { [line: string]: boolean } = {};
@@ -105,10 +107,9 @@ export const createDirectorySlice = (
 				if (leafAtLocation && fn) {
 					leafAtLocation.children[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
 				} else if (fn) {
-					newDirectoryState[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
+					proposedDirectoryState[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
 				}
 			} else {
-				console.log("new file");
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
 					type: fn.at(fn.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 					children: {},
@@ -118,7 +119,7 @@ export const createDirectorySlice = (
 				if (leafAtLocation && fn) {
 					leafAtLocation.children[uuid + "|" + fn] = newTree;
 				} else if (fn) {
-					newDirectoryState[uuid + "|" + fn] = newTree;
+					proposedDirectoryState[uuid + "|" + fn] = newTree;
 				}
 			}
 		}
@@ -130,7 +131,7 @@ export const createDirectorySlice = (
 			delete bufferMap[fn];
 		}
 		get().setEditingDirectory(true);
-		get().setProposedDirectoryState(newDirectoryState);
+		get().setProposedDirectoryState(atRoot ? leafAtLocation.children : proposedDirectoryState);
 		get().setSidebarBufferMap(bufferMap);
 	},
 
@@ -145,9 +146,6 @@ export const createDirectorySlice = (
 
 		const oldLocationMap = get().constructLocationMapHelper(oldState);
 		const newLocationMap = get().constructLocationMapHelper(newState);
-
-		console.log("old map: ", oldLocationMap);
-		console.log("new map: ", newLocationMap);
 
 		for (const uuid of Object.keys(oldLocationMap)) {
 			if (uuid in newLocationMap) {
@@ -170,8 +168,8 @@ export const createDirectorySlice = (
 
 	constructLocationMapHelper: (treeRoot: DirectoryTree): { [uuid: string]: string } => {
 		const res: { [uuid: string]: string } = {};
-		let q: DirectoryTree[] = [];
-		let location: string[] = [];
+		const q: DirectoryTree[] = [];
+		const location: string[] = [];
 
 		for (const key of Object.keys(treeRoot)) {
 			q.push({ [key]: treeRoot[key] });
