@@ -3,8 +3,8 @@ import { DirectoryChanges } from "@/types/sidebar-types";
 import { useEffect, useState } from "react";
 
 export const DirectoryConfirmation = () => {
-	const { setDirectoryConfirmation,
-		toggleSidebar, detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState } = useEditorStore((state) => state);
+	const { setDirectoryConfirmation, toggleSidebar,
+		detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState } = useEditorStore((state) => state);
 	const [changes, setChanges] = useState<DirectoryChanges>({
 		created: [],
 		deleted: [],
@@ -14,10 +14,12 @@ export const DirectoryConfirmation = () => {
 	useEffect(() => {
 		const newChanges: DirectoryChanges = detectAllDirectoryChanges();
 		if (newChanges.created.length === 0 && newChanges.deleted.length === 0 && newChanges.moved.length === 0) {
+			console.log("firing no new changes");
 			setDirectoryConfirmation(false);
+		} else {
+			setChanges(newChanges);
 		}
-		setChanges(newChanges);
-	}, [detectAllDirectoryChanges]);
+	}, []);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -31,6 +33,7 @@ export const DirectoryConfirmation = () => {
 			if (event.key === 'n') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
+				toggleSidebar();
 				setDirectoryConfirmation(false);
 			}
 		};
@@ -41,8 +44,8 @@ export const DirectoryConfirmation = () => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				setDirectoryState(structuredClone(proposedDirectoryState));
-				toggleSidebar();
 				setDirectoryConfirmation(false);
+				toggleSidebar();
 			}
 		};
 		document.addEventListener('keydown', handleYKey);
@@ -95,8 +98,8 @@ export const DirectoryConfirmation = () => {
 						className="cursor-pointer"
 						onClick={() => {
 							setDirectoryState(structuredClone(proposedDirectoryState));
-							toggleSidebar();
 							setDirectoryConfirmation(false);
+							toggleSidebar();
 						}}>
 						[y]
 					</button>es
@@ -106,6 +109,7 @@ export const DirectoryConfirmation = () => {
 						className="cursor-pointer"
 						onClick={() => {
 							setDirectoryConfirmation(false);
+							toggleSidebar();
 						}}>
 						[n]
 					</button>o

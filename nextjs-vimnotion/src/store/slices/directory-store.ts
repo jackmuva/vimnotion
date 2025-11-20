@@ -13,6 +13,7 @@ export const createDirectorySlice = (
 	proposedDirectoryState: {},
 	editingDirectory: false,
 	location: "",
+	lastValidLocation: "",
 	oilLine: "",
 	sidebarBufferHistory: [],
 	sidebarBufferMap: {},
@@ -24,11 +25,32 @@ export const createDirectorySlice = (
 	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
 
 	getLocation: () => get().location,
-	setLocation: (location: string) => set({ location: location }),
+	setLocation: (location: string) => {
+		const locArr: string[] = location.split("/");
+		locArr.pop();
+		let lastValidIndex: number = 0;
+		let cur: { type: DirectoryObjectType; children: DirectoryTree; } = {
+			type: DirectoryObjectType.DIRECTORY,
+			children: get().directoryState
+		};
+		for (let i = 0; i < locArr.length; i++) {
+			if (locArr[i] + "/" in cur.children) {
+				lastValidIndex = i;
+				cur = cur.children[locArr[i] + "/"];
+			}
+		}
+
+
+		set({
+			location: location,
+			lastValidLocation: lastValidIndex === 0 ? locArr[0] + "/" : locArr.slice(0, lastValidIndex + 1).join("/") + "/"
+		})
+	},
+	getLastValidLocation: () => get().location,
+	setLastValidLocation: (location: string) => set({ location: location }),
 
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => {
-		console.log("oil line: ", get().sidebarBufferMap[line]);
 		set({ oilLine: get().sidebarBufferMap[line] })
 	},
 	pushSidebarBufferHistory: (buffer: string) => {
@@ -43,6 +65,7 @@ export const createDirectorySlice = (
 		set({ lastDeleted: delTree })
 	},
 
+	//TODO:when a user has folder/folder/file, parse
 	//TODO:Copy functionality
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
@@ -191,5 +214,10 @@ export const createDirectorySlice = (
 		return res;
 	},
 
-	setDirectoryConfirmation: (open: boolean) => set({ directoryConfirmation: open }),
+	setDirectoryConfirmation: (open: boolean) => {
+		if (!open) {
+			get().setLocation(get().lastValidLocation);
+		}
+		set({ directoryConfirmation: open })
+	},
 });

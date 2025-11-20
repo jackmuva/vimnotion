@@ -36,7 +36,7 @@ export const applyCustomVim = ({
 	setLocation,
 	getLocation,
 	getOilLine,
-	evaluateAllOilBufferChanges,
+	setDirectoryConfirmation,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -50,14 +50,14 @@ export const applyCustomVim = ({
 	setLocation: (loc: string) => void,
 	getLocation: () => string,
 	getOilLine: () => string,
-	evaluateAllOilBufferChanges: () => void,
+	setDirectoryConfirmation: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
-			evaluateAllOilBufferChanges();
+			setDirectoryConfirmation();
 		}
 	});
 
@@ -66,6 +66,7 @@ export const applyCustomVim = ({
 		if (activePanel === PanelType.MAIN) {
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {
+			setDirectoryConfirmation();
 			toggleSidebar();
 		}
 	});
@@ -76,7 +77,7 @@ export const applyCustomVim = ({
 			closePane();
 			console.log('saving');
 		} else if (activePanel === PanelType.SIDEBAR) {
-			evaluateAllOilBufferChanges();
+			setDirectoryConfirmation();
 		}
 	});
 

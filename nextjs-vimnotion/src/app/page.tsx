@@ -14,7 +14,8 @@ import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-con
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
-	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState, setProposedDirectoryState, setLocation } = useEditorStore((state) => state);
+	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState,
+		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
 
 
 	useEffect(() => {

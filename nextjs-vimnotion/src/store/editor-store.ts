@@ -54,6 +54,7 @@ export type EditorState = {
 	proposedDirectoryState: DirectoryTree;
 	editingDirectory: boolean;
 	location: string;
+	lastValidLocation: string;
 	oilLine: string;
 	sidebarBufferHistory: string[];
 	sidebarBufferMap: { [id: string]: string };
@@ -66,6 +67,8 @@ export type EditorState = {
 
 	getLocation: () => string;
 	setLocation: (location: string) => void;
+	getLastValidLocation: () => string;
+	setLastValidLocation: (location: string) => void;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
 	pushSidebarBufferHistory: (buffer: string) => void;

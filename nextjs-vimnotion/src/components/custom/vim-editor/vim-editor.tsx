@@ -7,6 +7,7 @@ import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
+import { DirectoryConfirmation } from '../sidebar/directory-confirmation';
 
 export const VimEditor = ({
 	paneId,
@@ -32,6 +33,7 @@ export const VimEditor = ({
 	const prevTab = useEditorStore(state => state.prevTab);
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePaneById = useEditorStore((state) => state.updatePaneById);
+	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation } = useEditorStore((state) => state);
 
@@ -68,7 +70,7 @@ export const VimEditor = ({
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
-	}, [activeId, activePanel])
+	}, [activeId, activePanel, directoryConfirmation])
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -113,7 +115,7 @@ export const VimEditor = ({
 			getLocation: () => getLocation(),
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
-			evaluateAllOilBufferChanges: () => setDirectoryConfirmation(true),
+			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 		});
 		setVimEditor(view);
 	}, [isClient]);
