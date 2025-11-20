@@ -90,10 +90,10 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 		claims := token.Claims.(jwt.MapClaims)
 		email := claims["email"]
 
-		var structure struct {
+		var payload struct {
 			Structure string
 		}
-		err = json.NewDecoder(r.Body).Decode(&structure)
+		err = json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
 			http.Error(w, "Unable to read body", http.StatusBadRequest)
 			fmt.Printf("unable to read body: %s\n", err)
@@ -102,7 +102,7 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 
 		repository.UpdateDirectoryStructure(db, models.DirectoryStructure{
 			Email:     email.(string),
-			Structure: structure.Structure,
+			Structure: payload.Structure,
 		})
 		response := models.DataResponse{StatusCode: 200}
 		jsonMessage, err := json.Marshal(response)

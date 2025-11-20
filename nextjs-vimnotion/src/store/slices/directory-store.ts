@@ -166,31 +166,72 @@ export const createDirectorySlice = (
 		}
 		const oldState: DirectoryTree = get().directoryState;
 		const newState: DirectoryTree = get().proposedDirectoryState;
+		console.log("new state: ", newState);
 
-		const oldLocationMap = get().constructLocationMapHelper(oldState);
-		const newLocationMap = get().constructLocationMapHelper(newState);
+		const oldLocationMap: {
+			[uuid: string]: {
+				location: string,
+				name: string,
+				isFile: boolean,
+			},
+		} = get().constructLocationMapHelper(oldState);
+		const newLocationMap: {
+			[uuid: string]: {
+				location: string,
+				name: string,
+				isFile: boolean,
+			},
+		} = get().constructLocationMapHelper(newState);
+		// console.log("new map: ", newLocationMap);
 
 		for (const uuid of Object.keys(oldLocationMap)) {
 			if (uuid in newLocationMap) {
-				if (newLocationMap[uuid] !== oldLocationMap[uuid]) {
-					res.moved.push({ oldLocation: oldLocationMap[uuid], newLocation: newLocationMap[uuid] });
+				if (newLocationMap[uuid].location !== oldLocationMap[uuid].location) {
+					res.moved.push({
+						oldLocation: oldLocationMap[uuid].location,
+						newLocation: newLocationMap[uuid].location,
+						uuid: uuid,
+						name: newLocationMap[uuid].name,
+						isFile: newLocationMap[uuid].isFile,
+					});
 				}
 			} else {
-				res.deleted.push({ objectLocation: oldLocationMap[uuid] });
+				res.deleted.push({
+					objectLocation: oldLocationMap[uuid].location,
+					uuid: uuid,
+				});
 			}
 		}
 
 		for (const uuid of Object.keys(newLocationMap)) {
 			if (!(uuid in oldLocationMap)) {
-				res.created.push({ objectLocation: newLocationMap[uuid] });
+				res.created.push({
+					objectLocation: newLocationMap[uuid].location,
+					uuid: uuid,
+					name: newLocationMap[uuid].name,
+					isFile: newLocationMap[uuid].isFile,
+				});
 			}
 		}
 
 		return res;
 	},
 
-	constructLocationMapHelper: (treeRoot: DirectoryTree): { [uuid: string]: string } => {
-		const res: { [uuid: string]: string } = {};
+	//BUG:Not correct anymore
+	constructLocationMapHelper: (treeRoot: DirectoryTree): {
+		[uuid: string]: {
+			location: string,
+			name: string,
+			isFile: boolean,
+		},
+	} => {
+		const res: {
+			[uuid: string]: {
+				location: string,
+				name: string,
+				isFile: boolean,
+			},
+		} = {};
 		const q: DirectoryTree[] = [];
 		const location: string[] = [];
 
@@ -205,7 +246,12 @@ export const createDirectorySlice = (
 
 			const key = Object.keys(tree!)[0]!;
 			const locString: string = loc + "||" + key;
-			res[key.split("|")[0]] = locString;
+			const uuid: string = key.split("|")[0];
+			res[uuid] = {
+				name: key.split("|")[1],
+				isFile: key.at(-1) === "/" ? false : true,
+				location: locString
+			};
 			for (const childKey of Object.keys(tree![key].children)) {
 				q.push({ [childKey]: tree![key].children[childKey] });
 				location.push(locString);

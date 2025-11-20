@@ -77,7 +77,13 @@ export type EditorState = {
 	evaluateOilBufferChanges: () => void;
 	setDirectoryConfirmation: (open: boolean) => void;
 	detectAllDirectoryChanges: () => DirectoryChanges;
-	constructLocationMapHelper: (treeRoot: DirectoryTree) => { [uuid: string]: string };
+	constructLocationMapHelper: (treeRoot: DirectoryTree) => {
+		[uuid: string]: {
+			location: string,
+			name: string,
+			isFile: boolean,
+		},
+	};
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({

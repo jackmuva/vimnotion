@@ -18,13 +18,20 @@ export type DirectoryTree = {
 
 export type DirectoryChanges = {
 	created: {
-		objectLocation: string
+		objectLocation: string,
+		uuid: string,
+		name: string,
+		isFile: boolean,
 	}[],
 	deleted: {
 		objectLocation: string
+		uuid: string,
 	}[],
 	moved: {
 		oldLocation: string,
 		newLocation: string,
+		uuid: string,
+		name: string,
+		isFile: boolean,
 	}[],
 }
