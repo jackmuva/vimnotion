@@ -293,6 +293,8 @@ export const createPanelSlice = (
 		const startingPane: string = activePane;
 		const paneArray: Array<string> = tabMap[activeTab].panes;
 		let curPane: string = startingPane;
+		if (paneArray.length === 0) return curPane;
+
 		let justStarting: boolean = true;
 
 		while (curPane !== startingPane || justStarting) {

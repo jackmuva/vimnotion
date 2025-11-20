@@ -8,6 +8,8 @@ export const LeaderPanel = () => {
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePaneById);
 	const closePanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleWindowPanel = useEditorStore((state) => state.toggleWindowPanel);
+	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
+	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
 	const shiftToMarkdown = (): void => {
 		const paneNode: PaneNode = getPane(activePane);
@@ -18,6 +20,7 @@ export const LeaderPanel = () => {
 			},
 		}
 		updatePane(updateNode);
+		setActivePane(cycleNeighbor())
 	}
 
 	useEffect(() => {
@@ -38,6 +41,8 @@ export const LeaderPanel = () => {
 
 		const handleMKey = (event: KeyboardEvent) => {
 			if (event.key === 'm') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				shiftToMarkdown();
 				closePanel();
 			}
