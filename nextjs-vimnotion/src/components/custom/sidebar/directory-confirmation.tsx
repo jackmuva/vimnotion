@@ -11,10 +11,22 @@ export const DirectoryConfirmation = () => {
 		moved: [],
 	});
 
+	const updateDirectoryStructure = async (): Promise<boolean> => {
+		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`, {
+			method: "PUT",
+			headers: {
+				"Content-type": "application/json",
+			},
+			body: JSON.stringify({ structure: JSON.stringify(proposedDirectoryState) }),
+			credentials: "include",
+		});
+		console.log(await res.json());
+		return res.ok;
+	}
+
 	useEffect(() => {
 		const newChanges: DirectoryChanges = detectAllDirectoryChanges();
 		if (newChanges.created.length === 0 && newChanges.deleted.length === 0 && newChanges.moved.length === 0) {
-			console.log("firing no new changes");
 			setDirectoryConfirmation(false);
 		} else {
 			setChanges(newChanges);
@@ -39,13 +51,16 @@ export const DirectoryConfirmation = () => {
 		};
 		document.addEventListener('keydown', handleNKey);
 
-		const handleYKey = (event: KeyboardEvent) => {
+		const handleYKey = async (event: KeyboardEvent) => {
 			if (event.key === 'y') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				setDirectoryState(structuredClone(proposedDirectoryState));
-				setDirectoryConfirmation(false);
-				toggleSidebar();
+				const updateRes: boolean = await updateDirectoryStructure();
+				if (updateRes) {
+					setDirectoryState(structuredClone(proposedDirectoryState));
+					setDirectoryConfirmation(false);
+					toggleSidebar();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleYKey);
@@ -96,10 +111,13 @@ export const DirectoryConfirmation = () => {
 				<div>
 					<button id={`first-confirmation-option`}
 						className="cursor-pointer"
-						onClick={() => {
-							setDirectoryState(structuredClone(proposedDirectoryState));
-							setDirectoryConfirmation(false);
-							toggleSidebar();
+						onClick={async () => {
+							const updateRes: boolean = await updateDirectoryStructure();
+							if (updateRes) {
+								setDirectoryState(structuredClone(proposedDirectoryState));
+								setDirectoryConfirmation(false);
+								toggleSidebar();
+							}
 						}}>
 						[y]
 					</button>es
