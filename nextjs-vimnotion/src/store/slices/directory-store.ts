@@ -26,6 +26,7 @@ export const createDirectorySlice = (
 
 	getLocation: () => get().location,
 	setLocation: (location: string) => {
+		//NOTE:Check for last valid location
 		const locArr: string[] = location.split("/");
 		locArr.pop();
 		let lastValidIndex: number = 0;
@@ -104,6 +105,7 @@ export const createDirectorySlice = (
 		}
 
 		//NOTE:Renames
+
 		const renames: { [newName: string]: string } = {};
 		const newBufferLines: string[] = newBuffer!.split("\n");
 		const oldBufferLines: string[] = oldBuffer!.split("\n");
@@ -153,12 +155,14 @@ export const createDirectorySlice = (
 			delete leafAtLocation.children[toDelete[fn]];
 			delete bufferMap[fn];
 		}
+
 		get().setEditingDirectory(true);
 		get().setProposedDirectoryState(atRoot ? leafAtLocation.children : proposedDirectoryState);
 		get().setSidebarBufferMap(bufferMap);
 	},
 
 	detectAllDirectoryChanges: (): DirectoryChanges => {
+		get().dedupeProposedDirectory();
 		const res: DirectoryChanges = {
 			created: [],
 			deleted: [],
@@ -166,7 +170,6 @@ export const createDirectorySlice = (
 		}
 		const oldState: DirectoryTree = get().directoryState;
 		const newState: DirectoryTree = get().proposedDirectoryState;
-		console.log("new state: ", newState);
 
 		const oldLocationMap: {
 			[uuid: string]: {
@@ -182,7 +185,6 @@ export const createDirectorySlice = (
 				isFile: boolean,
 			},
 		} = get().constructLocationMapHelper(newState);
-		// console.log("new map: ", newLocationMap);
 
 		for (const uuid of Object.keys(oldLocationMap)) {
 			if (uuid in newLocationMap) {
@@ -217,7 +219,6 @@ export const createDirectorySlice = (
 		return res;
 	},
 
-	//BUG:Not correct anymore
 	constructLocationMapHelper: (treeRoot: DirectoryTree): {
 		[uuid: string]: {
 			location: string,
@@ -265,5 +266,46 @@ export const createDirectorySlice = (
 			get().setLocation(get().lastValidLocation);
 		}
 		set({ directoryConfirmation: open })
+	},
+
+	//OPTIM:This is a workaround, i think this could be simpler
+	dedupeProposedDirectory: () => {
+		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
+		let subTree: DirectoryTree = proposedDirectoryState;
+
+		const q: DirectoryTree[] = [];
+
+		for (const key of Object.keys(proposedDirectoryState)) {
+			q.push({ [key]: proposedDirectoryState[key] });
+		}
+
+		while (q.length > 0) {
+			subTree = q.shift()!;
+			const uuidMap: { [key: string]: boolean } = {};
+
+			for (const childKey of Object.keys(subTree[Object.keys(subTree)[0]].children)) {
+				//NOTE:Check for duplicate uuids from incorrect renames
+				const curId: string = childKey.split("|")[0];
+				if (curId in uuidMap) {
+					const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
+						type: childKey.at(childKey.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
+						children: {},
+					}
+					const newId: string = v4();
+					const fn = childKey.split("|")[1];
+					if (subTree && fn) {
+						subTree[Object.keys(subTree)[0]].children[newId + "|" + fn] = newTree;
+					} else if (fn) {
+						proposedDirectoryState[newId + "|" + fn] = newTree;
+					}
+					delete subTree[Object.keys(subTree)[0]].children[childKey];
+					q.push({ [newId + "|" + fn]: subTree[Object.keys(subTree)[0]].children[newId + "|" + fn] });
+				} else {
+					uuidMap[curId] = true;
+					q.push({ [childKey]: subTree[Object.keys(subTree)[0]].children[childKey] });
+				}
+			}
+		}
+		get().setProposedDirectoryState(proposedDirectoryState);
 	},
 });

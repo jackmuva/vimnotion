@@ -84,6 +84,7 @@ export type EditorState = {
 			isFile: boolean,
 		},
 	};
+	dedupeProposedDirectory: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
