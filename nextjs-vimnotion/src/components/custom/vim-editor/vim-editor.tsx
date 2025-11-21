@@ -4,9 +4,12 @@ import { useEffect, useState, useRef } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { applyCustomVim, customTheme } from './custom-editor-settings';
+import { customTheme } from './vim-editor-theme';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
+import { applyTabBindings } from './extensions/tab-bindings';
+import { applySidebarBindings } from './extensions/sidebar-bindings';
+import { applyPanelBindings } from './extensions/panel-bindings';
 
 export const VimEditor = ({
 	paneId,
@@ -113,22 +116,30 @@ export const VimEditor = ({
 				effects: theme.reconfigure(darkTheme),
 			});
 		}
-		applyCustomVim({
-			toggleLeaderPanel: toggleLeaderPanel,
-			toggleSidebar: toggleSidebar,
-			splitHorizontal: () => splitPane(SplitState.HORIZONTAL),
-			splitVertical: () => splitPane(SplitState.VERTICAL),
-			closePane: () => closePane(),
+		applyTabBindings({
 			createNewTab: () => createNewTab(),
 			nextTab: () => nextTab(),
 			prevTab: () => prevTab(),
 			getActivePanel: () => getActivePanel(),
+		});
+		applySidebarBindings({
+			toggleLeaderPanel: toggleLeaderPanel,
+			toggleSidebar: toggleSidebar,
+			getActivePanel: () => getActivePanel(),
 			getLocation: () => getLocation(),
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
-			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 			openFileInBuffer: () => openFileInBuffer(),
+
+		});
+		applyPanelBindings({
+			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
+			splitHorizontal: () => splitPane(SplitState.HORIZONTAL),
+			splitVertical: () => splitPane(SplitState.VERTICAL),
+			closePane: () => closePane(),
+			getActivePanel: () => getActivePanel(),
 			updateVnObject: () => updateVnObject(),
+			toggleSidebar: toggleSidebar,
 		});
 		setVimEditor(view);
 	}, [isClient]);

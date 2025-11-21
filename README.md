@@ -13,11 +13,7 @@ go run main.go
 
 ## Granular Todos
 1. Save and Load buffers from sidebar
-    * on directory confirmation, update backend with new directory structure and objects
-    * on CR, for a file, inject contents in buffer
-    * :w in vim mode send a PUT
-    * splitting should inject the fileid and contents in the buffer
-        * need to decide how updates are handled client side when two buffers are open
+    * need to decide how updates are handled client side when two buffers are open
 2. start search
 
 ## High-level Todos
@@ -35,4 +31,4 @@ go run main.go
 - version history
   - trash
 - local md downloads
-
+- public publishing

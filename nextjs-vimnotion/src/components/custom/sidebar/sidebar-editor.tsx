@@ -18,7 +18,7 @@ import { lintKeymap } from "@codemirror/lint";
 import { useEffect, useRef, useState } from "react";
 import { Compartment } from '@codemirror/state';
 import { vim } from "@replit/codemirror-vim";
-import { customTheme } from '../vim-editor/custom-editor-settings';
+import { customTheme } from "../vim-editor/vim-editor-theme";
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
