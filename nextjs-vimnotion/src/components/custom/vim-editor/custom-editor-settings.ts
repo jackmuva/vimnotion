@@ -37,6 +37,7 @@ export const applyCustomVim = ({
 	getLocation,
 	getOilLine,
 	setDirectoryConfirmation,
+	openFileInBuffer,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -51,6 +52,7 @@ export const applyCustomVim = ({
 	getLocation: () => string,
 	getOilLine: () => string,
 	setDirectoryConfirmation: () => void,
+	openFileInBuffer: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
@@ -112,7 +114,12 @@ export const applyCustomVim = ({
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.SIDEBAR) {
-			setLocation(getLocation() + getOilLine());
+			if (getOilLine().at(-1) === "/") {
+				setLocation(getLocation() + getOilLine());
+			} else {
+				openFileInBuffer();
+				toggleSidebar();
+			}
 		}
 	});
 	Vim.unmap('<CR>', "false");

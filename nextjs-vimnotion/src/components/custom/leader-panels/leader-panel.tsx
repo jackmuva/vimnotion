@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export const LeaderPanel = () => {
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const activePane: string = useEditorStore((state) => state.activePane);
-	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePaneById);
+	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const closePanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleWindowPanel = useEditorStore((state) => state.toggleWindowPanel);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);

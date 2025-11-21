@@ -35,7 +35,7 @@ export type EditorState = {
 	cycleNeighbor: () => string;
 
 	getPaneById: (paneId: string) => PaneNode;
-	updatePaneById: (pane: PaneNode) => void;
+	updatePane: (pane: PaneNode) => void;
 
 	activeTab: string;
 	tabArray: string[];
@@ -85,6 +85,8 @@ export type EditorState = {
 		},
 	};
 	dedupeProposedDirectory: () => void;
+
+	openFileInBuffer: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({

@@ -10,7 +10,7 @@ export const MarkdownEditor = ({
 	paneId: string,
 }) => {
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
-	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePaneById);
+	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const pane: PaneNode = getPane(paneId);
 
 	const shiftToVim = (): void => {

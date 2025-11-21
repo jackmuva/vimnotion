@@ -117,7 +117,6 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 			Email:     email.(string),
 			Structure: payload.Structure,
 		})
-		fmt.Printf("payload: %+v\n", payload)
 
 		err = CreateAllVnObjects(db, payload.Changes.Created)
 		if err != nil {
@@ -212,10 +211,15 @@ func UpdateAllVnObjects(db *sql.DB, movedObjects []models.MovedObjects) error {
 			defer func() { <-workerSem }()
 
 			err := repository.UpdateVnObject(db, models.VnObject{
-				Id:         obj.Uuid,
-				Name:       obj.Name,
-				IsFile:     obj.IsFile,
-				Contents:   *obj.Contents,
+				Id:     obj.Uuid,
+				Name:   obj.Name,
+				IsFile: obj.IsFile,
+				Contents: func(s *string) string {
+					if s == nil {
+						return ""
+					}
+					return *s
+				}(obj.Contents),
 				UpdateDate: time.Now().Format(time.RFC3339),
 			})
 			if err != nil {

@@ -1,6 +1,8 @@
 import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
+import { PaneNode } from "@/types/editor-types";
+import { VnObject } from "@/types/primitive-types";
 
 export const createDirectorySlice = (
 	set: {
@@ -124,6 +126,7 @@ export const createDirectorySlice = (
 				leafAtLocation.children[fullId] = lastDeleted[fullId];
 				bufferMap[fullId.split("|")[1]] = fullId;
 			} else if (fn in renames) {
+				//TODO:This should also copy contents
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
 					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 					children: leafAtLocation.children[bufferMap[renames[fn]]].children,
@@ -307,4 +310,25 @@ export const createDirectorySlice = (
 		}
 		get().setProposedDirectoryState(proposedDirectoryState);
 	},
+
+	openFileInBuffer: () => {
+		const fileId: string = get().getOilLine().split("|")[0];
+		const activePane: PaneNode = get().getPaneById(get().activePane);
+
+		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/${fileId}`,
+			{
+				credentials: 'include'
+			}
+		).then((res: Response) => {
+			res.json().then((body: { Data: VnObject }) => {
+				activePane[Object.keys(activePane)[0]].fileId = fileId;
+				activePane[Object.keys(activePane)[0]].buffer = body.Data.contents;
+				get().updatePane(activePane);
+			}).catch((err) => {
+				console.error("unable to get vnobject: ", err);
+			});
+		}).catch((err) => {
+			console.error("unable to get vnobject: ", err);
+		});
+	}
 });

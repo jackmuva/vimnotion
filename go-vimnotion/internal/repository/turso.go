@@ -115,7 +115,7 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.Contents); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents); err != nil {
 			fmt.Println("Error scanning row:", err)
 		}
 
@@ -178,7 +178,7 @@ func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
 }
 
 func DeleteVnObject(db *sql.DB, id string) error {
-	_, err := db.Exec("DELETE VnObject WHERE id=?", id)
+	_, err := db.Exec("DELETE FROM VnObject WHERE id=?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
 		return err

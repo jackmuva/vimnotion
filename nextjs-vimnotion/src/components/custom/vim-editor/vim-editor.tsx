@@ -31,10 +31,11 @@ export const VimEditor = ({
 	const nextTab = useEditorStore(state => state.nextTab);
 	const prevTab = useEditorStore(state => state.prevTab);
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
-	const updatePaneById = useEditorStore((state) => state.updatePaneById);
+	const updatePane = useEditorStore((state) => state.updatePane);
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
-	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation } = useEditorStore((state) => state);
+	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
+		openFileInBuffer } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -51,9 +52,19 @@ export const VimEditor = ({
 					buffer: v.state.doc.toString(),
 				}
 			};
-			updatePaneById(updatedPane);
+			updatePane(updatedPane);
 		}
 	});
+
+	useEffect(() => {
+		vimEditor?.dispatch({
+			changes: {
+				from: 0,
+				to: vimEditor?.state.doc.length,
+				insert: pane[paneId].buffer,
+			},
+		});
+	}, [pane[paneId].fileId]);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -116,6 +127,7 @@ export const VimEditor = ({
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
+			openFileInBuffer: () => openFileInBuffer(),
 		});
 		setVimEditor(view);
 	}, [isClient]);

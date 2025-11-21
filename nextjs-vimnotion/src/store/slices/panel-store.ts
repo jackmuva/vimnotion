@@ -25,7 +25,7 @@ export const createPanelSlice = (
 		}
 	},
 
-	updatePaneById: (paneNode: PaneNode) => {
+	updatePane: (paneNode: PaneNode) => {
 		const { paneTree } = get();
 		const paneId = Object.keys(paneNode);
 		if (!paneId) return;
@@ -58,7 +58,7 @@ export const createPanelSlice = (
 			deleted: false,
 			editorType: EditorType.VIM,
 			buffer: "\n\n\n\n\n\n\n",
-			fileId: v4(),
+			fileId: "START_PAGE",
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -311,7 +311,5 @@ export const createPanelSlice = (
 		}
 		return curPane;
 	},
-
-
 });
 

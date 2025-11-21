@@ -24,6 +24,7 @@ func main() {
 	mux.HandleFunc("/", handlers.Healthcheck)
 	mux.HandleFunc("/oauth/github/callback", handlers.GithubCallback(tursoDb))
 	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.HandlePersonalDirectory(tursoDb)))
+	mux.Handle("/api/vnobject/{id}", middleware.AuthMiddleware(handlers.GetVnObjectById(tursoDb)))
 	corsHandler := middleware.EnableCors(mux)
 
 	ctx := context.Background()
