@@ -20,7 +20,7 @@ export const customTheme = Prec.highest(
 			minHeight: "100%",
 		},
 	})
-);
+)
 
 
 export const applyCustomVim = ({

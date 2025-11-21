@@ -27,7 +27,10 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 		token := github.GetGithubToken(code)
 		userData := github.GetGithubUser(token)
 
-		user := repository.GetUser(db, userData.Email)
+		user, err := repository.GetUser(db, userData.Email)
+		if err != nil {
+			fmt.Printf("Unable to get user: %s\n", err)
+		}
 		if len(user) == 0 {
 			rootId := uuid.New().String()
 			trashId := uuid.New().String()

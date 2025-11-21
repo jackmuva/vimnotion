@@ -14,7 +14,10 @@ import (
 const keyServerAddr = "go-vimnotion-server"
 
 func main() {
-	tursoDb := repository.ConnectTurso()
+	tursoDb, err := repository.ConnectTurso()
+	if err != nil {
+		fmt.Errorf("error connecting to db: %s\n", err)
+	}
 	defer tursoDb.Close()
 
 	mux := http.NewServeMux()
@@ -32,7 +35,7 @@ func main() {
 			return ctx
 		},
 	}
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
 	} else if err != nil {

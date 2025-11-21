@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { DirectoryChanges } from "@/types/sidebar-types";
+import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { useEffect, useState } from "react";
 
 export const DirectoryConfirmation = () => {
@@ -11,13 +11,17 @@ export const DirectoryConfirmation = () => {
 		moved: [],
 	});
 
-	const updateDirectoryStructure = async (): Promise<boolean> => {
+	const updateDirectoryStructure = async (changes: DirectoryChanges, structure: DirectoryTree): Promise<boolean> => {
+		console.log("sending changes: ", changes);
 		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`, {
 			method: "PUT",
 			headers: {
 				"Content-type": "application/json",
 			},
-			body: JSON.stringify({ structure: JSON.stringify(proposedDirectoryState) }),
+			body: JSON.stringify({
+				changes: changes,
+				structure: JSON.stringify(structure)
+			}),
 			credentials: "include",
 		});
 		console.log(await res.json());
@@ -55,7 +59,7 @@ export const DirectoryConfirmation = () => {
 			if (event.key === 'y') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				const updateRes: boolean = await updateDirectoryStructure();
+				const updateRes: boolean = await updateDirectoryStructure(changes, proposedDirectoryState);
 				if (updateRes) {
 					setDirectoryState(structuredClone(proposedDirectoryState));
 					setDirectoryConfirmation(false);
@@ -71,8 +75,7 @@ export const DirectoryConfirmation = () => {
 			document.removeEventListener('keydown', handleNKey);
 			document.removeEventListener('keydown', handleYKey);
 		};
-	}, [setDirectoryConfirmation]);
-
+	}, [setDirectoryConfirmation, changes, proposedDirectoryState, toggleSidebar, setDirectoryState]);
 
 	return (
 		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
@@ -112,7 +115,7 @@ export const DirectoryConfirmation = () => {
 					<button id={`first-confirmation-option`}
 						className="cursor-pointer"
 						onClick={async () => {
-							const updateRes: boolean = await updateDirectoryStructure();
+							const updateRes: boolean = await updateDirectoryStructure(changes, proposedDirectoryState);
 							if (updateRes) {
 								setDirectoryState(structuredClone(proposedDirectoryState));
 								setDirectoryConfirmation(false);

@@ -105,7 +105,6 @@ export const createDirectorySlice = (
 		}
 
 		//NOTE:Renames
-
 		const renames: { [newName: string]: string } = {};
 		const newBufferLines: string[] = newBuffer!.split("\n");
 		const oldBufferLines: string[] = oldBuffer!.split("\n");
@@ -119,14 +118,14 @@ export const createDirectorySlice = (
 		//NOTE:new files
 		for (const fn of Object.keys(newBufferLinesMap)) {
 			if (!fn) continue;
-			//NOTE:Cutting
+			//NOTE:Cutting (doesnt account for multi-line cuts
 			if (lastDeleted && fn === Object.keys(lastDeleted)[0].split("|")[1]) {
 				const fullId: string = Object.keys(lastDeleted)[0];
 				leafAtLocation.children[fullId] = lastDeleted[fullId];
 				bufferMap[fullId.split("|")[1]] = fullId;
 			} else if (fn in renames) {
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-					type: leafAtLocation.children[bufferMap[renames[fn]]].type,
+					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 					children: leafAtLocation.children[bufferMap[renames[fn]]].children,
 				}
 				if (leafAtLocation && fn) {
@@ -136,7 +135,7 @@ export const createDirectorySlice = (
 				}
 			} else {
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-					type: fn.at(fn.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
+					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 					children: {},
 				}
 				const uuid: string = v4();
@@ -288,7 +287,7 @@ export const createDirectorySlice = (
 				const curId: string = childKey.split("|")[0];
 				if (curId in uuidMap) {
 					const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-						type: childKey.at(childKey.length - 1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
+						type: childKey.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 						children: {},
 					}
 					const newId: string = v4();

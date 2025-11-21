@@ -11,7 +11,7 @@ import (
 	"vimnotion.com/server/internal/models"
 )
 
-func ConnectTurso() *sql.DB {
+func ConnectTurso() (*sql.DB, error) {
 	cfg := config.Get()
 	var urlBuffer strings.Builder
 	urlBuffer.WriteString(cfg.TursoDatabaseUrl)
@@ -21,6 +21,7 @@ func ConnectTurso() *sql.DB {
 	db, err := sql.Open("libsql", urlBuffer.String())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", urlBuffer.String(), err)
+		return nil, err
 	}
 
 	db.SetConnMaxIdleTime(9 * time.Second)
@@ -28,24 +29,28 @@ func ConnectTurso() *sql.DB {
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS User (email TEXT PRIMARY KEY, name TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
+		return nil, err
 	}
 
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS DirectoryStructure(email TEXT PRIMARY KEY, structure TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
+		return nil, err
 	}
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }
 
-func GetUser(db *sql.DB, email string) []models.User {
+func GetUser(db *sql.DB, email string) ([]models.User, error) {
 	rows, err := db.Query("SELECT * FROM User WHERE email=?", email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -56,6 +61,7 @@ func GetUser(db *sql.DB, email string) []models.User {
 
 		if err := rows.Scan(&user.Email, &user.Name); err != nil {
 			fmt.Println("Error scanning row:", err)
+			return nil, err
 		}
 
 		users = append(users, user)
@@ -64,14 +70,16 @@ func GetUser(db *sql.DB, email string) []models.User {
 
 	if err := rows.Err(); err != nil {
 		fmt.Println("Error during rows iteration:", err)
+		return nil, err
 	}
-	return users
+	return users, nil
 }
 
-func GetDirectoryStructure(db *sql.DB, email string) []models.DirectoryStructure {
+func GetDirectoryStructure(db *sql.DB, email string) ([]models.DirectoryStructure, error) {
 	rows, err := db.Query("SELECT * FROM DirectoryStructure WHERE email=?", email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -82,6 +90,7 @@ func GetDirectoryStructure(db *sql.DB, email string) []models.DirectoryStructure
 
 		if err := rows.Scan(&directoryStructure.Email, &directoryStructure.Structure); err != nil {
 			fmt.Println("Error scanning row:", err)
+			return nil, err
 		}
 
 		directoryStructures = append(directoryStructures, directoryStructure)
@@ -89,11 +98,12 @@ func GetDirectoryStructure(db *sql.DB, email string) []models.DirectoryStructure
 
 	if err := rows.Err(); err != nil {
 		fmt.Println("Error during rows iteration:", err)
+		return nil, err
 	}
-	return directoryStructures
+	return directoryStructures, nil
 }
 
-func GetVnObjectById(db *sql.DB, id string) []models.VnObject {
+func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	rows, err := db.Query("SELECT * FROM VnObject WHERE id=?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
@@ -114,44 +124,64 @@ func GetVnObjectById(db *sql.DB, id string) []models.VnObject {
 
 	if err := rows.Err(); err != nil {
 		fmt.Println("Error during rows iteration:", err)
+		return nil, err
 	}
-	return vnObjects
+	return vnObjects, nil
 }
 
-func InsertUser(db *sql.DB, user models.User) {
+func InsertUser(db *sql.DB, user models.User) error {
 	_, err := db.Exec("INSERT INTO User (email, name) VALUES(?, ?)", user.Email, user.Name)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
 	}
+	return nil
 }
 
-func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) {
+func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
 	_, err := db.Exec("INSERT INTO DirectoryStructure (email, structure) VALUES(?, ?)", dirStruct.Email, dirStruct.Structure)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
 	}
+	return nil
 }
 
-func InsertVnObject(db *sql.DB, vnObject models.VnObject) {
+func InsertVnObject(db *sql.DB, vnObject models.VnObject) error {
 	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?, ?, ?)",
 		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
 	}
+	return nil
 }
 
-func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) {
+func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
 	_, err := db.Exec("UPDATE DirectoryStructure SET structure=? WHERE email=?",
 		dirStruct.Structure, dirStruct.Email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
 	}
+	return nil
 }
 
-func UpdateVnObject(db *sql.DB, vnObject models.VnObject) {
+func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
 	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=?, updateDate=? WHERE id=?",
-		vnObject.Name, vnObject.Contents, vnObject.Id, vnObject.UpdateDate)
+		vnObject.Name, vnObject.Contents, vnObject.UpdateDate, vnObject.Id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
 	}
+	return nil
+}
+
+func DeleteVnObject(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE VnObject WHERE id=?", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
 }

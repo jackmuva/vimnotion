@@ -7,7 +7,6 @@ import { markdown } from '@codemirror/lang-markdown';
 import { applyCustomVim, customTheme } from './custom-editor-settings';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
-import { DirectoryConfirmation } from '../sidebar/directory-confirmation';
 
 export const VimEditor = ({
 	paneId,
@@ -93,6 +92,7 @@ export const VimEditor = ({
 				markdown(),
 				focusListener,
 				docChangeListener,
+				EditorView.lineWrapping,
 			],
 			parent: editorElement,
 		});
