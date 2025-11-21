@@ -321,7 +321,7 @@ export const createDirectorySlice = (
 			}
 		).then((res: Response) => {
 			res.json().then((body: { Data: VnObject }) => {
-				activePane[Object.keys(activePane)[0]].fileId = fileId;
+				activePane[Object.keys(activePane)[0]].fileId = get().getOilLine();
 				activePane[Object.keys(activePane)[0]].buffer = body.Data.contents;
 				get().updatePane(activePane);
 			}).catch((err) => {

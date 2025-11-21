@@ -35,7 +35,7 @@ export const VimEditor = ({
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer } = useEditorStore((state) => state);
+		openFileInBuffer, updateVnObject } = useEditorStore((state) => state);
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -128,6 +128,7 @@ export const VimEditor = ({
 			setLocation: (loc: string) => setLocation(loc),
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 			openFileInBuffer: () => openFileInBuffer(),
+			updateVnObject: () => updateVnObject(),
 		});
 		setVimEditor(view);
 	}, [isClient]);

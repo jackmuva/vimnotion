@@ -1,6 +1,7 @@
 import { Direction, ChildType, EditorType, PaneNode, SplitState, TabMap, PanelType } from "@/types/editor-types";
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
+import { VnObject } from "@/types/primitive-types";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -310,6 +311,34 @@ export const createPanelSlice = (
 			}
 		}
 		return curPane;
+	},
+
+	updateVnObject: (): boolean => {
+		let succ = false;
+		const activePane: PaneNode = get().getPaneById(get().activePane);
+		const paneId: string = Object.keys(activePane)[0];
+		const vnObject: VnObject = {
+			id: activePane[paneId].fileId.split("|")[0],
+			name: activePane[paneId].fileId.split("|")[1],
+			isFile: true,
+			contents: activePane[paneId].buffer,
+			updateDate: (new Date).toISOString(),
+		}
+		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
+			{
+				method: "PUT",
+				body: JSON.stringify(vnObject),
+				credentials: 'include'
+			}
+		).then((res: Response) => {
+			if (res.ok) {
+				succ = true;
+			}
+		}).catch((err) => {
+			console.error("unable to get vnobject: ", err);
+		});
+		return succ;
+
 	},
 });
 

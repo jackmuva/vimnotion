@@ -34,6 +34,8 @@ export type EditorState = {
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
 	cycleNeighbor: () => string;
 
+	updateVnObject: () => boolean;
+
 	getPaneById: (paneId: string) => PaneNode;
 	updatePane: (pane: PaneNode) => void;
 

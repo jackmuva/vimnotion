@@ -15,10 +15,35 @@ func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
 		switch r.Method {
 		case http.MethodPost:
 		case http.MethodPut:
+			UpdateVnObject(db)(w, r)
 		case http.MethodDelete:
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
+	}
+}
+
+func UpdateVnObject(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var payload models.VnObject
+		err := json.NewDecoder(r.Body).Decode(&payload)
+		if err != nil {
+			http.Error(w, "Unable to read body", http.StatusBadRequest)
+			fmt.Printf("unable to read body: %s\n", err)
+			return
+		}
+		err = repository.UpdateVnObject(db, payload)
+		if err != nil {
+			http.Error(w, "Unable to update vnobject", http.StatusBadRequest)
+			fmt.Printf("unable to updat vnobject: %s\n", err)
+			return
+		}
+		response := models.DataResponse{StatusCode: 200}
+		jsonMessage, err := json.Marshal(response)
+		if err != nil {
+			fmt.Printf("unable to write error json: %s\n", err)
+		}
+		w.Write(jsonMessage)
 	}
 }
 
