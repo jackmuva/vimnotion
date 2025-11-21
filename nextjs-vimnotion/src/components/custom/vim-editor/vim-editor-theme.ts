@@ -14,6 +14,9 @@ export const customTheme = Prec.highest(
 		".cm-gutters": {
 			background: "none",
 		},
+		"&.cm-editor": {
+			backgroundColor: "transparent",
+		},
 		"&": {
 			minHeight: "100%",
 		},

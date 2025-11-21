@@ -79,13 +79,14 @@ export const DirectoryConfirmation = () => {
 
 	return (
 		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-			z-30 bg-secondary-background shadow-2xl h-96 max-w-11/12 w-[700px] p-4 
-			flex flex-col justify-between">
+			z-30 bg-secondary-background/50 h-96 max-w-11/12 w-[700px] p-4 
+			flex flex-col justify-between outline  outline-offset-2 
+			outline-foreground-muted/50">
 			<div className="w-full flex flex-col">
 				{changes.created.map((newObj, i) => {
 					return (
 						<div className="flex gap-4" key={i}>
-							<div className="text-blue-500">CREATE</div>
+							<div className="text-blue-500 font-bold italic">create</div>
 							<div>{newObj.objectLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
 						</div>
 					);
@@ -93,7 +94,7 @@ export const DirectoryConfirmation = () => {
 				{changes.moved.map((movedObj, i) => {
 					return (
 						<div className="flex gap-4" key={i}>
-							<div className="text-yellow-500">MOVED</div>
+							<div className="text-yellow-500 font-bold italic">moved</div>
 							<div>{movedObj.oldLocation.split("||").map((str) => str.split("|")[1]).join("")}
 								{" -> "}
 								{movedObj.newLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
@@ -103,7 +104,7 @@ export const DirectoryConfirmation = () => {
 				{changes.deleted.map((oldObj, i) => {
 					return (
 						<div className="flex gap-4" key={i}>
-							<div className="text-red-500">DELETE</div>
+							<div className="text-red-500 font-bold italic">delete</div>
 							<div>{oldObj.objectLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
 						</div>
 					);

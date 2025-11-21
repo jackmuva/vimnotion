@@ -176,7 +176,7 @@ export const SidebarEditor = () => {
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-secondary-background'>
 			<div id={`sidebar-editor`}
-				className={`h-full w-full overflow-y-scroll`}>
+				className={`h-full w-full overflow-y-scroll bg-transparent`}>
 			</div>
 		</div>
 

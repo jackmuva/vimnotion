@@ -13,6 +13,8 @@ export const SearchPanel = () => {
 
 		const handleFKey = (event: KeyboardEvent) => {
 			if (event.key === 'f') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				toggleSearchModal();
 				toggleSearchPanel();
 			}
@@ -28,7 +30,8 @@ export const SearchPanel = () => {
 	return (
 		<div id={`search-panel`}
 			className='z-20 w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
-					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28'>
+					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28
+			content-start gap-4'>
 			<div>
 				<button id={`first-search-option`}
 					className="cursor-pointer"

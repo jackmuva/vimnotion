@@ -11,6 +11,7 @@ import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
 import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-confirmation";
 import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
+import { SearchModal } from "@/components/custom/modals/search-modal";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -57,6 +58,15 @@ export default function Home() {
 		}
 	}, [directoryConfirmation]);
 
+	useEffect(() => {
+		if (searchModal) {
+			const input = document.getElementById(`search-modal-input`);
+			if (input) {
+				input.focus();
+			}
+		}
+	}, [searchModal]);
+
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
@@ -85,6 +95,7 @@ export default function Home() {
 			{searchPanel && <SearchPanel />}
 			<LeaderButton />
 			{directoryConfirmation && <DirectoryConfirmation />}
+			{searchModal && <SearchModal />}
 		</div>
 	);
 }

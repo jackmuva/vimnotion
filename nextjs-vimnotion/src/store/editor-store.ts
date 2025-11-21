@@ -6,6 +6,7 @@ import { createToggleSlice } from './slices/toggle-store';
 import { createPanelSlice, DrillDownResult } from './slices/panel-store';
 import { createTabSlice } from './slices/tab-store';
 import { createDirectorySlice } from './slices/directory-store';
+import { createSearchSlice } from './slices/search-store';
 
 export type EditorState = {
 	openSidebar: boolean;
@@ -92,7 +93,12 @@ export type EditorState = {
 	};
 	dedupeProposedDirectory: () => void;
 
-	openFileInBuffer: () => void;
+	openFileInBuffer: (id?: string) => void;
+
+	filePaths: { [path: string]: string };
+	refreshFilePaths: () => void;
+	searchByFilename: (term: string) => SearchResults;
+	searchByGrep: (pat: string) => SearchResults;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -100,4 +106,5 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	...createPanelSlice(set, get),
 	...createTabSlice(set, get),
 	...createDirectorySlice(set, get),
+	...createSearchSlice(set, get),
 }))

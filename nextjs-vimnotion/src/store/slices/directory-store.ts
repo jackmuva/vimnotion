@@ -311,8 +311,8 @@ export const createDirectorySlice = (
 		get().setProposedDirectoryState(proposedDirectoryState);
 	},
 
-	openFileInBuffer: () => {
-		const fileId: string = get().getOilLine().split("|")[0];
+	openFileInBuffer: (id?: string) => {
+		const fileId: string = id ? id : get().getOilLine().split("|")[0];
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
 		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/${fileId}`,
