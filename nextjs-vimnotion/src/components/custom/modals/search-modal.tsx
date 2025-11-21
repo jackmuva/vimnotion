@@ -83,9 +83,12 @@ export const SearchModal = () => {
 			<div className="h-full w-full flex flex-col justify-between">
 				<div className="w-full outline-offset-2 outline outline-foreground-muted/50 
 					p-3 grow mb-4">
-					{Object.keys(searchResults).map((path) => {
+					{Object.keys(searchResults).map((path, i) => {
 						return (
-							<div key={searchResults[path].id}>
+							<div key={searchResults[path].id}
+								className={`${!inputMode && selectedIndex === i ?
+									"rounded-sm bg-foreground/10 " : ""}
+									py-0.5 px-1`}>
 								{path}
 							</div>
 						);
