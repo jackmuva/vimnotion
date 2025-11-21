@@ -8,6 +8,7 @@ export const LeaderPanel = () => {
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const closePanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleWindowPanel = useEditorStore((state) => state.toggleWindowPanel);
+	const toggleSearchPanel = useEditorStore((state) => state.toggleSearchPanel);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
 	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
@@ -49,11 +50,21 @@ export const LeaderPanel = () => {
 		};
 		document.addEventListener('keydown', handleMKey);
 
+		const handleSKey = (event: KeyboardEvent) => {
+			if (event.key === 's') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleSearchPanel();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleSKey);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
 			document.removeEventListener('keydown', handleMKey);
+			document.removeEventListener('keydown', handleSKey);
 		};
 	}, [closePanel, toggleWindowPanel]);
 
@@ -80,6 +91,16 @@ export const LeaderPanel = () => {
 					[w]
 				</button>indow
 			</div>
+			<div>
+				<button className="cursor-pointer"
+					onClick={() => {
+						toggleSearchPanel();
+						closePanel();
+					}}>
+					[s]
+				</button>earch
+			</div>
+
 		</div>
 	);
 

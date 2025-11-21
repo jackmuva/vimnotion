@@ -2,6 +2,7 @@ export enum PanelType {
 	LEADER = "LEADER",
 	SIDEBAR = "SIDEBAR",
 	MAIN = "MAIN",
+	MODAL = "MODAL",
 }
 
 

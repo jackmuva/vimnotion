@@ -11,6 +11,8 @@ export const createToggleSlice = (
 	openSidebar: false,
 	openLeaderPanel: false,
 	openWindowPanel: false,
+	openSearchPanel: false,
+	openSearchModal: false,
 
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
@@ -47,5 +49,26 @@ export const createToggleSlice = (
 		set({ openLeaderPanel: !leaderPanel });
 	},
 
+	toggleSearchPanel: () => {
+		const searchPanel = get().openSearchPanel;
+		if (searchPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+
+		set({ openSearchPanel: !searchPanel });
+	},
+
+	toggleSearchModal: () => {
+		const searchModal = get().openSearchModal;
+		if (searchModal) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.MODAL);
+		}
+
+		set({ openSearchModal: !searchModal });
+	},
 
 });

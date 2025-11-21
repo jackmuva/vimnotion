@@ -10,11 +10,14 @@ import { useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
 import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-confirmation";
+import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
-	const { openSidebar, openLeaderPanel, openWindowPanel, directoryConfirmation, setDirectoryState,
+	const searchPanel = useEditorStore((state) => state.openSearchPanel);
+	const searchModal = useEditorStore((state) => state.openSearchModal);
+	const { openSidebar, directoryConfirmation, setDirectoryState,
 		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
 
 
@@ -35,6 +38,15 @@ export default function Home() {
 			}
 		}
 	}, [windowPanel]);
+
+	useEffect(() => {
+		if (searchPanel) {
+			const button = document.getElementById(`first-search-option`);
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [searchPanel]);
 
 	useEffect(() => {
 		if (directoryConfirmation) {
@@ -68,8 +80,9 @@ export default function Home() {
 			<Header />
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer />
-			{openLeaderPanel && <LeaderPanel />}
-			{openWindowPanel && <WindowPanel />}
+			{leaderPanel && <LeaderPanel />}
+			{windowPanel && <WindowPanel />}
+			{searchPanel && <SearchPanel />}
 			<LeaderButton />
 			{directoryConfirmation && <DirectoryConfirmation />}
 		</div>
