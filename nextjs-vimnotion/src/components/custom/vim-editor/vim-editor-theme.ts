@@ -26,28 +26,93 @@ export const customTheme = Prec.highest(
 )
 
 export const markdownHighlighting = HighlightStyle.define([
+	// Headings
 	{
 		tag: tags.heading1,
-		fontWeight: "bold"
+		color: "#66d9ef"
 	},
 	{
 		tag: tags.heading2,
-		fontWeight: "bold"
+		color: "#66d9ef"
 	},
 	{
 		tag: tags.heading3,
-		fontWeight: "bold"
+		color: "#66d9ef"
 	},
 	{
 		tag: tags.heading4,
-		fontWeight: "bold"
+		color: "#66d9ef"
 	},
 	{
 		tag: tags.heading5,
-		fontWeight: "bold"
+		color: "#66d9ef"
 	},
 	{
 		tag: tags.heading6,
-		fontWeight: "bold"
+		color: "#66d9ef"
+	},
+	// Emphasis
+	{
+		tag: tags.emphasis,
+		fontStyle: "italic",
+		color: "#a1efe4"
+	},
+	{
+		tag: tags.strong,
+		color: "#f92672"
+	},
+	// Links and URLs
+	{
+		tag: tags.link,
+		color: "#a6e22e",
+		textDecoration: "underline"
+	},
+	{
+		tag: tags.url,
+		color: "#a6e22e"
+	},
+	// Code
+	{
+		tag: tags.monospace,
+		color: "#e6db74"
+	},
+	{
+		tag: tags.processingInstruction,
+		color: "#e6db74"
+	},
+	// Inline code
+	{
+		tag: tags.string,
+		color: "#e6db74"
+	},
+	// Blockquotes
+	{
+		tag: tags.quote,
+		fontStyle: "italic",
+		color: "#a1efe4"
+	},
+	// Punctuation
+	{
+		tag: tags.punctuation,
+		color: "#75715e"
+	},
+	// Lists
+	{
+		tag: tags.list,
+		color: "#a6e22e"
+	},
+	// Horizontal rules / separators
+	{
+		tag: tags.escape,
+		color: "#75715e"
+	},
+	// HTML tags in markdown
+	{
+		tag: tags.tagName,
+		color: "#f92672"
+	},
+	{
+		tag: tags.attributeName,
+		color: "#a6e22e"
 	},
 ]);
