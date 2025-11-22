@@ -13,6 +13,7 @@ export const createToggleSlice = (
 	openWindowPanel: false,
 	openSearchPanel: false,
 	openSearchModal: false,
+	openImageModal: false,
 
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
@@ -69,6 +70,16 @@ export const createToggleSlice = (
 		}
 
 		set({ openSearchModal: !searchModal });
+	},
+	toggleImageModal: () => {
+		const imageModal = get().openImageModal;
+		if (imageModal) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.MODAL);
+		}
+
+		set({ openImageModal: !imageModal });
 	},
 
 });

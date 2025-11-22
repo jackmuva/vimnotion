@@ -91,7 +91,7 @@ export const WindowPanel = () => {
 					className="cursor-pointer"
 					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.WEST))}
 				>
-					[h]
+					<span className="font-bold text-orange-500">[h]</span>
 				</button>
 				&rarr;move left a window
 			</div>
@@ -100,7 +100,7 @@ export const WindowPanel = () => {
 					className="cursor-pointer"
 					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.SOUTH))}
 				>
-					[j]
+					<span className="font-bold text-orange-500">[j]</span>
 				</button>
 				&rarr;move down a window
 			</div>
@@ -109,7 +109,7 @@ export const WindowPanel = () => {
 					className="cursor-pointer"
 					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.NORTH))}
 				>
-					[k]
+					<span className="font-bold text-orange-500">[k]</span>
 				</button>
 				&rarr;move up a window
 			</div>
@@ -118,7 +118,7 @@ export const WindowPanel = () => {
 					className="cursor-pointer"
 					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.EAST))}
 				>
-					[l]
+					<span className="font-bold text-orange-500">[&nbsp;l&nbsp;]</span>
 				</button>
 				&rarr;move right a window
 			</div>
@@ -127,7 +127,7 @@ export const WindowPanel = () => {
 					className="cursor-pointer"
 					onClick={() => handleNavigation(cycleNeighbor())}
 				>
-					[w]
+					<span className="font-bold text-orange-500">[w]</span>
 				</button>
 				&rarr;next window
 			</div>

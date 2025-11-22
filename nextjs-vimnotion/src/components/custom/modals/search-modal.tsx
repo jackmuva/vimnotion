@@ -13,7 +13,7 @@ const renderPathWithHighlights = (path: string, matches: RegExpMatchArray | null
 			parts.push(path.substring(lastIndex, matchIndex));
 		}
 		parts.push(
-			<span key={`match-${idx}`} className="text-orange-400 font-bold">
+			<span key={`match-${idx}`} className="text-orange-500 font-bold">
 				{match}
 			</span>
 		);

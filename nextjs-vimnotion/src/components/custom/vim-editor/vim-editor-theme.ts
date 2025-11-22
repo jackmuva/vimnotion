@@ -6,11 +6,11 @@ import { HighlightStyle } from "@codemirror/language"
 export const customTheme = Prec.highest(
 	EditorView.theme({
 		".cm-fat-cursor": {
-			background: "#d2d7c6",
+			background: "#818cf8",
 		},
 		"&:not(.cm-focused) .cm-fat-cursor": {
 			background: "none",
-			outline: "solid 1px #d2d7c6",
+			outline: "solid 1px #818cf8",
 			color: "transparent !important",
 		},
 		".cm-gutters": {

@@ -15,6 +15,7 @@ go run cmd/server/main.go
 1. grep search
 3. insert images
 4. public pages
+5. deploy backend
 
 
 ## High-level Todos

@@ -8,7 +8,7 @@ export const Header = () => {
 			z-40 absolute p-2 space-x-4 bg-background">
 			<button className='hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm'
 				onClick={() => toggleSidebar()}>
-				<Menu size={15} />
+				<Menu size={17} />
 			</button>
 			<h1 className='font-pixel italic text-2xl font-bold'>vimnotion</h1>
 		</div>

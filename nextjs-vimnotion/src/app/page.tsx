@@ -12,12 +12,14 @@ import useSWR from "swr";
 import { ConfirmationModal } from "@/components/custom/modals/confirmation-modal";
 import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
 import { SearchModal } from "@/components/custom/modals/search-modal";
+import { ImageModal } from "@/components/custom/modals/image-modal";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
 	const searchPanel = useEditorStore((state) => state.openSearchPanel);
 	const searchModal = useEditorStore((state) => state.openSearchModal);
+	const imageModal = useEditorStore((state) => state.openImageModal);
 	const { openSidebar, directoryConfirmation, setDirectoryState,
 		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
 
@@ -67,6 +69,15 @@ export default function Home() {
 		}
 	}, [searchModal]);
 
+	useEffect(() => {
+		if (imageModal) {
+			const input = document.getElementById(`first-image-option`);
+			if (input) {
+				input.focus();
+			}
+		}
+	}, [imageModal]);
+
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
@@ -96,6 +107,7 @@ export default function Home() {
 			<LeaderButton />
 			{directoryConfirmation && <ConfirmationModal />}
 			{searchModal && <SearchModal />}
+			{imageModal && <ImageModal />}
 		</div>
 	);
 }

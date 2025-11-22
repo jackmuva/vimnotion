@@ -38,7 +38,7 @@ export const SearchPanel = () => {
 						toggleSearchModal();
 						toggleSearchPanel();
 					}}>
-					[f]
+					<span className="font-bold text-orange-500">[f]</span>
 				</button>ilename
 			</div>
 		</div>

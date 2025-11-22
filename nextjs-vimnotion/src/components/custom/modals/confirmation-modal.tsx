@@ -94,7 +94,7 @@ export const ConfirmationModal = () => {
 				{changes.moved.map((movedObj, i) => {
 					return (
 						<div className="flex gap-4" key={i}>
-							<div className="text-yellow-500 font-bold italic">moved</div>
+							<div className="text-yellow-600 font-bold italic">moved</div>
 							<div>{movedObj.oldLocation.split("||").map((str) => str.split("|")[1]).join("")}
 								{" -> "}
 								{movedObj.newLocation.split("||").map((str) => str.split("|")[1]).join("")}</div>
@@ -111,7 +111,7 @@ export const ConfirmationModal = () => {
 				})}
 
 			</div>
-			<div className="w-full flex gap-8 justify-center">
+			<div className="w-full flex gap-8 justify-center text-2xl">
 				<div>
 					<button id={`first-confirmation-option`}
 						className="cursor-pointer"
@@ -123,7 +123,7 @@ export const ConfirmationModal = () => {
 								toggleSidebar();
 							}
 						}}>
-						[y]
+						<span className="font-bold text-orange-500">[y]</span>
 					</button>es
 				</div>
 				<div>
@@ -133,7 +133,7 @@ export const ConfirmationModal = () => {
 							setDirectoryConfirmation(false);
 							toggleSidebar();
 						}}>
-						[n]
+						<span className="font-bold text-orange-500">[n]</span>
 					</button>o
 				</div>
 			</div>

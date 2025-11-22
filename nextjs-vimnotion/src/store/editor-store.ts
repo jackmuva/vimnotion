@@ -15,12 +15,14 @@ export type EditorState = {
 	openWindowPanel: boolean;
 	openSearchPanel: boolean;
 	openSearchModal: boolean;
+	openImageModal: boolean;
 
 	toggleSidebar: () => void;
 	toggleLeaderPanel: () => void;
 	toggleWindowPanel: () => void;
 	toggleSearchPanel: () => void;
 	toggleSearchModal: () => void;
+	toggleImageModal: () => void;
 
 	activePane: string;
 	paneTree: PaneNode;

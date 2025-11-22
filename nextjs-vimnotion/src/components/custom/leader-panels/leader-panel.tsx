@@ -9,6 +9,7 @@ export const LeaderPanel = () => {
 	const closePanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleWindowPanel = useEditorStore((state) => state.toggleWindowPanel);
 	const toggleSearchPanel = useEditorStore((state) => state.toggleSearchPanel);
+	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
 	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
@@ -60,11 +61,22 @@ export const LeaderPanel = () => {
 		};
 		document.addEventListener('keydown', handleSKey);
 
+		const handleIKey = (event: KeyboardEvent) => {
+			if (event.key === 'i') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleImageModal();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleIKey);
+
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
 			document.removeEventListener('keydown', handleMKey);
 			document.removeEventListener('keydown', handleSKey);
+			document.removeEventListener('keydown', handleIKey);
 		};
 	}, [closePanel, toggleWindowPanel]);
 
@@ -79,7 +91,7 @@ export const LeaderPanel = () => {
 						shiftToMarkdown();
 						closePanel();
 					}}>
-					[m]
+					<span className="font-bold text-orange-500">[m]</span>
 				</button>arkdown
 			</div>
 			<div>
@@ -88,7 +100,7 @@ export const LeaderPanel = () => {
 						toggleWindowPanel();
 						closePanel();
 					}}>
-					[w]
+					<span className="font-bold text-orange-500">[w]</span>
 				</button>indow
 			</div>
 			<div>
@@ -97,8 +109,17 @@ export const LeaderPanel = () => {
 						toggleSearchPanel();
 						closePanel();
 					}}>
-					[s]
+					<span className="font-bold text-orange-500">[s]</span>
 				</button>earch
+			</div>
+			<div>
+				<button className="cursor-pointer"
+					onClick={() => {
+						toggleImageModal();
+						closePanel();
+					}}>
+					<span className="font-bold text-orange-500">[&nbsp;i &nbsp;]</span>
+				</button>nsert [ &nbsp;i &nbsp;]mage
 			</div>
 
 		</div>
