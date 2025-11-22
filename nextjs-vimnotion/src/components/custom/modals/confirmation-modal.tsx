@@ -2,7 +2,7 @@ import { useEditorStore } from "@/store/editor-store";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { useEffect, useState } from "react";
 
-export const DirectoryConfirmation = () => {
+export const ConfirmationModal = () => {
 	const { setDirectoryConfirmation, toggleSidebar,
 		detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState } = useEditorStore((state) => state);
 	const [changes, setChanges] = useState<DirectoryChanges>({
@@ -78,8 +78,8 @@ export const DirectoryConfirmation = () => {
 	}, [setDirectoryConfirmation, changes, proposedDirectoryState, toggleSidebar, setDirectoryState]);
 
 	return (
-		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-			z-30 bg-secondary-background/50 h-96 max-w-11/12 w-[700px] p-4 
+		<div className="font-pixel text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+			z-30 bg-background h-96 max-w-11/12 w-[700px] p-4 
 			flex flex-col justify-between outline  outline-offset-2 
 			outline-foreground-muted/50">
 			<div className="w-full flex flex-col">

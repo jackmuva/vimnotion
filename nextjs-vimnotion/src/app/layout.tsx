@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Libre_Baskerville } from "next/font/google";
+import { Geist, Geist_Mono, Libre_Baskerville, Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,15 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-const custom = Libre_Baskerville({
+const libre = Libre_Baskerville({
 	weight: "400",
-	variable: "--font-custom",
+	variable: "--font-libre",
+	subsets: ["latin"],
+});
+
+const pixel = Pixelify_Sans({
+	weight: "400",
+	variable: "--font-pixel",
 	subsets: ["latin"],
 });
 
@@ -31,7 +37,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable} 
-					${custom.variable} antialiased `}>
+					${libre.variable} ${pixel.variable} antialiased `}>
 				{children}
 			</body>
 		</html>

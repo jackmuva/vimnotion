@@ -9,7 +9,7 @@ import { TabContainer } from "@/components/custom/tab-container";
 import { useEditorStore } from "@/store/editor-store";
 import { LeaderButton } from "@/components/custom/leader-button";
 import useSWR from "swr";
-import { DirectoryConfirmation } from "@/components/custom/sidebar/directory-confirmation";
+import { ConfirmationModal } from "@/components/custom/modals/confirmation-modal";
 import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
 import { SearchModal } from "@/components/custom/modals/search-modal";
 
@@ -86,7 +86,7 @@ export default function Home() {
 	}, [data]);
 
 	return (
-		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-custom text-lg">
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-libre text-lg">
 			<Header />
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer />
@@ -94,7 +94,7 @@ export default function Home() {
 			{windowPanel && <WindowPanel />}
 			{searchPanel && <SearchPanel />}
 			<LeaderButton />
-			{directoryConfirmation && <DirectoryConfirmation />}
+			{directoryConfirmation && <ConfirmationModal />}
 			{searchModal && <SearchModal />}
 		</div>
 	);

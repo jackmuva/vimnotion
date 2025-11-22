@@ -16,7 +16,8 @@
   --color-foreground-muted: var(--foreground-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-custom: var(--font-custom);
+  --font-libre: var(--font-libre);
+  --font-pixel: var(--font-pixel);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,21 +38,21 @@ body {
 
 [id^="md-editor-"] {
   & h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
 
   & h2 {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 600;
     margin-top: 1.25rem;
     margin-bottom: 0.75rem;
   }
 
   & h3 {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 600;
     margin-top: 1rem;
     margin-bottom: 0.5rem;

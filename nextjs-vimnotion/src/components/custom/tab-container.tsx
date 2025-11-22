@@ -21,7 +21,7 @@ export const TabContainer = () => {
 	}, [tabs]);
 
 	if (!isClient || !tabs || tabs.length === 0) {
-		return <div className="h-full w-full text-center">Loading...</div>;
+		return <div className="h-full w-full text-center font-pixel">Loading...</div>;
 	}
 	return (
 		<div className="h-full w-full flex flex-col space-y-0">

@@ -123,7 +123,7 @@ export const SearchModal = () => {
 	}, [inputMode]);
 
 	return (
-		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+		<div className="font-pixel text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
 			z-30 h-[600px] max-h-11/12 max-w-11/12 w-[700px] pt-14 p-4 
 			flex flex-col items-center bg-background">
 			<div className="h-full w-full flex flex-col justify-between">

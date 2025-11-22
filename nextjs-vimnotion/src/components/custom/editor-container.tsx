@@ -46,7 +46,7 @@ export const EditorContainer = ({
 	}
 
 	if (!isClient) {
-		return <div className="h-full w-full text-center">Loading...</div>;
+		return <div className="h-full w-full text-center font-pixel">Loading...</div>;
 	} else {
 		return (
 			<>

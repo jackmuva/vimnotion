@@ -70,9 +70,8 @@ export const LeaderPanel = () => {
 
 	return (
 		<div id={`leader-panel`}
-			className='z-20 w-full bg-background-muted/50 h-1/4 absolute bottom-0 left-0 
-					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 
-			content-start gap-4'>
+			className='font-pixel text-2xl z-20 w-full bg-background-muted h-1/4 absolute bottom-0 left-0 
+					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
 			<div>
 				<button id={`first-leader-option`}
 					className="cursor-pointer"
