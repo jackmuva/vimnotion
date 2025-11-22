@@ -12,9 +12,8 @@ go run main.go
 ```
 
 ## Granular Todos
-1. Save and Load buffers from sidebar
-    * need to decide how updates are handled client side when two buffers are open
-2. start search
+1. grep search
+2. md highlighting
 
 ## High-level Todos
 - search experience
