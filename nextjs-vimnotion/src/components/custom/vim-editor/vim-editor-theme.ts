@@ -27,190 +27,206 @@ export const customTheme = Prec.highest(
 	})
 )
 
+const brilliantYellow = "#ffd497";
+const glowingCoral = "#eda09c";
+const luminousOrchid = "#d1b6cb";
 const iceBlue = "#c8d6dc";
-const snowWhite = "#f5f7f7";
-const luminousPeach = "#f8dcc9";
-const starryYellow = "#f0e2cd";
+
 
 export const markdownDark = HighlightStyle.define([
 	{
 		tag: tags.heading1,
-		color: "#83a598",
+		color: brilliantYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: "#8ec07c",
+		color: glowingCoral,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: "#8ec07c",
+		color: luminousOrchid,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: "#fe8019",
+		color: iceBlue,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: "#fe8019",
+		color: brilliantYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: "#d3869b",
+		color: glowingCoral,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
+		color: iceBlue,
 	},
 	{
 		tag: tags.strong,
 		fontWeight: "bold",
+		color: luminousOrchid,
 	},
 	{
 		tag: tags.link,
-		color: "#b8bb26",
+		color: luminousOrchid,
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: "#b8bb26"
+		color: glowingCoral
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: "#fabd2f"
+		color: luminousOrchid
 	},
 	{
 		tag: tags.processingInstruction,
-		color: "#fabd2f"
+		color: brilliantYellow
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: "#fabd2f"
+		color: iceBlue
 	},
 	// Blockquotes
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: "#8ec07c"
+		color: iceBlue
 	},
 	{
 		tag: tags.punctuation,
-		color: "#928374"
+		color: brilliantYellow
 	},
 	{
 		tag: tags.list,
-		color: "#b8bb26"
+		color: iceBlue
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: "#928374"
+		color: iceBlue
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: "#fe8019"
+		color: luminousOrchid
 	},
 	{
 		tag: tags.attributeName,
-		color: "#b8bb26"
+		color: iceBlue
 	},
 ]);
+
+// Kanagawa Lotus palette (light theme inspired)
+const kanagawaViolet = "#766b90";
+const kanagawaRed = "#c4746e";
+const kanagawaGreen = "#597c5c";
+const kanagawaYellow = "#c4b28a";
+const kanagawaBlue = "#4d8fd4";
+const kanagawaPink = "#b35b79";
+const kanagawaAqua = "#597c5c";
+const kanagawaGray = "#716e61";
+
 
 export const markdownLight = HighlightStyle.define([
 	{
 		tag: tags.heading1,
-		color: "#427b58",
+		color: kanagawaBlue,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: "#558a5a",
+		color: kanagawaRed,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: "#558a5a",
+		color: kanagawaViolet,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: "#af3a03",
+		color: kanagawaYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: "#af3a03",
+		color: kanagawaGreen,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: "#8f3f71",
+		color: kanagawaPink,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
+		color: kanagawaAqua,
 	},
 	{
 		tag: tags.strong,
 		fontWeight: "bold",
+		color: kanagawaPink,
 	},
 	{
 		tag: tags.link,
-		color: "#6f8735",
+		color: kanagawaBlue,
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: "#6f8735"
+		color: kanagawaBlue
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: "#b57614"
+		color: kanagawaYellow
 	},
 	{
 		tag: tags.processingInstruction,
-		color: "#b57614"
+		color: kanagawaYellow
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: "#b57614"
+		color: kanagawaYellow
 	},
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: "#558a5a"
+		color: kanagawaGray
 	},
 	{
 		tag: tags.punctuation,
-		color: "#7c6f64"
+		color: kanagawaGray
 	},
 	{
 		tag: tags.list,
-		color: "#6f8735"
+		color: kanagawaPink
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: "#7c6f64"
+		color: kanagawaGray
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: "#af3a03"
+		color: kanagawaBlue
 	},
 	{
 		tag: tags.attributeName,
-		color: "#6f8735"
+		color: kanagawaYellow
 	},
 ]);
