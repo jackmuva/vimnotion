@@ -312,7 +312,7 @@ export const createDirectorySlice = (
 	},
 
 	openFileInBuffer: (id?: string) => {
-		const fileId: string = id ? id : get().getOilLine().split("|")[0];
+		const fileId: string = id ? id.split("|")[0] : get().getOilLine().split("|")[0];
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
 		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/${fileId}`,
@@ -321,7 +321,7 @@ export const createDirectorySlice = (
 			}
 		).then((res: Response) => {
 			res.json().then((body: { Data: VnObject }) => {
-				activePane[Object.keys(activePane)[0]].fileId = get().getOilLine();
+				activePane[Object.keys(activePane)[0]].fileId = id ? id.split("|")[0] : get().getOilLine();
 				activePane[Object.keys(activePane)[0]].buffer = body.Data.contents;
 				get().updatePane(activePane);
 			}).catch((err) => {

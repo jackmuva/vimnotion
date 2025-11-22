@@ -27,7 +27,7 @@ export const createSearchSlice = (
 			const prefix = prefixPaths.shift()!;
 
 			for (const childKey of Object.keys(directoryTree[Object.keys(directoryTree)[0]].children)) {
-				pathRes[prefix + childKey.split("|")[1]] = childKey.split("|")[0];
+				pathRes[prefix + childKey.split("|")[1]] = childKey;
 				q.push({
 					[childKey]: directoryTree[Object.keys(directoryTree)[0]].children[childKey]
 				});
