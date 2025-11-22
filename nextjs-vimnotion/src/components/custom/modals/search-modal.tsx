@@ -6,7 +6,8 @@ export const SearchModal = () => {
 	const [inputMode, setInputMode] = useState<boolean>(true);
 	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [searchResults, setSearchResults] = useState<SearchResults>({});
-	const { refreshFilePaths, openFileInBuffer, searchByFilename } = useEditorStore((state) => state);
+	const { refreshFilePaths, openFileInBuffer, searchByFilename,
+		toggleSearchModal } = useEditorStore((state) => state);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const selectedIndexRef = useRef(selectedIndex);
@@ -32,9 +33,14 @@ export const SearchModal = () => {
 
 	useEffect(() => {
 		refreshFilePaths();
+		debouncedSearch(searchTerm);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				setInputMode((prev) => !prev);
+				if (inputModeRef.current) {
+					setInputMode(false);
+				} else {
+					toggleSearchModal();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleKeyDown);
@@ -57,11 +63,29 @@ export const SearchModal = () => {
 		};
 		document.addEventListener('keydown', handleKKeyDown);
 
+		const handleIKeyDown = (event: KeyboardEvent) => {
+			if (!inputModeRef.current && event.key === 'i') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				setInputMode(true);
+			}
+		};
+		document.addEventListener('keydown', handleIKeyDown);
+
+		const handleCrKeyDown = (event: KeyboardEvent) => {
+			if (!inputModeRef.current && event.key === 'Enter') {
+				openFileInBuffer(searchResultsRef.current[Object.keys(searchResultsRef.current)[selectedIndexRef.current]].id);
+				toggleSearchModal();
+			}
+		};
+		document.addEventListener('keydown', handleCrKeyDown);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleJKeyDown);
 			document.removeEventListener('keydown', handleKKeyDown);
+			document.removeEventListener('keydown', handleIKeyDown);
+			document.removeEventListener('keydown', handleCrKeyDown);
 		}
 
 	}, []);
@@ -72,9 +96,6 @@ export const SearchModal = () => {
 			inp?.focus();
 		}
 	}, [inputMode]);
-
-	console.log("search res: ", searchResults);
-	console.log("index: ", selectedIndex);
 
 	return (
 		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2

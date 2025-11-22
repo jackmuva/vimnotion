@@ -43,7 +43,7 @@ export const createSearchSlice = (
 
 		for (const fp of Object.keys(filePaths)) {
 			const matches: null | RegExpMatchArray = fp.match(term);
-			if (matches) {
+			if (matches && fp.at(-1) !== "/") {
 				searchRes[fp] = {
 					id: filePaths[fp],
 					regexMatches: matches

@@ -15,8 +15,8 @@ export const SearchPanel = () => {
 			if (event.key === 'f') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleSearchModal();
 				toggleSearchPanel();
+				toggleSearchModal();
 			}
 		};
 		document.addEventListener('keydown', handleFKey);
