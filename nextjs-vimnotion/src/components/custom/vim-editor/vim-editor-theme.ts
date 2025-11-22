@@ -27,211 +27,206 @@ export const customTheme = Prec.highest(
 	})
 )
 
-// Kanagawa Wave palette (dark theme inspired)
-const kanagawaDarkCarpYellow = "#E6C384";
-const kanagawaDarkPeachRed = "#FF5D62";
-const kanagawaDarkSakuraPink = "#D27E99";
-const kanagawaDarkCrystalBlue = "#7E9CD8";
-const kanagawaDarkSpringGreen = "#98BB6C";
-const kanagawaDarkOniViolet = "#957FB8";
-const kanagawaDarkSpringBlue = "#7FB4CA";
-const kanagawaDarkFujiGray = "#727169";
+const brilliantYellow = "#ffd497";
+const glowingCoral = "#eda09c";
+const luminousOrchid = "#d1b6cb";
+const iceBlue = "#c8d6dc";
 
 
 export const markdownDark = HighlightStyle.define([
 	{
 		tag: tags.heading1,
-		color: kanagawaDarkCarpYellow,
+		color: brilliantYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: kanagawaDarkPeachRed,
+		color: glowingCoral,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: kanagawaDarkSakuraPink,
+		color: luminousOrchid,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: kanagawaDarkCrystalBlue,
+		color: iceBlue,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: kanagawaDarkSpringGreen,
+		color: brilliantYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: kanagawaDarkOniViolet,
+		color: glowingCoral,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
-		color: kanagawaDarkSpringBlue,
+		color: iceBlue,
 	},
 	{
 		tag: tags.strong,
 		fontWeight: "bold",
-		color: kanagawaDarkSakuraPink,
+		color: luminousOrchid,
 	},
 	{
 		tag: tags.link,
-		color: kanagawaDarkCrystalBlue,
+		color: luminousOrchid,
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: kanagawaDarkCrystalBlue
+		color: glowingCoral
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: kanagawaDarkCarpYellow
+		color: luminousOrchid
 	},
 	{
 		tag: tags.processingInstruction,
-		color: kanagawaDarkCarpYellow
+		color: brilliantYellow
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: kanagawaDarkSpringGreen
+		color: iceBlue
 	},
 	// Blockquotes
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: kanagawaDarkFujiGray
+		color: iceBlue
 	},
 	{
 		tag: tags.punctuation,
-		color: kanagawaDarkFujiGray
+		color: brilliantYellow
 	},
 	{
 		tag: tags.list,
-		color: kanagawaDarkPeachRed
+		color: iceBlue
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: kanagawaDarkFujiGray
+		color: iceBlue
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: kanagawaDarkCrystalBlue
+		color: luminousOrchid
 	},
 	{
 		tag: tags.attributeName,
-		color: kanagawaDarkCarpYellow
+		color: iceBlue
 	},
 ]);
 
 // Kanagawa Lotus palette (light theme inspired)
-const kanagawaLightViolet = "#766b90";
-const kanagawaLightRed = "#c4746e";
-const kanagawaLightGreen = "#597c5c";
-const kanagawaLightYellow = "#c4b28a";
-const kanagawaLightBlue = "#4d8fd4";
-const kanagawaLightPink = "#b35b79";
-const kanagawaLightAqua = "#597c5c";
-const kanagawaLightGray = "#716e61";
+const kanagawaViolet = "#766b90";
+const kanagawaRed = "#c4746e";
+const kanagawaGreen = "#597c5c";
+const kanagawaYellow = "#c4b28a";
+const kanagawaBlue = "#4d8fd4";
+const kanagawaPink = "#b35b79";
+const kanagawaAqua = "#597c5c";
+const kanagawaGray = "#716e61";
 
 
 export const markdownLight = HighlightStyle.define([
 	{
 		tag: tags.heading1,
-		color: kanagawaLightBlue,
+		color: kanagawaBlue,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: kanagawaLightRed,
+		color: kanagawaRed,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: kanagawaLightViolet,
+		color: kanagawaViolet,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: kanagawaLightYellow,
+		color: kanagawaYellow,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: kanagawaLightGreen,
+		color: kanagawaGreen,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: kanagawaLightPink,
+		color: kanagawaPink,
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
-		color: kanagawaLightAqua,
+		color: kanagawaAqua,
 	},
 	{
 		tag: tags.strong,
 		fontWeight: "bold",
-		color: kanagawaLightPink,
+		color: kanagawaPink,
 	},
 	{
 		tag: tags.link,
-		color: kanagawaLightBlue,
+		color: kanagawaBlue,
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: kanagawaLightBlue
+		color: kanagawaBlue
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: kanagawaLightYellow
+		color: kanagawaViolet,
 	},
 	{
 		tag: tags.processingInstruction,
-		color: kanagawaLightYellow
+		color: kanagawaYellow
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: kanagawaLightYellow
+		color: kanagawaYellow
 	},
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: kanagawaLightGray
+		color: kanagawaGray
 	},
 	{
 		tag: tags.punctuation,
-		color: kanagawaLightGray
+		color: kanagawaGray
 	},
 	{
 		tag: tags.list,
-		color: kanagawaLightPink
+		color: kanagawaPink
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: kanagawaLightGray
+		color: kanagawaGray
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: kanagawaLightBlue
+		color: kanagawaBlue
 	},
 	{
 		tag: tags.attributeName,
-		color: kanagawaLightYellow
+		color: kanagawaYellow
 	},
 ]);
