@@ -1,5 +1,6 @@
 import { DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
+import { SearchResults } from "@/types/search-types";
 
 export const createSearchSlice = (
 	set: {

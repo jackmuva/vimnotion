@@ -1,6 +1,31 @@
 import { debounce } from "@/lib/utils";
 import { useEditorStore } from "@/store/editor-store";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { SearchResults } from "@/types/search-types";
+
+const renderPathWithHighlights = (path: string, matches: RegExpMatchArray | null) => {
+	if (!matches || matches.length === 0) return path;
+	const parts: (string | ReactNode)[] = [];
+	let lastIndex = 0;
+	matches.forEach((match, idx) => {
+		const matchIndex = path.indexOf(match, lastIndex);
+		if (matchIndex > lastIndex) {
+			parts.push(path.substring(lastIndex, matchIndex));
+		}
+		parts.push(
+			<span key={`match-${idx}`} className="text-orange-400 font-bold">
+				{match}
+			</span>
+		);
+		lastIndex = matchIndex + match.length;
+	});
+
+	if (lastIndex < path.length) {
+		parts.push(path.substring(lastIndex));
+	}
+
+	return parts;
+};
 
 export const SearchModal = () => {
 	const [inputMode, setInputMode] = useState<boolean>(true);
@@ -97,8 +122,6 @@ export const SearchModal = () => {
 		}
 	}, [inputMode]);
 
-	console.log(searchResultsRef.current);
-
 	return (
 		<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
 			z-30 h-[600px] max-h-11/12 max-w-11/12 w-[700px] pt-14 p-4 
@@ -112,7 +135,7 @@ export const SearchModal = () => {
 								className={`${!inputMode && selectedIndex === i ?
 									"rounded-sm bg-foreground/10 " : ""}
 									py-0.5 px-1 flex`}>
-								{path}
+								{renderPathWithHighlights(path, searchResults[path].regexMatches)}
 							</div>
 						);
 					})}
