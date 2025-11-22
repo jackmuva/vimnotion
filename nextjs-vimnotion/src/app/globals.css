@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf4ed;
-  --secondary-background:#F1EAE1;
+  --background: #F1EAE1;
+  --secondary-background:#dfe0ed;
   --background-muted: #d1d5db; /*gray-300*/
-  --foreground: #2e241d; 
+  --foreground: black; 
   --foreground-muted: #334155; /*slate-700*/
 }
 
@@ -21,8 +21,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #2e241d;
-    --secondary-background: #403744;
+    --background: #151515; /*sesame black*/
+    --secondary-background: #252A36; /*duskypine*/
     --background-muted: #404040; /*neutral-700*/
     --foreground: #faf4ed;
     --foreground-muted: #d4d4d4; /*neutral-300*/

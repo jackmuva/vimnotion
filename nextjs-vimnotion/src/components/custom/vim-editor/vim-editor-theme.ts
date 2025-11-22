@@ -21,43 +21,48 @@ export const customTheme = Prec.highest(
 		},
 		"&": {
 			minHeight: "100%",
+			//NOTE:we can change text color here
+			// color: "white",
 		},
 	})
 )
 
+const iceBlue = "#c8d6dc";
+const snowWhite = "#f5f7f7";
+const luminousPeach = "#f8dcc9";
+const starryYellow = "#f0e2cd";
+
 export const markdownDark = HighlightStyle.define([
-	// Headings
 	{
 		tag: tags.heading1,
-		color: "#60a5fa",
+		color: "#83a598",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: "#2563eb",
+		color: "#8ec07c",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: "#2563eb",
+		color: "#8ec07c",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: "#2563eb",
+		color: "#fe8019",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: "#2563eb",
+		color: "#fe8019",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: "#2563eb",
+		color: "#d3869b",
 		fontWeight: "bold",
 	},
-	// Emphasis
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
@@ -66,95 +71,90 @@ export const markdownDark = HighlightStyle.define([
 		tag: tags.strong,
 		fontWeight: "bold",
 	},
-	// Links and URLs
 	{
 		tag: tags.link,
-		color: "#a6e22e",
+		color: "#b8bb26",
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: "#a6e22e"
+		color: "#b8bb26"
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: "#e6db74"
+		color: "#fabd2f"
 	},
 	{
 		tag: tags.processingInstruction,
-		color: "#e6db74"
+		color: "#fabd2f"
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: "#e6db74"
+		color: "#fabd2f"
 	},
 	// Blockquotes
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: "#a1efe4"
+		color: "#8ec07c"
 	},
-	// Punctuation
 	{
 		tag: tags.punctuation,
-		color: "#75715e"
+		color: "#928374"
 	},
-	// Lists
 	{
 		tag: tags.list,
-		color: "#a6e22e"
+		color: "#b8bb26"
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: "#75715e"
+		color: "#928374"
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: "#f92672"
+		color: "#fe8019"
 	},
 	{
 		tag: tags.attributeName,
-		color: "#a6e22e"
+		color: "#b8bb26"
 	},
 ]);
 
 export const markdownLight = HighlightStyle.define([
-	// Headings
 	{
 		tag: tags.heading1,
-		color: "#1e40af",
+		color: "#427b58",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading2,
-		color: "#2563eb",
+		color: "#558a5a",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading3,
-		color: "#2563eb",
+		color: "#558a5a",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading4,
-		color: "#2563eb",
+		color: "#af3a03",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading5,
-		color: "#2563eb",
+		color: "#af3a03",
 		fontWeight: "bold",
 	},
 	{
 		tag: tags.heading6,
-		color: "#2563eb",
+		color: "#8f3f71",
 		fontWeight: "bold",
 	},
-	// Emphasis
 	{
 		tag: tags.emphasis,
 		fontStyle: "italic",
@@ -163,58 +163,54 @@ export const markdownLight = HighlightStyle.define([
 		tag: tags.strong,
 		fontWeight: "bold",
 	},
-	// Links and URLs
 	{
 		tag: tags.link,
-		color: "#a6e22e",
+		color: "#6f8735",
 		textDecoration: "underline"
 	},
 	{
 		tag: tags.url,
-		color: "#a6e22e"
+		color: "#6f8735"
 	},
 	// Code
 	{
 		tag: tags.monospace,
-		color: "#e6db74"
+		color: "#b57614"
 	},
 	{
 		tag: tags.processingInstruction,
-		color: "#e6db74"
+		color: "#b57614"
 	},
 	// Inline code
 	{
 		tag: tags.string,
-		color: "#e6db74"
+		color: "#b57614"
 	},
-	// Blockquotes
 	{
 		tag: tags.quote,
 		fontStyle: "italic",
-		color: "#a1efe4"
+		color: "#558a5a"
 	},
-	// Punctuation
 	{
 		tag: tags.punctuation,
-		color: "#75715e"
+		color: "#7c6f64"
 	},
-	// Lists
 	{
 		tag: tags.list,
-		color: "#a6e22e"
+		color: "#6f8735"
 	},
 	// Horizontal rules / separators
 	{
 		tag: tags.escape,
-		color: "#75715e"
+		color: "#7c6f64"
 	},
 	// HTML tags in markdown
 	{
 		tag: tags.tagName,
-		color: "#f92672"
+		color: "#af3a03"
 	},
 	{
 		tag: tags.attributeName,
-		color: "#a6e22e"
+		color: "#6f8735"
 	},
 ]);
