@@ -6,10 +6,29 @@ export const ImageModal = () => {
 	const [imagePresent, setImagePresent] = useState<boolean>(false);
 	const [imageBuffer, setImageBuffer] = useState<string | ArrayBuffer | null>(null);
 	const imagePresentRef = useRef(imagePresent);
+	const imageFile = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
 		imagePresentRef.current = imagePresent;
 	}, [imagePresent]);
+
+
+	const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (!event || !event.target || !event.target.files) return;
+		const file = event.target.files[0];
+		const fileReader = new FileReader();
+
+		fileReader.readAsDataURL(file)
+		fileReader.onload = () => {
+			setImagePresent(true);
+			setImageBuffer(fileReader.result);
+		}
+	}
+
+	const uploadImage = () => {
+		imageFile.current?.click();
+	}
+
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -30,15 +49,23 @@ export const ImageModal = () => {
 		}
 		document.addEventListener('keydown', handleNKeyDown);
 
+		const handleUKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'u' && !imagePresentRef.current) {
+				uploadImage();
+			}
+		}
+		document.addEventListener('keydown', handleUKeyDown);
+
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleYKeyDown);
 			document.removeEventListener('keydown', handleNKeyDown);
+			document.removeEventListener('keydown', handleUKeyDown);
 		}
 	}, []);
 
 	useEffect(() => {
-		let contentTarget = document.getElementById("imageUpload");
+		const contentTarget = document.getElementById("imageUpload");
 
 		if (!contentTarget) return;
 		contentTarget.onpaste = (e: ClipboardEvent) => {
@@ -49,7 +76,7 @@ export const ImageModal = () => {
 
 			if (!cbPayload.length || cbPayload.length === 0) return false;
 
-			let reader = new FileReader();
+			const reader = new FileReader();
 			reader.onload = (e: ProgressEvent<FileReader>) => {
 				e.preventDefault();
 				if (!e || !e.target) return;
@@ -71,7 +98,8 @@ export const ImageModal = () => {
 			const button = document.getElementById("image-confirmation-option");
 			if (button) button.focus();
 		}
-	}, [imagePresent])
+	}, [imagePresent]);
+
 
 	return (
 		<div className="font-pixel text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
@@ -124,13 +152,15 @@ export const ImageModal = () => {
 						</div>
 
 					</>) : (<>
+						<input type="file" id="image" style={{ display: 'none' }}
+							ref={imageFile} accept="image/*"
+							onChange={handleImage} />
 						<div>
 							<button
 								className="cursor-pointer"
 								id="first-image-option"
 								onClick={
-									() => {
-									}
+									() => { uploadImage(); }
 								}>
 								<span className="font-bold text-orange-500">[u]</span>
 							</button>pload image
