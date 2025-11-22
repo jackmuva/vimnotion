@@ -8,12 +8,11 @@ npm run dev
 
 ### go webserver
 ```bash
-go run main.go
+go run server/cmd/main.go
 ```
 
 ## Immediate Todos
 1. grep search
-2. md highlighting
 3. insert images
 4. public pages
 
