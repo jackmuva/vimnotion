@@ -4,12 +4,13 @@ import { useEffect, useState, useRef } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { customTheme } from './vim-editor-theme';
+import { customTheme, markdownHighlighting } from './vim-editor-theme';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
 import { applyTabBindings } from './extensions/tab-bindings';
 import { applySidebarBindings } from './extensions/sidebar-bindings';
 import { applyPanelBindings } from './extensions/panel-bindings';
+import { syntaxHighlighting } from "@codemirror/language"
 
 export const VimEditor = ({
 	paneId,
@@ -107,6 +108,7 @@ export const VimEditor = ({
 				focusListener,
 				docChangeListener,
 				EditorView.lineWrapping,
+				syntaxHighlighting(markdownHighlighting),
 			],
 			parent: editorElement,
 		});

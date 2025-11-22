@@ -11,15 +11,15 @@ npm run dev
 go run main.go
 ```
 
-## Granular Todos
+## Immediate Todos
 1. grep search
 2. md highlighting
+3. insert images
+4. public pages
+
 
 ## High-level Todos
 - search experience
-  - sqlite with full-text search, indexed db with incremental sync
-  - in sqlite, keep a json string with directory structure;
-  this will work as we can search by name client-side and search grep server-side/indexed-db
 - markdown renderer
   - ability to link pages, insert images, embed videos
   - how do we keep images private (to research)
