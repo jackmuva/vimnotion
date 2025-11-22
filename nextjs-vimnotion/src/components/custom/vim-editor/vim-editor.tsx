@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
-import { customTheme, markdownHighlighting } from './vim-editor-theme';
+import { customTheme, markdownDark, markdownLight } from './vim-editor-theme';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
 import { applyTabBindings } from './extensions/tab-bindings';
@@ -22,9 +22,8 @@ export const VimEditor = ({
 	toggleLeaderPanel: () => void,
 }) => {
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
-	const themeRef = useRef(new Compartment());
-	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
+
 	const activeId: string = useEditorStore((state) => state.activePane);
 	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
 	const getActivePanel: () => PanelType = useEditorStore((state) => state.getActivePanel);
@@ -40,6 +39,11 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, updateVnObject } = useEditorStore((state) => state);
+
+	const themeRef = useRef(new Compartment());
+	const theme = themeRef.current;
+	const highlightRef = useRef(new Compartment());
+	const highlight = highlightRef.current;
 
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
@@ -104,11 +108,11 @@ export const VimEditor = ({
 				vim(),
 				basicSetup,
 				theme.of(lightTheme),
+				highlight.of(syntaxHighlighting(markdownLight)),
 				markdown(),
 				focusListener,
 				docChangeListener,
 				EditorView.lineWrapping,
-				syntaxHighlighting(markdownHighlighting),
 			],
 			parent: editorElement,
 		});
@@ -116,6 +120,9 @@ export const VimEditor = ({
 		if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			view.dispatch({
 				effects: theme.reconfigure(darkTheme),
+			});
+			view.dispatch({
+				effects: highlight.reconfigure(syntaxHighlighting(markdownDark)),
 			});
 		}
 		applyTabBindings({
@@ -166,9 +173,15 @@ export const VimEditor = ({
 					vimEditor?.dispatch({
 						effects: theme.reconfigure(darkTheme),
 					});
+					vimEditor.dispatch({
+						effects: highlight.reconfigure(syntaxHighlighting(markdownDark)),
+					});
 				} else {
 					vimEditor?.dispatch({
 						effects: theme.reconfigure(lightTheme),
+					});
+					vimEditor.dispatch({
+						effects: highlight.reconfigure(syntaxHighlighting(markdownLight)),
 					});
 				}
 			};
