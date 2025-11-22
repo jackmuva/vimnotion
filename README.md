@@ -8,7 +8,7 @@ npm run dev
 
 ### go webserver
 ```bash
-go run server/cmd/main.go
+go run cmd/server/main.go
 ```
 
 ## Immediate Todos
