@@ -32,7 +32,7 @@ export const MarkdownEditor = ({
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 
-			flex flex-col justify-start items-start space-y-2 p-2'>
+			flex flex-col justify-start items-center space-y-2 p-2'>
 			<h1 className="flex justify-end w-full italic  
 				border-b border-b-background-muted/50">
 				<button className="flex items-center space-x-1 
@@ -43,7 +43,7 @@ export const MarkdownEditor = ({
 				</button>
 			</h1>
 			<div id={`md-editor-${paneId}`}
-				className={`h-full w-full overflow-y-scroll`}>
+				className={`h-full max-w-[1100px] w-full overflow-y-scroll`}>
 				<Markdown>
 					{pane[paneId].buffer}
 				</Markdown>
