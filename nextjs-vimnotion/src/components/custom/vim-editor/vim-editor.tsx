@@ -85,9 +85,7 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		console.log('refocusing');
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
-			console.log('focus');
 			vimEditor.focus();
 			if (newImageUrl) {
 				const mdImage = `![your-image-name](${newImageUrl})`

@@ -65,8 +65,8 @@ export const LeaderPanel = () => {
 			if (event.key === 'i') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleImageModal();
 				closePanel();
+				toggleImageModal();
 			}
 		};
 		document.addEventListener('keydown', handleIKey);
