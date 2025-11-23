@@ -43,6 +43,7 @@ func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			fmt.Printf("unable to write error json: %s\n", err)
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonMessage)
 	}
 }

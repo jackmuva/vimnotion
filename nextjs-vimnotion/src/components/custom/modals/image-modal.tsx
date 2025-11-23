@@ -56,6 +56,7 @@ export const ImageModal = () => {
 				method: 'POST',
 				headers: { 'Content-Type': contentType },
 				body: binaryData,
+				credentials: "include",
 			});
 
 			if (!response.ok) {
@@ -95,9 +96,6 @@ export const ImageModal = () => {
 			if (event.key === 'n' && imagePresentRef.current) {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				// setImagePresent(false);
-				// setImageBuffer(null);
-				console.log("n");
 				toggleImageModal();
 			}
 		}

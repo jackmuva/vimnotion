@@ -21,13 +21,13 @@ func main() {
 	defer tursoDb.Close()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handlers.Healthcheck)
 	mux.HandleFunc("/oauth/github/callback", handlers.GithubCallback(tursoDb))
 	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.HandlePersonalDirectory(tursoDb)))
 	mux.Handle("/api/vnobject/{id}", middleware.AuthMiddleware(handlers.GetVnObjectById(tursoDb)))
 	mux.Handle("/api/vnobject", middleware.AuthMiddleware(handlers.RouteVnObjectRequests(tursoDb)))
 	mux.Handle("/api/image/{id}", handlers.GetImageById(tursoDb))
 	mux.Handle("/api/image", middleware.AuthMiddleware(handlers.InsertImage(tursoDb)))
+	mux.HandleFunc("/", handlers.Healthcheck)
 
 	corsHandler := middleware.EnableCors(mux)
 

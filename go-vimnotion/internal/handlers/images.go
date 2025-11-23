@@ -16,6 +16,7 @@ import (
 
 func GetImageById(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("hit the get image endpoint!\n")
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -35,6 +36,8 @@ func GetImageById(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		image := objs[0]
+		fmt.Printf("image object retrieved: %+v\n", image)
+
 		w.Header().Set("Content-Type", image.ContentType)
 		w.Write(image.BinaryData)
 	}
@@ -43,6 +46,7 @@ func GetImageById(db *sql.DB) http.HandlerFunc {
 // TODO:Create a function for getting email from token in auth service
 func InsertImage(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
