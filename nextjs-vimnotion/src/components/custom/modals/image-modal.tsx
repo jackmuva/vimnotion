@@ -68,7 +68,6 @@ export const ImageModal = () => {
 				StatusCode: number,
 				Data: string,
 			} = await response.json();
-			console.log('Image uploaded:', result);
 
 			setNewImageUrl(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/${result.Data}`);
 			setImagePresent(false);

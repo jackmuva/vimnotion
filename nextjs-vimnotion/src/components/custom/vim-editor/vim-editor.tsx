@@ -88,15 +88,20 @@ export const VimEditor = ({
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 			if (newImageUrl) {
+				console.log("new image url: ", newImageUrl);
 				const mdImage = `![your-image-name](${newImageUrl})`
 				const cursorPosition: number = vimEditor.state.selection.main.head;
-				vimEditor.dispatch({
+				const transaction = vimEditor.state.update({
 					changes: {
 						from: cursorPosition,
-						to: cursorPosition + mdImage.length,
 						insert: mdImage,
-					}
+					},
+					selection: { anchor: cursorPosition + 1 },
+					scrollIntoView: true,
 				});
+				if (transaction) {
+					vimEditor.dispatch(transaction);
+				}
 				setNewImageUrl("");
 			}
 		}

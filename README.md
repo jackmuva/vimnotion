@@ -13,7 +13,6 @@ go run cmd/server/main.go
 
 ## Immediate Todos
 1. grep search
-3. insert images
 4. public pages
 5. deploy backend
 
@@ -31,3 +30,4 @@ go run cmd/server/main.go
   - trash
 - local md downloads
 - public publishing
+- cron job to delete all unused images
