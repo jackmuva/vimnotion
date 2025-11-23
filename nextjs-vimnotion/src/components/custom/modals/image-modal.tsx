@@ -1,6 +1,20 @@
 import { useEditorStore } from "@/store/editor-store";
 import { useEffect, useRef, useState } from "react";
 
+const base64ToBinary = (base64: string): Uint8Array => {
+	const binaryString = atob(base64);
+	const bytes = new Uint8Array(binaryString.length);
+	for (let i = 0; i < binaryString.length; i++) {
+		bytes[i] = binaryString.charCodeAt(i);
+	}
+	return bytes;
+}
+
+const getContentTypeFromDataUri = (dataUri: string): string => {
+	const match = dataUri.match(/^data:([^;]+);/);
+	return match ? match[1] : 'application/octet-stream';
+}
+
 export const ImageModal = () => {
 	const { toggleImageModal } = useEditorStore((state) => state);
 	const [imagePresent, setImagePresent] = useState<boolean>(false);
@@ -29,6 +43,35 @@ export const ImageModal = () => {
 		imageFile.current?.click();
 	}
 
+	const handleImageConfirm = async () => {
+		if (!imageBuffer || typeof imageBuffer !== 'string') return;
+
+		try {
+			const contentType = getContentTypeFromDataUri(imageBuffer);
+			const base64String = imageBuffer.split(',')[1];
+			const binaryData = base64ToBinary(base64String);
+
+			const response = await fetch('/api/images', {
+				method: 'POST',
+				headers: { 'Content-Type': contentType },
+				body: binaryData,
+			});
+
+			if (!response.ok) {
+				console.error('Failed to upload image');
+				return;
+			}
+
+			const result = await response.json();
+			console.log('Image uploaded:', result);
+
+			setImagePresent(false);
+			setImageBuffer(null);
+			toggleImageModal();
+		} catch (error) {
+			console.error('Error uploading image:', error);
+		}
+	}
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -39,12 +82,14 @@ export const ImageModal = () => {
 		document.addEventListener('keydown', handleKeyDown);
 		const handleYKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'y' && imagePresentRef.current) {
+				handleImageConfirm();
 			}
 		}
 		document.addEventListener('keydown', handleYKeyDown);
 		const handleNKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'n' && imagePresentRef.current) {
-				toggleImageModal();
+				setImagePresent(false);
+				setImageBuffer(null);
 			}
 		}
 		document.addEventListener('keydown', handleNKeyDown);
@@ -133,20 +178,17 @@ export const ImageModal = () => {
 							<button
 								id="image-confirmation-option"
 								className="cursor-pointer"
-								onClick={
-									() => {
-									}
-								}>
+								onClick={handleImageConfirm}>
 								<span className="font-bold text-orange-500">[y]</span>
 							</button>es, add this image
 						</div>
 						<div>
 							<button
 								className="cursor-pointer"
-								onClick={
-									() => {
-									}
-								}>
+								onClick={() => {
+									setImagePresent(false);
+									setImageBuffer(null);
+								}}>
 								<span className="font-bold text-orange-500">[n]</span>
 							</button>o, cancel
 						</div>

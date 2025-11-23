@@ -27,11 +27,11 @@ func GetImageById(db *sql.DB) http.HandlerFunc {
 			}
 			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
 		}
-		image := objs[0]
 		if len(objs) == 0 {
 			http.Error(w, "Image not found", http.StatusNotFound)
 			return
 		}
+		image := objs[0]
 		w.Header().Set("Content-Type", image.ContentType)
 		w.Write(image.BinaryData)
 	}
