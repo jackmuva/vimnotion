@@ -10,6 +10,7 @@ export const LeaderPanel = () => {
 	const toggleWindowPanel = useEditorStore((state) => state.toggleWindowPanel);
 	const toggleSearchPanel = useEditorStore((state) => state.toggleSearchPanel);
 	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
+	const togglePublishModal = useEditorStore((state) => state.togglePublishModal);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
 	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 
@@ -71,12 +72,23 @@ export const LeaderPanel = () => {
 		};
 		document.addEventListener('keydown', handleIKey);
 
+		const handlePKey = (event: KeyboardEvent) => {
+			if (event.key === 'p') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				togglePublishModal();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handlePKey);
+
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
 			document.removeEventListener('keydown', handleMKey);
 			document.removeEventListener('keydown', handleSKey);
 			document.removeEventListener('keydown', handleIKey);
+			document.removeEventListener('keydown', handlePKey);
 		};
 	}, [closePanel, toggleWindowPanel]);
 
@@ -121,7 +133,15 @@ export const LeaderPanel = () => {
 					<span className="font-bold text-orange-500">[&nbsp;i &nbsp;]</span>
 				</button>nsert [ &nbsp;i &nbsp;]mage
 			</div>
-
+			<div>
+				<button className="cursor-pointer"
+					onClick={() => {
+						togglePublishModal();
+						closePanel();
+					}}>
+					<span className="font-bold text-orange-500">[p]</span>
+				</button>ublish/unpublish [p]age
+			</div>
 		</div>
 	);
 

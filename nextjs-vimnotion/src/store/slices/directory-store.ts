@@ -324,6 +324,7 @@ export const createDirectorySlice = (
 			res.json().then((body: { Data: VnObject }) => {
 				activePane[Object.keys(activePane)[0]].fileId = id ? id.split("|")[0] : get().getOilLine();
 				activePane[Object.keys(activePane)[0]].buffer = body.Data.contents;
+				activePane[Object.keys(activePane)[0]].public = body.Data.public;
 				get().updatePane(activePane);
 			}).catch((err) => {
 				console.error("unable to get vnobject: ", err);

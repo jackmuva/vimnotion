@@ -33,7 +33,5 @@ export type DirectoryChanges = {
 		uuid: string,
 		name: string,
 		isFile: boolean,
-		public: boolean,
-		contents?: string,
 	}[],
 }

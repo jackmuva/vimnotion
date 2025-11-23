@@ -16,6 +16,7 @@ export type EditorState = {
 	openSearchPanel: boolean;
 	openSearchModal: boolean;
 	openImageModal: boolean;
+	openPublishModal: boolean;
 
 	toggleSidebar: () => void;
 	toggleLeaderPanel: () => void;
@@ -23,6 +24,7 @@ export type EditorState = {
 	toggleSearchPanel: () => void;
 	toggleSearchModal: () => void;
 	toggleImageModal: () => void;
+	togglePublishModal: () => void;
 
 	activePane: string;
 	paneTree: PaneNode;

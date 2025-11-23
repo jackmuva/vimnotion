@@ -60,6 +60,7 @@ export const createPanelSlice = (
 			editorType: EditorType.VIM,
 			buffer: "\n\n\n\n\n\n\n",
 			fileId: "START_PAGE",
+			public: false,
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -98,6 +99,7 @@ export const createPanelSlice = (
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
+				public: paneTree[parentId].public,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -114,6 +116,7 @@ export const createPanelSlice = (
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
+				public: paneTree[parentId].public,
 			}
 		};
 		setPaneTree(newTree);
@@ -323,6 +326,7 @@ export const createPanelSlice = (
 			isFile: true,
 			contents: activePane[paneId].buffer,
 			updateDate: (new Date).toISOString(),
+			public: activePane[paneId].public,
 		}
 		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
 			{
