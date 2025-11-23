@@ -49,6 +49,9 @@ func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 
 func GetVnObjectById(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
 		fileId := r.PathValue("id")
 		objs, err := repository.GetVnObjectById(db, fileId)
 		if err != nil {

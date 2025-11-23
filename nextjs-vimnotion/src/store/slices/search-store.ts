@@ -58,5 +58,11 @@ export const createSearchSlice = (
 		const searchRes: SearchResults = {};
 
 		return searchRes;
-	}
+	},
+
+	newImageUrl: "",
+
+	setNewImageUrl: (url: string) => {
+		set({ newImageUrl: url });
+	},
 });

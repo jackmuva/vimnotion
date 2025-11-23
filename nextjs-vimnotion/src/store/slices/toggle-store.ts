@@ -72,13 +72,13 @@ export const createToggleSlice = (
 		set({ openSearchModal: !searchModal });
 	},
 	toggleImageModal: () => {
+		console.log("toggle image modal");
 		const imageModal = get().openImageModal;
 		if (imageModal) {
 			get().setActivePanel(PanelType.MAIN);
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-
 		set({ openImageModal: !imageModal });
 	},
 

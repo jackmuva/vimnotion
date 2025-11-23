@@ -38,7 +38,7 @@ export const VimEditor = ({
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer, updateVnObject } = useEditorStore((state) => state);
+		openFileInBuffer, updateVnObject, newImageUrl, setNewImageUrl, } = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -85,10 +85,24 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
+		console.log('refocusing');
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
+			console.log('focus');
 			vimEditor.focus();
+			if (newImageUrl) {
+				const mdImage = `![your-image-name](${newImageUrl})`
+				const cursorPosition: number = vimEditor.state.selection.main.head;
+				vimEditor.dispatch({
+					changes: {
+						from: cursorPosition,
+						to: cursorPosition + mdImage.length,
+						insert: mdImage,
+					}
+				});
+				setNewImageUrl("");
+			}
 		}
-	}, [activeId, activePanel, directoryConfirmation])
+	}, [activeId, activePanel, directoryConfirmation, newImageUrl, setNewImageUrl])
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {

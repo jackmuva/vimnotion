@@ -16,6 +16,9 @@ import (
 
 func GetImageById(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
 		imageId := r.PathValue("id")
 		objs, err := repository.GetImageById(db, imageId)
 		if err != nil {
@@ -40,6 +43,9 @@ func GetImageById(db *sql.DB) http.HandlerFunc {
 // TODO:Create a function for getting email from token in auth service
 func InsertImage(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
 		tokenCookie, err := r.Cookie("token")
 		if err != nil {
 			message := "need to auth"

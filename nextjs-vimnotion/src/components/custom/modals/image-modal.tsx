@@ -16,7 +16,8 @@ const getContentTypeFromDataUri = (dataUri: string): string => {
 }
 
 export const ImageModal = () => {
-	const { toggleImageModal } = useEditorStore((state) => state);
+	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
+	const setNewImageUrl = useEditorStore((state) => state.setNewImageUrl);
 	const [imagePresent, setImagePresent] = useState<boolean>(false);
 	const [imageBuffer, setImageBuffer] = useState<string | ArrayBuffer | null>(null);
 	const imagePresentRef = useRef(imagePresent);
@@ -51,7 +52,7 @@ export const ImageModal = () => {
 			const base64String = imageBuffer.split(',')[1];
 			const binaryData = base64ToBinary(base64String);
 
-			const response = await fetch('/api/images', {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/image`, {
 				method: 'POST',
 				headers: { 'Content-Type': contentType },
 				body: binaryData,
@@ -62,9 +63,13 @@ export const ImageModal = () => {
 				return;
 			}
 
-			const result = await response.json();
+			const result: {
+				StatusCode: number,
+				Data: string,
+			} = await response.json();
 			console.log('Image uploaded:', result);
 
+			setNewImageUrl(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/${result.Data}`);
 			setImagePresent(false);
 			setImageBuffer(null);
 			toggleImageModal();
@@ -88,8 +93,12 @@ export const ImageModal = () => {
 		document.addEventListener('keydown', handleYKeyDown);
 		const handleNKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'n' && imagePresentRef.current) {
-				setImagePresent(false);
-				setImageBuffer(null);
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				// setImagePresent(false);
+				// setImageBuffer(null);
+				console.log("n");
+				toggleImageModal();
 			}
 		}
 		document.addEventListener('keydown', handleNKeyDown);
@@ -107,7 +116,7 @@ export const ImageModal = () => {
 			document.removeEventListener('keydown', handleNKeyDown);
 			document.removeEventListener('keydown', handleUKeyDown);
 		}
-	}, []);
+	}, [toggleImageModal, handleImageConfirm]);
 
 	useEffect(() => {
 		const contentTarget = document.getElementById("imageUpload");

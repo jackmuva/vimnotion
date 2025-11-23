@@ -102,6 +102,9 @@ export type EditorState = {
 	refreshFilePaths: () => void;
 	searchByFilename: (term: string) => SearchResults;
 	searchByGrep: (pat: string) => SearchResults;
+
+	newImageUrl: string;
+	setNewImageUrl: (url: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
