@@ -26,6 +26,9 @@ func main() {
 	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.HandlePersonalDirectory(tursoDb)))
 	mux.Handle("/api/vnobject/{id}", middleware.AuthMiddleware(handlers.GetVnObjectById(tursoDb)))
 	mux.Handle("/api/vnobject", middleware.AuthMiddleware(handlers.RouteVnObjectRequests(tursoDb)))
+	mux.Handle("/api/image/{id}", handlers.GetImageById(tursoDb))
+	mux.Handle("/api/image", middleware.AuthMiddleware(handlers.InsertImage(tursoDb)))
+
 	corsHandler := middleware.EnableCors(mux)
 
 	ctx := context.Background()

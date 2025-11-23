@@ -42,6 +42,11 @@ func ConnectTurso() (*sql.DB, error) {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS Image(id TEXT PRIMARY KEY, email TEXT, contentType TEXT, binaryData BLOB)")
+	if err != nil {
+		fmt.Printf("error creating table: %s", err)
+		return nil, err
+	}
 
 	return db, nil
 }
@@ -129,6 +134,29 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	return vnObjects, nil
 }
 
+func GetImageById(db *sql.DB, id string) ([]models.Image, error) {
+	rows, err := db.Query("SELECT * FROM Image WHERE id=?", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+	}
+	defer rows.Close()
+
+	var images []models.Image
+
+	for rows.Next() {
+		var image models.Image
+		if err := rows.Scan(&image.Id, &image.Email, &image.ContentType, &image.BinaryData); err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+		images = append(images, image)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return images, nil
+}
 func InsertUser(db *sql.DB, user models.User) error {
 	_, err := db.Exec("INSERT INTO User (email, name) VALUES(?, ?)", user.Email, user.Name)
 	if err != nil {
@@ -157,6 +185,15 @@ func InsertVnObject(db *sql.DB, vnObject models.VnObject) error {
 	return nil
 }
 
+func InsertImage(db *sql.DB, image models.Image) error {
+	_, err := db.Exec("INSERT INTO Image(id, email, contentType, binaryData) VALUES(?, ?, ?, ? )",
+		image.Id, image.Email, image.ContentType, image.BinaryData)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
 func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
 	_, err := db.Exec("UPDATE DirectoryStructure SET structure=? WHERE email=?",
 		dirStruct.Structure, dirStruct.Email)
@@ -180,7 +217,16 @@ func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
 func DeleteVnObject(db *sql.DB, id string) error {
 	_, err := db.Exec("DELETE FROM VnObject WHERE id=?", id)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteImage(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE FROM Image WHERE id=?", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
 		return err
 	}
 	return nil

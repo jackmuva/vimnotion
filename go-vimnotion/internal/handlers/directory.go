@@ -64,6 +64,10 @@ func GetPersonalDirectory(db *sql.DB) http.HandlerFunc {
 			}
 			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
 		}
+		if len(directory) == 0 {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
 		data := directory[0].Structure
 		response := models.DataResponse{StatusCode: 200, Data: &data}
 		jsonMessage, err := json.Marshal(response)

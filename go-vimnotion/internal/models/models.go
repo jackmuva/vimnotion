@@ -18,6 +18,13 @@ type VnObject struct {
 	UpdateDate string `json:"updateDate"`
 }
 
+type Image struct {
+	Id          string `json:"id"`
+	Email       string `json:"email"`
+	ContentType string `json:"contentType"`
+	BinaryData  []byte `json:"binaryData"`
+}
+
 type UserData struct {
 	Username string
 	Name     string

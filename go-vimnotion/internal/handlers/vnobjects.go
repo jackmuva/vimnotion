@@ -61,6 +61,10 @@ func GetVnObjectById(db *sql.DB) http.HandlerFunc {
 			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
 		}
 		data := objs[0]
+		if len(objs) == 0 {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
 		response := struct {
 			StatusCode int
 			Data       models.VnObject
