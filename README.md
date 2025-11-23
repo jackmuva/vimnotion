@@ -15,6 +15,7 @@ go run cmd/server/main.go
 1. grep search
 4. public pages
 5. deploy backend
+6. fix sidebar editor
 
 
 ## High-level Todos

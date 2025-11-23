@@ -185,6 +185,7 @@ func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects) erro
 				IsFile:     created.IsFile,
 				Contents:   "",
 				UpdateDate: time.Now().Format(time.RFC3339),
+				Public:     false,
 			})
 			if err != nil {
 				errMutex.Lock()
@@ -225,6 +226,7 @@ func UpdateAllVnObjects(db *sql.DB, movedObjects []models.MovedObjects) error {
 					return *s
 				}(obj.Contents),
 				UpdateDate: time.Now().Format(time.RFC3339),
+				Public:     obj.Public,
 			})
 			if err != nil {
 				errMutex.Lock()

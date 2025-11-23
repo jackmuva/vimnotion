@@ -70,6 +70,7 @@ export const createDirectorySlice = (
 
 	//TODO:when a user has folder/folder/file, parse
 	//TODO:Copy functionality
+	//BUG:The rename functionality doesn't work when you delete an entire line
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
 		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);

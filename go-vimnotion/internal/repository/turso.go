@@ -37,7 +37,7 @@ func ConnectTurso() (*sql.DB, error) {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT, public BOOLEAN)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
@@ -120,7 +120,7 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
 			fmt.Println("Error scanning row:", err)
 		}
 
@@ -176,8 +176,8 @@ func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) e
 }
 
 func InsertVnObject(db *sql.DB, vnObject models.VnObject) error {
-	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?, ?, ?)",
-		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate)
+	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, contents, updateDate, public) VALUES(?, ?, ?, ?, ?, ?)",
+		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate, vnObject.Public)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 		return err

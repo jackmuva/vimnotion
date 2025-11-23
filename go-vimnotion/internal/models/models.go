@@ -16,6 +16,7 @@ type VnObject struct {
 	IsFile     bool   `json:"isFile"`
 	Contents   string `json:"contents"`
 	UpdateDate string `json:"updateDate"`
+	Public     bool   `json:"public"`
 }
 
 type Image struct {
@@ -62,6 +63,7 @@ type MovedObjects struct {
 	Name        string  `json:"name"`
 	IsFile      bool    `json:"isFile"`
 	Contents    *string `json:"contents"`
+	Public      bool    `json:"public"`
 }
 
 type DirectoryChanges struct {
