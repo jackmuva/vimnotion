@@ -50,6 +50,7 @@ export type PaneNode = {
 		editorType: EditorType,
 		buffer: string,
 		fileId: string,
+		public: boolean,
 	}
 }
 

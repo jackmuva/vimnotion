@@ -185,6 +185,7 @@ func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects) erro
 				IsFile:     created.IsFile,
 				Contents:   "",
 				UpdateDate: time.Now().Format(time.RFC3339),
+				Public:     false,
 			})
 			if err != nil {
 				errMutex.Lock()
@@ -214,18 +215,7 @@ func UpdateAllVnObjects(db *sql.DB, movedObjects []models.MovedObjects) error {
 			workerSem <- struct{}{}
 			defer func() { <-workerSem }()
 
-			err := repository.UpdateVnObject(db, models.VnObject{
-				Id:     obj.Uuid,
-				Name:   obj.Name,
-				IsFile: obj.IsFile,
-				Contents: func(s *string) string {
-					if s == nil {
-						return ""
-					}
-					return *s
-				}(obj.Contents),
-				UpdateDate: time.Now().Format(time.RFC3339),
-			})
+			err := repository.UpdateVnObjectLocation(db, obj.Uuid, obj.Name, obj.IsFile, time.Now().Format(time.RFC3339))
 			if err != nil {
 				errMutex.Lock()
 				errors = append(errors, err)

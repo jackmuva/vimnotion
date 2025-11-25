@@ -16,6 +16,7 @@ export type EditorState = {
 	openSearchPanel: boolean;
 	openSearchModal: boolean;
 	openImageModal: boolean;
+	openPublishModal: boolean;
 
 	toggleSidebar: () => void;
 	toggleLeaderPanel: () => void;
@@ -23,6 +24,7 @@ export type EditorState = {
 	toggleSearchPanel: () => void;
 	toggleSearchModal: () => void;
 	toggleImageModal: () => void;
+	togglePublishModal: () => void;
 
 	activePane: string;
 	paneTree: PaneNode;
@@ -42,7 +44,8 @@ export type EditorState = {
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
 	cycleNeighbor: () => string;
 
-	updateVnObject: () => boolean;
+	saveVnObjectBuffer: () => boolean;
+	publishVnObject: (publish: boolean) => boolean;
 
 	getPaneById: (paneId: string) => PaneNode;
 	updatePane: (pane: PaneNode) => void;

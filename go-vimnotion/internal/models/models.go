@@ -16,6 +16,7 @@ type VnObject struct {
 	IsFile     bool   `json:"isFile"`
 	Contents   string `json:"contents"`
 	UpdateDate string `json:"updateDate"`
+	Public     bool   `json:"public"`
 }
 
 type Image struct {
@@ -56,12 +57,11 @@ type DeletedObjects struct {
 }
 
 type MovedObjects struct {
-	OldLocation string  `json:"oldLocation"`
-	NewLocation string  `json:"newLocation"`
-	Uuid        string  `json:"uui"`
-	Name        string  `json:"name"`
-	IsFile      bool    `json:"isFile"`
-	Contents    *string `json:"contents"`
+	OldLocation string `json:"oldLocation"`
+	NewLocation string `json:"newLocation"`
+	Uuid        string `json:"uui"`
+	Name        string `json:"name"`
+	IsFile      bool   `json:"isFile"`
 }
 
 type DirectoryChanges struct {

@@ -4,4 +4,5 @@ export type VnObject = {
 	isFile: boolean,
 	contents: string,
 	updateDate: string,
+	public: boolean,
 }

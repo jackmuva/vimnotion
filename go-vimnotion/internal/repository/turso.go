@@ -37,7 +37,7 @@ func ConnectTurso() (*sql.DB, error) {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT, public BOOLEAN)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
@@ -120,7 +120,33 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+
+		vnObjects = append(vnObjects, vnObject)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return vnObjects, nil
+}
+
+func GetPublicVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
+	rows, err := db.Query("SELECT * FROM VnObject WHERE id=? AND public=1", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+	}
+	defer rows.Close()
+
+	var vnObjects []models.VnObject
+
+	for rows.Next() {
+		var vnObject models.VnObject
+
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
 			fmt.Println("Error scanning row:", err)
 		}
 
@@ -176,8 +202,8 @@ func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) e
 }
 
 func InsertVnObject(db *sql.DB, vnObject models.VnObject) error {
-	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, Contents, updateDate ) VALUES(?, ?, ?, ?, ?)",
-		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate)
+	_, err := db.Exec("INSERT INTO VnObject (id, name, isFile, contents, updateDate, public) VALUES(?, ?, ?, ?, ?, ?)",
+		vnObject.Id, vnObject.Name, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate, vnObject.Public)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 		return err
@@ -205,8 +231,18 @@ func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) e
 }
 
 func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
-	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=?, updateDate=? WHERE id=?",
-		vnObject.Name, vnObject.Contents, vnObject.UpdateDate, vnObject.Id)
+	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=?, updateDate=?, public=? WHERE id=?",
+		vnObject.Name, vnObject.Contents, vnObject.UpdateDate, vnObject.Public, vnObject.Id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateVnObjectLocation(db *sql.DB, id string, name string, isFile bool, dt string) error {
+	_, err := db.Exec("UPDATE VnObject SET Name=?, isFile=? dt=? WHERE id=?",
+		name, isFile, dt, id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
 		return err

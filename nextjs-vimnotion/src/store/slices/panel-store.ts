@@ -60,6 +60,7 @@ export const createPanelSlice = (
 			editorType: EditorType.VIM,
 			buffer: "\n\n\n\n\n\n\n",
 			fileId: "START_PAGE",
+			public: false,
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -98,6 +99,7 @@ export const createPanelSlice = (
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
+				public: paneTree[parentId].public,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -114,6 +116,7 @@ export const createPanelSlice = (
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
+				public: paneTree[parentId].public,
 			}
 		};
 		setPaneTree(newTree);
@@ -313,7 +316,7 @@ export const createPanelSlice = (
 		return curPane;
 	},
 
-	updateVnObject: (): boolean => {
+	saveVnObjectBuffer: (): boolean => {
 		let succ = false;
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 		const paneId: string = Object.keys(activePane)[0];
@@ -323,6 +326,7 @@ export const createPanelSlice = (
 			isFile: true,
 			contents: activePane[paneId].buffer,
 			updateDate: (new Date).toISOString(),
+			public: activePane[paneId].public,
 		}
 		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
 			{
@@ -340,5 +344,36 @@ export const createPanelSlice = (
 		return succ;
 
 	},
+
+	publishVnObject: (publish: boolean): boolean => {
+		let succ = false;
+		const activePane: PaneNode = get().getPaneById(get().activePane);
+		const paneId: string = Object.keys(activePane)[0];
+		const vnObject: VnObject = {
+			id: activePane[paneId].fileId.split("|")[0],
+			name: activePane[paneId].fileId.split("|")[1],
+			isFile: true,
+			contents: activePane[paneId].buffer,
+			updateDate: (new Date).toISOString(),
+			public: publish,
+		}
+		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
+			{
+				method: "PUT",
+				body: JSON.stringify(vnObject),
+				credentials: 'include'
+			}
+		).then((res: Response) => {
+			if (res.ok) {
+				succ = true;
+				get().updatePane({ [paneId]: { ...activePane[paneId], public: publish } });
+			}
+		}).catch((err) => {
+			console.error("unable to get vnobject: ", err);
+		});
+		return succ;
+
+	},
+
 });
 

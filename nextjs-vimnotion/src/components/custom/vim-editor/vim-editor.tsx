@@ -38,7 +38,7 @@ export const VimEditor = ({
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer, updateVnObject, newImageUrl, setNewImageUrl, } = useEditorStore((state) => state);
+		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, } = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -164,7 +164,7 @@ export const VimEditor = ({
 			splitVertical: () => splitPane(SplitState.VERTICAL),
 			closePane: () => closePane(),
 			getActivePanel: () => getActivePanel(),
-			updateVnObject: () => updateVnObject(),
+			saveVnObjectBuffer: () => saveVnObjectBuffer(),
 			toggleSidebar: toggleSidebar,
 		});
 		setVimEditor(view);

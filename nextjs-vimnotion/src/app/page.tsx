@@ -13,6 +13,7 @@ import { ConfirmationModal } from "@/components/custom/modals/confirmation-modal
 import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
 import { SearchModal } from "@/components/custom/modals/search-modal";
 import { ImageModal } from "@/components/custom/modals/image-modal";
+import { PublishModal } from "@/components/custom/modals/publish-modal";
 
 export default function Home() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -20,6 +21,7 @@ export default function Home() {
 	const searchPanel = useEditorStore((state) => state.openSearchPanel);
 	const searchModal = useEditorStore((state) => state.openSearchModal);
 	const imageModal = useEditorStore((state) => state.openImageModal);
+	const publishModal = useEditorStore((state) => state.openPublishModal);
 	const { openSidebar, directoryConfirmation, setDirectoryState,
 		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
 
@@ -78,6 +80,15 @@ export default function Home() {
 		}
 	}, [imageModal]);
 
+	useEffect(() => {
+		if (publishModal) {
+			const input = document.getElementById(`first-publish-option`);
+			if (input) {
+				input.focus();
+			}
+		}
+	}, [publishModal]);
+
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
@@ -108,6 +119,7 @@ export default function Home() {
 			{directoryConfirmation && <ConfirmationModal />}
 			{searchModal && <SearchModal />}
 			{imageModal && <ImageModal />}
+			{publishModal && <PublishModal />}
 		</div>
 	);
 }

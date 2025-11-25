@@ -6,7 +6,7 @@ export const applyPanelBindings = ({
 	splitHorizontal,
 	closePane,
 	getActivePanel,
-	updateVnObject,
+	saveVnObjectBuffer,
 	setDirectoryConfirmation,
 	toggleSidebar,
 }: {
@@ -14,14 +14,14 @@ export const applyPanelBindings = ({
 	splitHorizontal: () => void,
 	closePane: () => void,
 	getActivePanel: () => PanelType,
-	updateVnObject: () => boolean,
+	saveVnObjectBuffer: () => boolean,
 	setDirectoryConfirmation: () => void,
 	toggleSidebar: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
-			updateVnObject();
+			saveVnObjectBuffer();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 		}
@@ -40,7 +40,7 @@ export const applyPanelBindings = ({
 	Vim.defineEx('wquit', 'wq', function() {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
-			updateVnObject();
+			saveVnObjectBuffer();
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
