@@ -134,6 +134,32 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	return vnObjects, nil
 }
 
+func GetPublicVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
+	rows, err := db.Query("SELECT * FROM VnObject WHERE id=? AND public=1", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+	}
+	defer rows.Close()
+
+	var vnObjects []models.VnObject
+
+	for rows.Next() {
+		var vnObject models.VnObject
+
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+
+		vnObjects = append(vnObjects, vnObject)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return vnObjects, nil
+}
+
 func GetImageById(db *sql.DB, id string) ([]models.Image, error) {
 	rows, err := db.Query("SELECT * FROM Image WHERE id=?", id)
 	if err != nil {

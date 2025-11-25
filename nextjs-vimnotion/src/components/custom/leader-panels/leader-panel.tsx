@@ -76,8 +76,8 @@ export const LeaderPanel = () => {
 			if (event.key === 'p') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				togglePublishModal();
 				closePanel();
+				togglePublishModal();
 			}
 		};
 		document.addEventListener('keydown', handlePKey);
