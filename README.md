@@ -13,16 +13,13 @@ go run cmd/server/main.go
 
 ## Immediate Todos
 1. grep search
-4. public pages
 5. deploy backend
 6. fix sidebar editor
+7. startup + tutor pages
+8. marketing page with gifs
 
 
 ## High-level Todos
-- search experience
-- markdown renderer
-  - ability to link pages, insert images, embed videos
-  - how do we keep images private (to research)
 - normie view (not vimnotion)
 - create teams
 - extensabiity with hotkeys for apis
@@ -30,5 +27,4 @@ go run cmd/server/main.go
 - version history
   - trash
 - local md downloads
-- public publishing
 - cron job to delete all unused images
