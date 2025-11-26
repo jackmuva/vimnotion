@@ -17,6 +17,7 @@ go run cmd/server/main.go
 6. fix sidebar editor
 7. startup + tutor pages
 8. marketing page with gifs
+9. syntax highlighting on sidebar-editor
 
 
 ## High-level Todos
