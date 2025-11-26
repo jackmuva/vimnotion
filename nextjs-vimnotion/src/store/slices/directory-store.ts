@@ -56,116 +56,43 @@ export const createDirectorySlice = (
 	setOilLine: (line: string): void => {
 		set({ oilLine: get().sidebarBufferMap[line] })
 	},
-	pushSidebarBufferHistory: (buffer: string) => {
-		let bufferHistory: string[] = get().sidebarBufferHistory;
-		bufferHistory.push(buffer);
-		if (bufferHistory.length > 2) bufferHistory = bufferHistory.slice(-2);
-		set({ sidebarBufferHistory: bufferHistory })
-	},
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
 
 	setLastDeleted: (delTree: DirectoryTree) => {
 		set({ lastDeleted: delTree })
 	},
 
-	//TODO:when a user has folder/folder/file, parse
-	//TODO:Copy functionality
-	//BUG:The rename functionality doesn't work when you delete an entire line
 	evaluateOilBufferChanges: () => {
-		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
-		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);
-		const toDelete: { [id: string]: string } = { ...get().sidebarBufferMap };
 		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
 		const bufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
-		const lastDeleted: DirectoryTree | null = get().lastDeleted
-		let atRoot: boolean = false;
 
-		//NOTE:gets leaf at location
-		let leafAtLocation: { type: DirectoryObjectType, children: DirectoryTree } | null = null;
-		const locationArray = get().location.split("/");
-		locationArray.pop();
-		if (locationArray.length > 0) {
-			leafAtLocation = proposedDirectoryState[locationArray[0] + "/"];
-			for (const loc of locationArray.slice(1)) {
-				leafAtLocation = leafAtLocation.children[loc + "/"];
-			}
-		} else {
-			atRoot = true;
-			leafAtLocation = { type: DirectoryObjectType.DIRECTORY, children: { ...proposedDirectoryState } }
-		}
-
-
-		//NOTE:removes existing keys so newBuffer is only new files
-		const newBufferLinesMap: { [line: string]: boolean } = {};
-		newBuffer!.split("\n").forEach((line) => {
-			newBufferLinesMap[line] = true;
-		});
-		for (const fn of Object.keys(get().sidebarBufferMap)) {
-			if (fn in newBufferLinesMap) {
-				delete newBufferLinesMap[fn];
-				delete toDelete[fn];
-			}
-		}
-
-		//NOTE:Renames
-		const renames: { [newName: string]: string } = {};
-		const newBufferLines: string[] = newBuffer!.split("\n");
-		const oldBufferLines: string[] = oldBuffer!.split("\n");
-		for (let i = 0; i < newBufferLines.length; i++) {
-			if (newBufferLines[i] && i < oldBufferLines.length && bufferMap[oldBufferLines[i]]) {
-				bufferMap[newBufferLines[i]] = bufferMap[oldBufferLines[i]].split("|")[0] + "|" + newBufferLines[i];
-				renames[newBufferLines[i]] = oldBufferLines[i];
-			}
-		}
-
-		//NOTE:new files
-		for (const fn of Object.keys(newBufferLinesMap)) {
-			if (!fn) continue;
-			//NOTE:Cutting (doesnt account for multi-line cuts
-			if (lastDeleted && fn === Object.keys(lastDeleted)[0].split("|")[1]) {
-				const fullId: string = Object.keys(lastDeleted)[0];
-				leafAtLocation.children[fullId] = lastDeleted[fullId];
-				bufferMap[fullId.split("|")[1]] = fullId;
-			} else if (fn in renames) {
-				//TODO:This should also copy contents
-				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
-					children: leafAtLocation.children[bufferMap[renames[fn]]].children,
+		//create a map with only new/changes and a map with stale lines
+		const newLines: { [lineNum: number]: string } = {};
+		const staleLines: { [lineNum: number]: string } = {};
+		if (newBuffer && oldBuffer) {
+			const newBufferLines: string[] = newBuffer.split("\n");
+			const oldBufferLines: string[] = oldBuffer.split("\n");
+			for (let i = 0; i < newBufferLines.length; i++) {
+				if (!oldBufferLines.includes(newBufferLines[i])) {
+					newLines[i] = newBufferLines[i]
 				}
-				if (leafAtLocation && fn) {
-					leafAtLocation.children[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
-				} else if (fn) {
-					proposedDirectoryState[bufferMap[renames[fn]].split("|")[0] + "|" + fn] = newTree;
-				}
-			} else {
-				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
-					children: {},
-				}
-				const uuid: string = v4();
-				bufferMap[fn] = uuid + "|" + fn;
-				if (leafAtLocation && fn) {
-					leafAtLocation.children[uuid + "|" + fn] = newTree;
-				} else if (fn) {
-					proposedDirectoryState[uuid + "|" + fn] = newTree;
+			}
+			for (let i = 0; i < oldBufferLines.length; i++) {
+				if (!newBufferLines.includes(oldBufferLines[i])) {
+					staleLines[i] = oldBufferLines[i]
 				}
 			}
 		}
 
-		//NOTE:delete old files
-		for (const fn of Object.keys(toDelete)) {
-			get().setLastDeleted({ [toDelete[fn]]: { ...leafAtLocation.children[toDelete[fn]] } });
-			delete leafAtLocation.children[toDelete[fn]];
-			delete bufferMap[fn];
-		}
+		console.log("new lines: ", newLines);
+		console.log("old only lines: ", staleLines);
 
 		get().setEditingDirectory(true);
-		get().setProposedDirectoryState(atRoot ? leafAtLocation.children : proposedDirectoryState);
+		get().setProposedDirectoryState(proposedDirectoryState);
 		get().setSidebarBufferMap(bufferMap);
 	},
 
 	detectAllDirectoryChanges: (): DirectoryChanges => {
-		get().dedupeProposedDirectory();
 		const res: DirectoryChanges = {
 			created: [],
 			deleted: [],
@@ -268,48 +195,8 @@ export const createDirectorySlice = (
 		if (!open) {
 			get().setLocation(get().lastValidLocation);
 		}
+		get().evaluateOilBufferChanges();
 		set({ directoryConfirmation: open })
-	},
-
-	//OPTIM:This is a workaround, i think this could be simpler
-	dedupeProposedDirectory: () => {
-		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
-		let subTree: DirectoryTree = proposedDirectoryState;
-
-		const q: DirectoryTree[] = [];
-
-		for (const key of Object.keys(proposedDirectoryState)) {
-			q.push({ [key]: proposedDirectoryState[key] });
-		}
-
-		while (q.length > 0) {
-			subTree = q.shift()!;
-			const uuidMap: { [key: string]: boolean } = {};
-
-			for (const childKey of Object.keys(subTree[Object.keys(subTree)[0]].children)) {
-				//NOTE:Check for duplicate uuids from incorrect renames
-				const curId: string = childKey.split("|")[0];
-				if (curId in uuidMap) {
-					const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
-						type: childKey.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
-						children: {},
-					}
-					const newId: string = v4();
-					const fn = childKey.split("|")[1];
-					if (subTree && fn) {
-						subTree[Object.keys(subTree)[0]].children[newId + "|" + fn] = newTree;
-					} else if (fn) {
-						proposedDirectoryState[newId + "|" + fn] = newTree;
-					}
-					delete subTree[Object.keys(subTree)[0]].children[childKey];
-					q.push({ [newId + "|" + fn]: subTree[Object.keys(subTree)[0]].children[newId + "|" + fn] });
-				} else {
-					uuidMap[curId] = true;
-					q.push({ [childKey]: subTree[Object.keys(subTree)[0]].children[childKey] });
-				}
-			}
-		}
-		get().setProposedDirectoryState(proposedDirectoryState);
 	},
 
 	openFileInBuffer: (id?: string) => {

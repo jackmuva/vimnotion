@@ -84,7 +84,6 @@ export type EditorState = {
 	setLastValidLocation: (location: string) => void;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
-	pushSidebarBufferHistory: (buffer: string) => void;
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
 	setLastDeleted: (delTree: DirectoryTree) => void;
 	evaluateOilBufferChanges: () => void;
@@ -97,7 +96,6 @@ export type EditorState = {
 			isFile: boolean,
 		},
 	};
-	dedupeProposedDirectory: () => void;
 
 	openFileInBuffer: (id?: string) => void;
 
