@@ -65,7 +65,6 @@ export type EditorState = {
 
 	directoryState: DirectoryTree;
 	proposedDirectoryState: DirectoryTree;
-	editingDirectory: boolean;
 	location: string;
 	lastValidLocation: string;
 	oilLine: string;
@@ -76,7 +75,6 @@ export type EditorState = {
 
 	setDirectoryState: (tree: DirectoryTree) => void;
 	setProposedDirectoryState: (tree: DirectoryTree) => void;
-	setEditingDirectory: (isEdit: boolean) => void;
 
 	getLocation: () => string;
 	setLocation: (location: string) => void;

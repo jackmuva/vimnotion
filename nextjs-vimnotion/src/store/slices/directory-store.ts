@@ -13,7 +13,6 @@ export const createDirectorySlice = (
 ) => ({
 	directoryState: {},
 	proposedDirectoryState: {},
-	editingDirectory: false,
 	location: "",
 	lastValidLocation: "",
 	oilLine: "",
@@ -24,7 +23,6 @@ export const createDirectorySlice = (
 
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
-	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
 
 	getLocation: () => get().location,
 	setLocation: (location: string) => {
@@ -64,32 +62,53 @@ export const createDirectorySlice = (
 
 	evaluateOilBufferChanges: () => {
 		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
-		const bufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
+		const curBufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
+
+		//get original buffer map
+		let curDir: DirectoryTree = get().directoryState;
+		for (const loc of get().location.split("/")) {
+			if (loc && curDir[loc + "/"].children !== undefined) {
+				curDir = curDir[loc + "/"].children;
+			}
+		}
+		const ogBufferMap: { [id: string]: string } = {};
+		for (const fn of Object.keys(curDir)) {
+			ogBufferMap[fn.split("|")[1]] = fn;
+		}
 
 		//create a map with only new/changes and a map with stale lines
+		const newBufferLines = Object.keys(curBufferMap);
+		const ogBufferLines = Object.keys(ogBufferMap);
 		const newLines: { [lineNum: number]: string } = {};
 		const staleLines: { [lineNum: number]: string } = {};
-		if (newBuffer && oldBuffer) {
-			const newBufferLines: string[] = newBuffer.split("\n");
-			const oldBufferLines: string[] = oldBuffer.split("\n");
-			for (let i = 0; i < newBufferLines.length; i++) {
-				if (!oldBufferLines.includes(newBufferLines[i])) {
-					newLines[i] = newBufferLines[i]
-				}
+		const sameLines: { [lineNum: number]: string } = {};
+		for (let i = 0; i < newBufferLines.length; i++) {
+			if (!ogBufferLines.includes(newBufferLines[i])) {
+				newLines[i] = newBufferLines[i];
+			} else {
+				sameLines[i] = newBufferLines[i];
 			}
-			for (let i = 0; i < oldBufferLines.length; i++) {
-				if (!newBufferLines.includes(oldBufferLines[i])) {
-					staleLines[i] = oldBufferLines[i]
-				}
+		}
+		for (let i = 0; i < ogBufferLines.length; i++) {
+			if (!newBufferLines.includes(ogBufferLines[i])) {
+				staleLines[i] = ogBufferLines[i]
 			}
 		}
 
-		console.log("new lines: ", newLines);
-		console.log("old only lines: ", staleLines);
 
-		get().setEditingDirectory(true);
+
+		console.log("new lines: ", newLines);
+		console.log("stale lines: ", staleLines);
+		console.log("same lines: ", sameLines);
+
+		const newBufferMap: { [id: string]: string } = {};
+		for (const lineNum of Object.keys(sameLines)) {
+			newBufferMap[sameLines[Number(lineNum)]] = ogBufferMap[sameLines[Number(lineNum)]];
+		}
+		console.log('new buffer map: ', newBufferMap);
+
 		get().setProposedDirectoryState(proposedDirectoryState);
-		get().setSidebarBufferMap(bufferMap);
+		get().setSidebarBufferMap(newBufferMap);
 	},
 
 	detectAllDirectoryChanges: (): DirectoryChanges => {

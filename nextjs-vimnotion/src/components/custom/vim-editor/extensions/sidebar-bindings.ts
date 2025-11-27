@@ -9,6 +9,7 @@ export const applySidebarBindings = ({
 	getOilLine,
 	openFileInBuffer,
 	getActivePanel,
+	evaluateOilBufferChanges,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -17,11 +18,16 @@ export const applySidebarBindings = ({
 	getOilLine: () => string,
 	openFileInBuffer: () => void,
 	getActivePanel: () => PanelType,
+	evaluateOilBufferChanges: () => void,
 }) => {
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.SIDEBAR) {
+			console.log("location: ", getLocation());
+			console.log("oil line: ", getOilLine());
 			if (getOilLine().at(-1) === "/") {
+				console.log('going into dir');
+				evaluateOilBufferChanges();
 				setLocation(getLocation() + getOilLine());
 			} else {
 				openFileInBuffer();
@@ -51,6 +57,7 @@ export const applySidebarBindings = ({
 			const locationArr = location.split("/");
 			locationArr.pop();
 			locationArr.pop();
+			evaluateOilBufferChanges();
 			setLocation(locationArr && locationArr.length > 0 ? locationArr.join("/") + "/" : "");
 		}
 	});

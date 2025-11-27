@@ -38,7 +38,8 @@ export const VimEditor = ({
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, } = useEditorStore((state) => state);
+		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl,
+		evaluateOilBufferChanges } = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -156,7 +157,7 @@ export const VimEditor = ({
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
 			openFileInBuffer: () => openFileInBuffer(),
-
+			evaluateOilBufferChanges: () => evaluateOilBufferChanges(),
 		});
 		applyPanelBindings({
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),

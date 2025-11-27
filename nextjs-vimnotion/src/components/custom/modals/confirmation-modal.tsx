@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 
 export const ConfirmationModal = () => {
 	const { setDirectoryConfirmation, toggleSidebar,
-		detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState } = useEditorStore((state) => state);
+		detectAllDirectoryChanges, setDirectoryState, proposedDirectoryState,
+		setProposedDirectoryState } = useEditorStore((state) => state);
 	const [changes, setChanges] = useState<DirectoryChanges>({
 		created: [],
 		deleted: [],

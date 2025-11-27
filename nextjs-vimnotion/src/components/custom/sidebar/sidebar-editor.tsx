@@ -30,10 +30,17 @@ export const SidebarEditor = () => {
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const { location, setOilLine, directoryState, setSidebarBufferMap,
-		editingDirectory, proposedDirectoryState, directoryConfirmation } = useEditorStore((state) => state);
+		proposedDirectoryState, directoryConfirmation } = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
+			const bufferMap: { [id: string]: string } = {};
+			for (const line of v.state.doc.toString().split("\n")) {
+				if (line) {
+					bufferMap[line] = "";
+				}
+			}
+			setSidebarBufferMap(bufferMap)
 		}
 	});
 
@@ -66,6 +73,7 @@ export const SidebarEditor = () => {
 				}
 				cur += (line.length + 1);
 			}
+			console.log("cursor res: ", res);
 			setOilLine(res);
 		}
 	});
@@ -105,7 +113,7 @@ export const SidebarEditor = () => {
 		if (!isClient || vimEditor === null) {
 			return;
 		}
-		const newContent = getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState);
+		const newContent = getSidebarBuffer(location.split("/"), proposedDirectoryState);
 		vimEditor.dispatch({
 			changes: {
 				from: 0,
@@ -126,7 +134,7 @@ export const SidebarEditor = () => {
 		}
 
 		const view = new EditorView({
-			doc: getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState),
+			doc: getSidebarBuffer(location.split("/"), proposedDirectoryState),
 			extensions: [
 				customTheme,
 				vim(),
