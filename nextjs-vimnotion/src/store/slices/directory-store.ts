@@ -16,8 +16,7 @@ export const createDirectorySlice = (
 	location: "",
 	lastValidLocation: "",
 	oilLine: "",
-	sidebarBufferHistory: [],
-	sidebarBufferMap: {},
+	sidebarBuffer: "",
 	lastDeleted: null,
 	directoryConfirmation: false,
 
@@ -52,9 +51,18 @@ export const createDirectorySlice = (
 
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => {
-		set({ oilLine: get().sidebarBufferMap[line] })
+		let curDir: DirectoryTree = get().directoryState;
+		for (const loc of get().location.split("/")) {
+			if (loc && curDir[loc + "/"].children !== undefined) {
+				curDir = curDir[loc + "/"].children;
+			}
+		}
+
+		set({
+			oilLine: Object.keys(curDir).filter((childId) => childId.split("|")[1] === line)[0]
+		});
 	},
-	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
+	setSidebarBuffer: (buffer: string) => set({ sidebarBuffer: buffer }),
 
 	setLastDeleted: (delTree: DirectoryTree) => {
 		set({ lastDeleted: delTree })
@@ -62,7 +70,7 @@ export const createDirectorySlice = (
 
 	evaluateOilBufferChanges: () => {
 		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
-		const curBufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
+		const curBuffer: string = get().sidebarBuffer;
 
 		//get original buffer map
 		let curDir: DirectoryTree = get().directoryState;
@@ -77,15 +85,15 @@ export const createDirectorySlice = (
 		}
 
 		//create a map with only new/changes and a map with stale lines
-		const newBufferLines = Object.keys(curBufferMap);
+		const newBufferLines: string[] = curBuffer.split("\n");
 		const ogBufferLines = Object.keys(ogBufferMap);
 		const newLines: { [lineNum: number]: string } = {};
 		const staleLines: { [lineNum: number]: string } = {};
 		const sameLines: { [lineNum: number]: string } = {};
 		for (let i = 0; i < newBufferLines.length; i++) {
-			if (!ogBufferLines.includes(newBufferLines[i])) {
+			if (!ogBufferLines.includes(newBufferLines[i]) && newBufferLines[i]) {
 				newLines[i] = newBufferLines[i];
-			} else {
+			} else if (newBufferLines[i]) {
 				sameLines[i] = newBufferLines[i];
 			}
 		}
@@ -95,20 +103,11 @@ export const createDirectorySlice = (
 			}
 		}
 
-
-
 		console.log("new lines: ", newLines);
 		console.log("stale lines: ", staleLines);
 		console.log("same lines: ", sameLines);
 
-		const newBufferMap: { [id: string]: string } = {};
-		for (const lineNum of Object.keys(sameLines)) {
-			newBufferMap[sameLines[Number(lineNum)]] = ogBufferMap[sameLines[Number(lineNum)]];
-		}
-		console.log('new buffer map: ', newBufferMap);
-
 		get().setProposedDirectoryState(proposedDirectoryState);
-		get().setSidebarBufferMap(newBufferMap);
 	},
 
 	detectAllDirectoryChanges: (): DirectoryChanges => {

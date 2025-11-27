@@ -29,18 +29,12 @@ export const SidebarEditor = () => {
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const { location, setOilLine, directoryState, setSidebarBufferMap,
+	const { location, setOilLine, directoryState, setSidebarBuffer,
 		proposedDirectoryState, directoryConfirmation } = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			const bufferMap: { [id: string]: string } = {};
-			for (const line of v.state.doc.toString().split("\n")) {
-				if (line) {
-					bufferMap[line] = "";
-				}
-			}
-			setSidebarBufferMap(bufferMap)
+			setSidebarBuffer(v.state.doc.toString());
 		}
 	});
 
@@ -55,7 +49,7 @@ export const SidebarEditor = () => {
 		for (const fn of Object.keys(curDir)) {
 			bufferMap[fn.split("|")[1]] = fn;
 		}
-		setSidebarBufferMap(bufferMap);
+		// setSidebarBufferMap(bufferMap);
 		const buffer = Object.keys(bufferMap).join("\n") + "\n\n\n";
 		return buffer;
 	}
@@ -73,7 +67,6 @@ export const SidebarEditor = () => {
 				}
 				cur += (line.length + 1);
 			}
-			console.log("cursor res: ", res);
 			setOilLine(res);
 		}
 	});

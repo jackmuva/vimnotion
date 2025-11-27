@@ -68,8 +68,7 @@ export type EditorState = {
 	location: string;
 	lastValidLocation: string;
 	oilLine: string;
-	sidebarBufferHistory: string[];
-	sidebarBufferMap: { [id: string]: string };
+	sidebarBuffer: string;
 	lastDeleted: DirectoryTree | null;
 	directoryConfirmation: boolean;
 
@@ -82,7 +81,7 @@ export type EditorState = {
 	setLastValidLocation: (location: string) => void;
 	getOilLine: () => string;
 	setOilLine: (line: string) => void;
-	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
+	setSidebarBuffer: (buffer: string) => void;
 	setLastDeleted: (delTree: DirectoryTree) => void;
 	evaluateOilBufferChanges: () => void;
 	setDirectoryConfirmation: (open: boolean) => void;
