@@ -14,10 +14,10 @@ go run cmd/server/main.go
 ## Immediate Todos
 1. grep search
 5. deploy backend
-6. fix sidebar editor
 7. startup + tutor pages
 8. marketing page with gifs
 9. syntax highlighting on sidebar-editor
+10. non-vim usability tooltip hints
 
 
 ## High-level Todos
@@ -29,3 +29,4 @@ go run cmd/server/main.go
   - trash
 - local md downloads
 - cron job to delete all unused images
+- sidebar refactor

@@ -336,6 +336,7 @@ export const createPanelSlice = (
 			}
 		).then((res: Response) => {
 			if (res.ok) {
+				console.log("success");
 				succ = true;
 			}
 		}).catch((err) => {

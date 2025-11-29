@@ -12,7 +12,6 @@ export const ConfirmationModal = () => {
 	});
 
 	const updateDirectoryStructure = async (changes: DirectoryChanges, structure: DirectoryTree): Promise<boolean> => {
-		console.log("sending changes: ", changes);
 		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`, {
 			method: "PUT",
 			headers: {
@@ -24,7 +23,6 @@ export const ConfirmationModal = () => {
 			}),
 			credentials: "include",
 		});
-		console.log(await res.json());
 		return res.ok;
 	}
 

@@ -70,6 +70,7 @@ export const createDirectorySlice = (
 
 	//TODO:when a user has folder/folder/file, parse
 	//TODO:Copy functionality
+	//TODO: multi line copy and pastes
 	//BUG:The rename functionality doesn't work when you delete an entire line
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
@@ -321,10 +322,10 @@ export const createDirectorySlice = (
 				credentials: 'include'
 			}
 		).then((res: Response) => {
-			res.json().then((body: { Data: VnObject }) => {
+			res.json().then((body: { Data: VnObject[] }) => {
 				activePane[Object.keys(activePane)[0]].fileId = id ? id.split("|")[0] : get().getOilLine();
-				activePane[Object.keys(activePane)[0]].buffer = body.Data.contents;
-				activePane[Object.keys(activePane)[0]].public = body.Data.public;
+				activePane[Object.keys(activePane)[0]].buffer = body.Data[0].contents;
+				activePane[Object.keys(activePane)[0]].public = body.Data[0].public;
 				get().updatePane(activePane);
 			}).catch((err) => {
 				console.error("unable to get vnobject: ", err);
