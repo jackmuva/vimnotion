@@ -43,6 +43,8 @@ export type EditorState = {
 	goToNeighbor: (paneId: string, direction: Direction) => string;
 	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
 	cycleNeighbor: () => string;
+	renderMdTutor: () => void;
+	renderVimTutor: () => void;
 
 	saveVnObjectBuffer: () => boolean;
 	publishVnObject: (publish: boolean) => boolean;

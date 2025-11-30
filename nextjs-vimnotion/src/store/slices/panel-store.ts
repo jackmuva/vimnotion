@@ -2,6 +2,7 @@ import { Direction, ChildType, EditorType, PaneNode, SplitState, TabMap, PanelTy
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
+import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -19,7 +20,7 @@ export const createPanelSlice = (
 	activePane: "",
 	paneTree: {} as PaneNode,
 
-	getPaneById: (paneId: string) => {
+	getPaneById: (paneId: string): PaneNode => {
 		const { paneTree } = get();
 		return {
 			[paneId]: paneTree[paneId]
@@ -58,7 +59,7 @@ export const createPanelSlice = (
 			childType: ChildType.NONE,
 			deleted: false,
 			editorType: EditorType.VIM,
-			buffer: "\n\n\n\n\n\n\n",
+			buffer: START_BUFFER,
 			fileId: "START_PAGE",
 			public: false,
 		}
@@ -376,5 +377,18 @@ export const createPanelSlice = (
 
 	},
 
+	renderMdTutor: () => {
+		const activePane: PaneNode = { ...get().getPaneById(get().activePane) };
+		activePane[Object.keys(activePane)[0]].fileId = "MD_TUTOR";
+		activePane[Object.keys(activePane)[0]].buffer = MD_TUTOR_BUFFER;
+		get().updatePane(activePane);
+	},
+
+	renderVimTutor: () => {
+		const activePane: PaneNode = { ...get().getPaneById(get().activePane) };
+		activePane[Object.keys(activePane)[0]].fileId = "VIM_TUTOR";
+		activePane[Object.keys(activePane)[0]].buffer = VIM_TUTOR_BUFFER;
+		get().updatePane(activePane);
+	},
 });
 

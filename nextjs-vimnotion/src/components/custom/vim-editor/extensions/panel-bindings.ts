@@ -9,6 +9,8 @@ export const applyPanelBindings = ({
 	saveVnObjectBuffer,
 	setDirectoryConfirmation,
 	toggleSidebar,
+	renderMdTutor,
+	renderVimTutor,
 }: {
 	splitVertical: () => void,
 	splitHorizontal: () => void,
@@ -17,6 +19,8 @@ export const applyPanelBindings = ({
 	saveVnObjectBuffer: () => boolean,
 	setDirectoryConfirmation: () => void,
 	toggleSidebar: () => void,
+	renderMdTutor: () => void,
+	renderVimTutor: () => void,
 }) => {
 	Vim.defineEx('write', 'w', function() {
 		const activePanel: PanelType = getActivePanel();
@@ -68,5 +72,18 @@ export const applyPanelBindings = ({
 		}
 	});
 
+	Vim.defineEx('mdtutor', 'mdtutor', function() {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			renderMdTutor();
+		}
+	});
+
+	Vim.defineEx('vimtutor', 'vimtutor', function() {
+		const activePanel: PanelType = getActivePanel();
+		if (activePanel === PanelType.MAIN) {
+			renderVimTutor();
+		}
+	});
 
 }
