@@ -1,16 +1,18 @@
 export const START_BUFFER = `# Welcome to VimNotion
 ## Getting started
 1. Press "i" to go into \`insert mode\` and start typing like a normal editor
-2. Open the directory sideabar with "-"
-3. Create a new file by typing a file name on a new line
-4. Create directories (folders) by typing a directory name followed by the "/"
-5. Press the "<space>" key (the leader key) to bring up additional options like:
+2. Use "<ESC>" to go into \`normal mode\` at any time
+3. Use \`:w\` while in \`normal mode\` to save your VimNotion document
+4. \`:mdtutor\` and \`:vimtutor\` for additional guides on how to use VimNotion
+5. Open the directory sideabar with "-"
+    * Create a new file by typing a file name on a new line
+    * Create directories (folders) by typing a directory name followed by the "/"
+6. Press the "<space>" key (the leader key) to bring up additional options like:
     * render markdown
     * Inserting an image
     * Searching for a file
     * Publishing a page
-6. Try neovim-like executions like \`:w\`, \`:vsplit\`, \`:split\`, and \`:tabnew\`
-7. Type in \`:mdtutor\` and \`:vimtutor\` for additional guides on how to use VimNotion`;
+7. Try other neovim-like commands like \`:split\`, \`:vsplit\`, and \`:tabnew\``;
 
 export const MD_TUTOR_BUFFER = `# How to get started with Markdown
 
