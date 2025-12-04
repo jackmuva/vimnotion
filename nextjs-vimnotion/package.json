@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.3.4",
@@ -15,7 +15,7 @@
     "@replit/codemirror-vim": "^6.3.0",
     "codemirror": "^6.0.2",
     "lucide-react": "^0.536.0",
-    "next": "^15.5.2",
+    "next": "^16.0.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-markdown": "^10.1.0",
