@@ -66,6 +66,9 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 		jwt := services.CreateJwt(userData)
 
 		expire := time.Now().Add(time.Hour * 24 * 7)
+		cfg := config.Get()
+		fmt.Printf("Frontend domain: %s\n", cfg.FrontendDomain)
+
 		cookie := http.Cookie{
 			Name:     "token",
 			Value:    jwt,
@@ -73,9 +76,11 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 			MaxAge:   60 * 60 * 24 * 7,
 			Path:     "/",
 			HttpOnly: true,
+			Domain:   cfg.FrontendDomain,
+			Secure:   true,
 		}
+
 		http.SetCookie(w, &cookie)
-		cfg := config.Get()
 		http.Redirect(w, r, cfg.FrontendBaseUrl, http.StatusSeeOther)
 	}
 }

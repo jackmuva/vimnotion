@@ -12,6 +12,7 @@ type Config struct {
 	GithubSecretKey  string
 	AuthSecret       string
 	FrontendBaseUrl  string
+	FrontendDomain   string
 	TursoDatabaseUrl string
 	TursoAuthToken   string
 }
@@ -31,6 +32,7 @@ func Get() *Config {
 			GithubSecretKey:  os.Getenv("GITHUB_SECRET_KEY"),
 			AuthSecret:       os.Getenv("AUTH_SECRET"),
 			FrontendBaseUrl:  os.Getenv("FRONTEND_BASE_URL"),
+			FrontendDomain:   os.Getenv("FRONTEND_DOMAIN"),
 			TursoDatabaseUrl: os.Getenv("TURSO_DATABASE_URL"),
 			TursoAuthToken:   os.Getenv("TURSO_AUTH_TOKEN"),
 		}
