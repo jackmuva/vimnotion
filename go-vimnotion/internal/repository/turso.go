@@ -231,6 +231,7 @@ func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) e
 }
 
 func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
+	fmt.Printf("update vn: %v", vnObject)
 	_, err := db.Exec("UPDATE VnObject SET Name=?, Contents=?, updateDate=?, public=? WHERE id=?",
 		vnObject.Name, vnObject.Contents, vnObject.UpdateDate, vnObject.Public, vnObject.Id)
 	if err != nil {
@@ -241,7 +242,7 @@ func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
 }
 
 func UpdateVnObjectLocation(db *sql.DB, id string, name string, isFile bool, dt string) error {
-	_, err := db.Exec("UPDATE VnObject SET Name=?, isFile=? dt=? WHERE id=?",
+	_, err := db.Exec("UPDATE VnObject SET Name=?, isFile=?, updateDate=? WHERE id=?",
 		name, isFile, dt, id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)

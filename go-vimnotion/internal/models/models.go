@@ -59,7 +59,7 @@ type DeletedObjects struct {
 type MovedObjects struct {
 	OldLocation string `json:"oldLocation"`
 	NewLocation string `json:"newLocation"`
-	Uuid        string `json:"uui"`
+	Uuid        string `json:"uuid"`
 	Name        string `json:"name"`
 	IsFile      bool   `json:"isFile"`
 }
