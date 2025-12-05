@@ -11,6 +11,12 @@ npm run dev
 go run cmd/server/main.go
 ```
 
+### building webserver
+```bash
+docker build -t go-vimnotion:latest .
+docker run -v $(pwd)/.env/.env -p 3333:3333 go-vimnotion:latest
+```
+
 ## Immediate Todos
 1. grep search
 5. deploy backend
