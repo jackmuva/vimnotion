@@ -7,15 +7,15 @@ const nextConfig: NextConfig = {
 			beforeFiles: [
 				{
 					source: "/api/:path*",
-					destination: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/:path*`,
+					destination: `${process.env.BACKEND_BASE_URL}/api/:path*`,
 				},
 				{
 					source: "/oauth/:path*",
-					destination: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/oauth/:path*`,
+					destination: `${process.env.BACKEND_BASE_URL}/oauth/:path*`,
 				},
 				{
 					source: "/image/:path*",
-					destination: `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/:path*`,
+					destination: `${process.env.BACKEND_BASE_URL}/image/:path*`,
 				},
 			],
 		};
