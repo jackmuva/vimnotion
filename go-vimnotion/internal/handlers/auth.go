@@ -26,6 +26,7 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 		}
 		token := github.GetGithubToken(code)
 		userData := github.GetGithubUser(token)
+		fmt.Printf("user data from gh: %v\n", userData)
 
 		user, err := repository.GetUser(db, userData.Email)
 		if err != nil {
@@ -67,7 +68,6 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 
 		expire := time.Now().Add(time.Hour * 24 * 7)
 		cfg := config.Get()
-		fmt.Printf("Frontend domain: %s\n", cfg.FrontendDomain)
 
 		cookie := http.Cookie{
 			Name:     "token",

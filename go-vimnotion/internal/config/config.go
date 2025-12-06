@@ -24,7 +24,7 @@ func Get() *Config {
 	once.Do(func() {
 		err := godotenv.Load()
 		if err != nil {
-			fmt.Printf("Error loading .env file")
+			fmt.Printf("Error loading .env file\n")
 		}
 
 		config = &Config{

@@ -18,7 +18,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if jsonErr != nil {
 				fmt.Printf("unable to write error json: %s\n", err)
 			}
-
+			fmt.Printf("error at auth middleware, %s\n", err)
 			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
 			return
 		}

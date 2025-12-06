@@ -31,6 +31,7 @@ func GetPersonalDirectory(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		tokenCookie, err := r.Cookie("token")
+		fmt.Printf("cookie: %s\n", tokenCookie)
 		if err != nil {
 			message := "need to auth"
 			response := models.DataResponse{Message: &message, StatusCode: 400}

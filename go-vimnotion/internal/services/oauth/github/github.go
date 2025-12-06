@@ -42,7 +42,6 @@ func GetGithubToken(code string) string {
 	}
 
 	return tokenValues["access_token"][0]
-
 }
 
 func GetGithubEmail(token string) string {

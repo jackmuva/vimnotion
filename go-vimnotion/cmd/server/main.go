@@ -16,7 +16,7 @@ const keyServerAddr = "go-vimnotion-server"
 func main() {
 	tursoDb, err := repository.ConnectTurso()
 	if err != nil {
-		fmt.Errorf("error connecting to db: %s\n", err)
+		fmt.Printf("error connecting to db: %s\n", err)
 	}
 	defer tursoDb.Close()
 
