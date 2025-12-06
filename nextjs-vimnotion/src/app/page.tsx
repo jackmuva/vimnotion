@@ -91,7 +91,7 @@ export default function Home() {
 
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
-		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
+		const req = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/api/directory`,
 			{
 				credentials: 'include'
 			});
