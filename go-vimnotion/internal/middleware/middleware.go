@@ -14,6 +14,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenCookie, err := r.Cookie("token")
 		if err != nil {
+			fmt.Printf("no token\n")
 			jsonMessage, jsonErr := json.Marshal(models.ErrorMessage{Message: "need to auth", StatusCode: 401})
 			if jsonErr != nil {
 				fmt.Printf("unable to write error json: %s\n", err)
@@ -22,6 +23,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		fmt.Printf("token cookie: %s\n", tokenCookie)
 		_, err = services.VerifyJwt(tokenCookie.Value)
 		if err != nil {
 			http.Error(w, "401 Bad Token", http.StatusUnauthorized)
