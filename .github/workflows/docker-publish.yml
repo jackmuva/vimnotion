@@ -3,7 +3,7 @@ name: Build and publish to DO
 on:
   push:
     branches:
-      -'main'
+      - 'main'
 
 jobs:
   push_and_build:
