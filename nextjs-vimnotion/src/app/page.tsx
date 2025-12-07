@@ -1,23 +1,19 @@
 "use server"
 
+import MarketingHome from "@/components/custom/marketing-home";
 import VimNotion from "@/components/custom/vim-notion";
+import { cookies } from 'next/headers'
 
 export default async function Home() {
-	const isVerified = async (): Promise<boolean> => {
-		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
-			{
-				credentials: 'include'
-			});
-		console.log(res);
-		if (res.ok) {
-			const body = await res.json();
-			if (body.StatusCode === 200) return true;
-		}
-		return false;
-	}
+	const authed: string | undefined = (await cookies()).get("authed")?.value;
 
-	const authed = await isVerified();
-	console.log("authed: ", authed);
+	console.log(authed);
+
+	if (!authed) {
+		return (
+			<MarketingHome />
+		);
+	}
 
 	return (
 		<VimNotion />
