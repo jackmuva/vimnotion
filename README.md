@@ -22,7 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion
 
 ## Immediate Todos
 1. grep search
-5. backend is deployed but having trouble hitting api
 8. marketing page with gifs
 9. syntax highlighting on sidebar-editor
 10. non-vim usability tooltip hints
