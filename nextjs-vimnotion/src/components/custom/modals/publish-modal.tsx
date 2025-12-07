@@ -50,9 +50,9 @@ export const PublishModal = () => {
 			outline-foreground-muted/50">
 			<div className="h-full w-full flex flex-col p-4 border border-foreground-muted/50 mb-2 justify-center">
 				{activeTree[activePane].public ? `Published at ` : "Currently private"}
-				{activeTree[activePane].public && <a href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/doc/${activeTree[activePane].fileId}`}
+				{activeTree[activePane].public && <a href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/doc/${activeTree[activePane].fileId.split("|")[0]}`}
 					target="_blank" className="line-clamp-1 text-indigo-500 hover:underline">
-					{process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/doc/${activeTree[activePane].fileId}
+					{process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/doc/${activeTree[activePane].fileId.split("|")[0]}
 				</a>}
 			</div>
 			<div className="w-full flex gap-8 justify-center text-2xl">

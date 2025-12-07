@@ -26,7 +26,6 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 		}
 		token := github.GetGithubToken(code)
 		userData := github.GetGithubUser(token)
-		fmt.Printf("user data from gh: %v\n", userData)
 
 		user, err := repository.GetUser(db, userData.Email)
 		if err != nil {
