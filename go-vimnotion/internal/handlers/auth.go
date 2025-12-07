@@ -78,7 +78,7 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 			HttpOnly: true,
 			Domain:   cfg.FrontendDomain,
 			Secure:   true,
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteNoneMode,
 		}
 
 		http.SetCookie(w, &cookie)
