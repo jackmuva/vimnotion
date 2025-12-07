@@ -16,8 +16,8 @@ go run cmd/server/main.go
 docker build -t go-vimnotion:latest .
 docker run -v $(pwd)/.env/.env -p 3333:3333 go-vimnotion:latest
 docker login registry.digitalocean.com
-docker tag go-vimnotion registry.digitalocean.com/vimnotion/go-vimnotion
-docker push registry.digitalocean.com/vimnotion/go-vimnotion
+docker tag go-vimnotion registry.digitalocean.com/vimnotion/go-vimnotion:latest
+docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos

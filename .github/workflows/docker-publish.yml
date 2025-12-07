@@ -1,0 +1,31 @@
+name: Build and publish to DO
+
+on:
+  push:
+    branches:
+      -main
+
+jobs:
+  push_and_build:
+    name: push and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go-vimnotion
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t go-vimnotion:latest .
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 600
+      - name: Tag image
+        run:
+          docker tag go-vimnotion registry.digitalocean.com/vimnotion/go-vimnotion:latest
+      - name: Push image to DO Container Registry
+        run: 
+          docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
