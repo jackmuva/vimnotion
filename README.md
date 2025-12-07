@@ -31,9 +31,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - normie view (not vimnotion)
 - create teams
 - extensabiity with hotkeys for apis
-- router for vimnotion versions
 - version history
   - trash
 - local md downloads
 - cron job to delete all unused images
 - sidebar refactor
+- paid after 20 pages
