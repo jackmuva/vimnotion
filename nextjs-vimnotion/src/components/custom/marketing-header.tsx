@@ -8,7 +8,7 @@ export const MarketingHeader = () => {
 				className='font-bold font-pixel text-2xl italic'>
 				VimNotion
 			</Link>
-			<div className="flex gap-4 h-full">
+			<div className="flex gap-4 h-full items-center">
 				<Link target="_self" href={`https://github.com/login/oauth/authorize?scope=read:user,user:email&
 						client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}
 					className='font-bold font-pixel text-xl px-2 h-8
