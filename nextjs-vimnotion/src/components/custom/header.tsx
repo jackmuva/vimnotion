@@ -10,7 +10,9 @@ export const Header = () => {
 				onClick={() => toggleSidebar()}>
 				<Menu size={17} />
 			</button>
-			<h1 className='font-pixel italic text-2xl font-bold'>vimnotion</h1>
+			<h1 className='font-pixel italic text-2xl font-bold'>
+				VimNotion
+			</h1>
 		</div>
 	);
 }

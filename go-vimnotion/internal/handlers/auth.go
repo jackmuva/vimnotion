@@ -80,7 +80,20 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 			SameSite: http.SameSiteNoneMode,
 		}
 
+		isAuthedCookie := http.Cookie{
+			Name:     "authed",
+			Value:    "true",
+			Expires:  expire,
+			MaxAge:   60 * 60 * 24 * 7,
+			Path:     "/",
+			HttpOnly: false,
+			Domain:   cfg.FrontendDomain,
+			Secure:   true,
+			SameSite: http.SameSiteNoneMode,
+		}
+
 		http.SetCookie(w, &cookie)
+		http.SetCookie(w, &isAuthedCookie)
 		http.Redirect(w, r, cfg.FrontendBaseUrl, http.StatusSeeOther)
 	}
 }
