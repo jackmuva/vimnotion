@@ -21,10 +21,13 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-1. marketing page with gifs
 2. grep search
 9. syntax highlighting on sidebar-editor
 10. non-vim usability tooltip hints
+11. stripe payment
+12. account modal
+13. signin modal with google auth
+14. emoji support
 
 
 ## High-level Todos
@@ -36,4 +39,3 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - local md downloads
 - cron job to delete all unused images
 - sidebar refactor
-- paid after 20 pages
