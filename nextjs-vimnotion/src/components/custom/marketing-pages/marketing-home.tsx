@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MarketingHeader } from "./marketing-header";
 import Image from "next/image";
+import { StartButtonOverlay } from "./start-button-overlay";
 
 export default async function MarketingHome() {
 	return (
@@ -75,15 +76,7 @@ export default async function MarketingHome() {
 				</div>
 			</div>
 			<div className="h-14">
-				<Link target="_self" href={`https://github.com/login/oauth/authorize?scope=read:user,user:email&
-						client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}
-					className='font-bold font-pixel text-3xl px-4 h-12
-					border-yellow-600 text-[#151515] border-b-8 border-2 bg-[#ffd497]
-					hover:border-b-4 hover:translate-y-1 flex items-center'>
-					<div>
-						Enter VN
-					</div>
-				</Link>
+				<StartButtonOverlay variant="normal" />
 			</div>
 		</div>
 	);

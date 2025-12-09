@@ -29,6 +29,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 12. account modal
 13. signin modal with google auth
 14. emoji support
+15. docs on marketing page
 
 
 ## High-level Todos

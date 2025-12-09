@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StartButtonOverlay } from "./start-button-overlay";
 
 export const MarketingHeader = () => {
 	return (
@@ -9,13 +10,7 @@ export const MarketingHeader = () => {
 				VimNotion
 			</Link>
 			<div className="flex gap-4 h-full items-center">
-				<Link target="_self" href={`https://github.com/login/oauth/authorize?scope=read:user,user:email&
-						client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}
-					className='font-bold font-pixel text-xl px-2 h-8
-					border-yellow-600 text-[#151515] border-b-4 border bg-[#ffd497]
-					hover:border-b-2 hover:translate-y-0.5'>
-					start
-				</Link>
+				<StartButtonOverlay variant="sm" />
 				<Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog`}
 					className='underline font-bold font-pixel text-xl italic'>
 					blog

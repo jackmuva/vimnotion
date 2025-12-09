@@ -1,6 +1,6 @@
 "use server"
 
-import MarketingHome from "@/components/custom/marketing-home";
+import MarketingHome from "@/components/custom/marketing-pages/marketing-home";
 import VimNotion from "@/components/custom/vim-notion";
 import { cookies } from 'next/headers'
 
