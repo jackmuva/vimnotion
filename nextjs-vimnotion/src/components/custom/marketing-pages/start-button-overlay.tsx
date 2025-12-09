@@ -8,7 +8,7 @@ export const StartButtonOverlay = ({
 }: {
 	variant: "sm" | "normal",
 }) => {
-	let buttonStyle = variant === "sm" ? `font-bold font-pixel text-xl px-2 h-8
+	const buttonStyle = variant === "sm" ? `font-bold font-pixel text-xl px-2 h-8
 					border-yellow-600 text-[#151515] border-b-4 border bg-[#ffd497]
 					hover:border-b-2 hover:translate-y-0.5` :
 		`font-bold font-pixel text-3xl px-4 h-12
@@ -40,13 +40,13 @@ export const StartButtonOverlay = ({
 						Login to VimNotion
 					</h1>
 					<div className="flex flex-col gap-4">
-						<a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30 
-							hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full
-							space-x-2"
-							href={`https://accounts.google.com/o/oauth2/v2/auth?${googleParams.toString()}`}>
-							<Image alt="google logo" src={"/google-logo.png"} height={20} width={40} />
-							<p>Login with Google</p>
-						</a>
+						{/* <a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30  */}
+						{/* 	hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full */}
+						{/* 	space-x-2" */}
+						{/* 	href={`https://accounts.google.com/o/oauth2/v2/auth?${googleParams.toString()}`}> */}
+						{/* 	<Image alt="google logo" src={"/google-logo.png"} height={20} width={40} /> */}
+						{/* 	<p>Login with Google</p> */}
+						{/* </a> */}
 						<a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30 
 							hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full 
 							space-x-2"
