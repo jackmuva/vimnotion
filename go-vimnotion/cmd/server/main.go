@@ -22,6 +22,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/oauth/github/callback", handlers.GithubCallback(tursoDb))
+	mux.HandleFunc("/oauth/google/callback", handlers.GoogleCallback(tursoDb))
 	mux.Handle("/api/directory", middleware.AuthMiddleware(handlers.HandlePersonalDirectory(tursoDb)))
 	mux.Handle("/api/vnobject/{id}", middleware.AuthMiddleware(handlers.GetVnObjectById(tursoDb)))
 	mux.Handle("/api/vnobject", middleware.AuthMiddleware(handlers.RouteVnObjectRequests(tursoDb)))

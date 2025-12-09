@@ -15,6 +15,12 @@ import (
 	"vimnotion.com/server/internal/services/oauth/github"
 )
 
+func GoogleCallback(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
 func GithubCallback(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hasCode := r.URL.Query().Has("code")
