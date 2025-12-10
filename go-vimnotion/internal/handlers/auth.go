@@ -12,26 +12,36 @@ import (
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
 	"vimnotion.com/server/internal/services"
-	"vimnotion.com/server/internal/services/oauth/github"
+	"vimnotion.com/server/internal/services/oauth"
 )
 
 func GoogleCallback(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		hasToken := r.URL.Query().Has("access_token")
+		if !hasToken {
+			fmt.Printf("no token received from google\n")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		token := r.URL.Query().Get("access_token")
+		oauth.GetGoogleUser(token)
 
+		cfg := config.Get()
+		http.Redirect(w, r, cfg.FrontendBaseUrl, http.StatusSeeOther)
 	}
 }
 
 func GithubCallback(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hasCode := r.URL.Query().Has("code")
-		code := r.URL.Query().Get("code")
 		if !hasCode {
 			fmt.Printf("no code received from github\n")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		token := github.GetGithubToken(code)
-		userData := github.GetGithubUser(token)
+		code := r.URL.Query().Get("code")
+		token := oauth.GetGithubToken(code)
+		userData := oauth.GetGithubUser(token)
 
 		user, err := repository.GetUser(db, userData.Email)
 		if err != nil {
