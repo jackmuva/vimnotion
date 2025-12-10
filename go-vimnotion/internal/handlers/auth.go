@@ -17,14 +17,15 @@ import (
 
 func GoogleCallback(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		hasToken := r.URL.Query().Has("access_token")
-		if !hasToken {
+		hasCode := r.URL.Query().Has("code")
+		if !hasCode {
 			fmt.Printf("no token received from google\n")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		token := r.URL.Query().Get("access_token")
-		oauth.GetGoogleUser(token)
+		code := r.URL.Query().Get("code")
+		fmt.Printf("code: %s\n", code)
+		// oauth.GetGoogleUser(code)
 
 		cfg := config.Get()
 		http.Redirect(w, r, cfg.FrontendBaseUrl, http.StatusSeeOther)

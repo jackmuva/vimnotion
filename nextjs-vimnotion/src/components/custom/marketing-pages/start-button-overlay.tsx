@@ -18,7 +18,7 @@ export const StartButtonOverlay = ({
 	const googleParams = new URLSearchParams();
 	googleParams.append('client_id', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
 	googleParams.append('redirect_uri', process.env.NEXT_PUBLIC_BACKEND_BASE_URL! + "/oauth/google/callback");
-	googleParams.append('response_type', 'token');
+	googleParams.append('response_type', 'code');
 	googleParams.append('scope', 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid');
 	googleParams.append('include_granted_scopes', 'true');
 
