@@ -25,7 +25,10 @@ func GoogleCallback(db *sql.DB) http.HandlerFunc {
 		}
 		code := r.URL.Query().Get("code")
 		fmt.Printf("code: %s\n", code)
-		// oauth.GetGoogleUser(code)
+		token, _ := oauth.GetGoogleToken(code)
+		fmt.Printf("token: %s\n", token)
+		userData := oauth.GetGoogleUser(code)
+		fmt.Printf("user data: %v\n", userData)
 
 		cfg := config.Get()
 		http.Redirect(w, r, cfg.FrontendBaseUrl, http.StatusSeeOther)

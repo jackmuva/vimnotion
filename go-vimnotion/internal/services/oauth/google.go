@@ -2,12 +2,56 @@ package oauth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
+	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 )
+
+func GetGoogleToken(code string) (string, error) {
+	cfg := config.Get()
+	requestUrl := "https://oauth2.googleapis.com/token"
+	data := url.Values{}
+	data.Set("client_id", cfg.GoogleClientId)
+	data.Set("client_secret", cfg.GoogleSecretKey)
+	data.Set("code", code)
+	data.Set("grant_type", "authorization_code")
+	data.Set("redirect_uri", cfg.BackendBaseUrl+"/oauth/google/callback")
+
+	req, reqErr := http.NewRequest(http.MethodPost, requestUrl, strings.NewReader(data.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	if reqErr != nil {
+		fmt.Printf("[GOOGLE TOKEN REQUEST]: %s\n", reqErr)
+	}
+
+	res, resErr := http.DefaultClient.Do(req)
+	if resErr != nil {
+		fmt.Printf("[GOOGLE TOKEN RESPONSE]: %s\n", resErr)
+	}
+
+	body, bodyErr := io.ReadAll(res.Body)
+	if bodyErr != nil {
+		fmt.Printf("[GOOGLE TOKEN BODY]: %s\n", bodyErr)
+	}
+
+	var tokenMap map[string]any
+	jsonErr := json.Unmarshal(body, &tokenMap)
+	if jsonErr != nil {
+		fmt.Printf("[GOOGLE USER JSON]: %s\n", jsonErr)
+	}
+	res.Body.Close()
+	fmt.Printf("user map: %+v\n", tokenMap)
+
+	if tokenMap["access_token"] == nil {
+		fmt.Printf("GOOGLE MISSING TOKEN]")
+		return "", errors.New("missing token")
+	}
+	return tokenMap["access_token"].(string), nil
+}
 
 func GetGoogleUser(token string) models.UserData {
 	var authSb strings.Builder

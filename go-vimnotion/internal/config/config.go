@@ -10,8 +10,11 @@ import (
 type Config struct {
 	GithubClientId   string
 	GithubSecretKey  string
+	GoogleClientId   string
+	GoogleSecretKey  string
 	AuthSecret       string
 	FrontendBaseUrl  string
+	BackendBaseUrl   string
 	FrontendDomain   string
 	TursoDatabaseUrl string
 	TursoAuthToken   string
@@ -30,8 +33,11 @@ func Get() *Config {
 		config = &Config{
 			GithubClientId:   os.Getenv("GITHUB_CLIENT_ID"),
 			GithubSecretKey:  os.Getenv("GITHUB_SECRET_KEY"),
+			GoogleClientId:   os.Getenv("GOOGLE_CLIENT_ID"),
+			GoogleSecretKey:  os.Getenv("GOOGLE_SECRET_KEY"),
 			AuthSecret:       os.Getenv("AUTH_SECRET"),
 			FrontendBaseUrl:  os.Getenv("FRONTEND_BASE_URL"),
+			BackendBaseUrl:   os.Getenv("BACKEND_BASE_URL"),
 			FrontendDomain:   os.Getenv("FRONTEND_DOMAIN"),
 			TursoDatabaseUrl: os.Getenv("TURSO_DATABASE_URL"),
 			TursoAuthToken:   os.Getenv("TURSO_AUTH_TOKEN"),
