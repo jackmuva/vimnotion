@@ -44,7 +44,6 @@ func GetGoogleToken(code string) (string, error) {
 		fmt.Printf("[GOOGLE USER JSON]: %s\n", jsonErr)
 	}
 	res.Body.Close()
-	fmt.Printf("user map: %+v\n", tokenMap)
 
 	if tokenMap["access_token"] == nil {
 		fmt.Printf("GOOGLE MISSING TOKEN]")
@@ -81,14 +80,12 @@ func GetGoogleUser(token string) models.UserData {
 		fmt.Printf("[GOOGLE USER JSON]: %s\n", jsonErr)
 	}
 	res.Body.Close()
-	fmt.Printf("user map: %+v\n", userMap)
 
 	userData := models.UserData{
-		Username: userMap["login"].(string),
+		Username: userMap["given_name"].(string),
 		Name:     userMap["name"].(string),
-		Avatar:   userMap["avatar_url"].(string),
-		Email:    GetGithubEmail(token),
+		Avatar:   userMap["picture"].(string),
+		Email:    userMap["email"].(string),
 	}
 	return userData
-
 }
