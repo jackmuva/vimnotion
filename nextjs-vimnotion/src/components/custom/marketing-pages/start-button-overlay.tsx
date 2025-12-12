@@ -18,7 +18,7 @@ export const StartButtonOverlay = ({
 	const googleParams = new URLSearchParams();
 	googleParams.append('client_id', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!);
 	googleParams.append('redirect_uri', process.env.NEXT_PUBLIC_BACKEND_BASE_URL! + "/oauth/google/callback");
-	googleParams.append('response_type', 'token');
+	googleParams.append('response_type', 'code');
 	googleParams.append('scope', 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid');
 	googleParams.append('include_granted_scopes', 'true');
 
@@ -40,13 +40,13 @@ export const StartButtonOverlay = ({
 						Login to VimNotion
 					</h1>
 					<div className="flex flex-col gap-4">
-						{/* <a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30  */}
-						{/* 	hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full */}
-						{/* 	space-x-2" */}
-						{/* 	href={`https://accounts.google.com/o/oauth2/v2/auth?${googleParams.toString()}`}> */}
-						{/* 	<Image alt="google logo" src={"/google-logo.png"} height={20} width={40} /> */}
-						{/* 	<p>Login with Google</p> */}
-						{/* </a> */}
+						<a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30 
+							hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full
+							space-x-2"
+							href={`https://accounts.google.com/o/oauth2/v2/auth?${googleParams.toString()}`}>
+							<Image alt="google logo" src={"/google-logo.png"} height={20} width={40} />
+							<p>Login with Google</p>
+						</a>
 						<a className="border-2 rounded-sm cursor-pointer bg-foreground-muted/30 
 							hover:bg-background-muted/50 flex items-center justify-center py-1 px-2 w-full 
 							space-x-2"
