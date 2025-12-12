@@ -21,7 +21,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-1. sitemap
 2. grep search
 9. syntax highlighting on sidebar-editor
 10. non-vim usability tooltip hints
