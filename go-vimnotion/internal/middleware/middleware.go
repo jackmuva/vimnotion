@@ -23,7 +23,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		fmt.Printf("token cookie: %s\n", tokenCookie)
 		_, err = services.VerifyJwt(tokenCookie.Value)
 		if err != nil {
 			http.Error(w, "401 Bad Token", http.StatusUnauthorized)

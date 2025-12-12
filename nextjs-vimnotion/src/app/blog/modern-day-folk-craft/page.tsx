@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function ArticlePage() {
+export default async function FolkCraftPage() {
 	return (
 		<div className="h-dvh w-dvw px-2 pt-20 flex flex-col items-center">
 			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-4 overflow-y-auto 

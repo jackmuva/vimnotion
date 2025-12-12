@@ -28,6 +28,25 @@ export default async function BlogPage() {
 
 						</div>
 					</Link>
+					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/dear-vim`}
+						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
+						pb-2 hover:text-foreground/30">
+						<h2 className="text-xl">
+							Dear Vim
+						</h2>
+						<div className="flex w-full justify-between items-center">
+							<div>
+								Written by: Jack
+							</div>
+							<div>
+								Published: November 9, 2025
+							</div>
+						</div>
+						<div className="text-sm lineclamp-3">
+
+						</div>
+					</Link>
+
 				</div>
 			</div>
 		</div>
