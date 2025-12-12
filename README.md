@@ -27,9 +27,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 10. non-vim usability tooltip hints
 11. stripe payment
 12. account modal
-13. signin modal with google auth
 14. emoji support
 15. docs on marketing page
+16. about page
 
 
 ## High-level Todos
