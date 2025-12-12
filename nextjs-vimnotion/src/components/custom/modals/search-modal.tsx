@@ -99,6 +99,8 @@ export const SearchModal = () => {
 
 		const handleCrKeyDown = (event: KeyboardEvent) => {
 			if (!inputModeRef.current && event.key === 'Enter') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				openFileInBuffer(searchResultsRef.current[Object.keys(searchResultsRef.current)[selectedIndexRef.current]].id);
 				toggleSearchModal();
 			}
