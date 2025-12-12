@@ -6,7 +6,7 @@ import Link from "next/link";
 export default async function FolkCraftPage() {
 	return (
 		<div className="h-dvh w-dvw px-2 pt-20 flex flex-col items-center">
-			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-4 overflow-y-auto 
+			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-8 overflow-y-auto 
 				pb-20 px-4">
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-col gap-4">
@@ -34,6 +34,56 @@ export default async function FolkCraftPage() {
 				</h1>
 				<div>
 					Dear Vim,
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>From the moment</div>
+					<div>I saw you on ThePrimeagen&apos;s stream</div>
+					<div>How could I have known:</div>
+					<div>That I would fall in love with you.</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>From fumbling around</div>
+					<div>On ItelliJ&apos;s Vim plugin</div>
+					<div>To finally working up the courage</div>
+					<div>To talk to you</div>
+					<div>I kickstart(.nvim)ed my relationship</div>
+					<div>With you. And only you.</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>As the months went by</div>
+					<div>I programmed more and more.</div>
+					<div>Not because I was imparted</div>
+					<div>By the agility and grace you gave me</div>
+					<div>But by a new found love for my tools.</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>While this may come off as parody</div>
+					<div>There&apos;s truth in every line.</div>
+					<div>You made me feel like a brand new developer.</div>
+					<div>And I&apos;ll always love you for it.</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>For how can you love what you do</div>
+					<div>Without loving how you do it?</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>So when I&apos;m building VimNotion</div>
+					<div>A Vim-first notes app</div>
+					<div>With my Neovim IDE,</div>
+					<div>It&apos;s a labor of love.</div>
+				</div>
+				<div className="flex flex-col w-full gap-1">
+					<div>And no matter what I&apos;m building,</div>
+					<div>I now know one thing for certain:</div>
+					<div>I&apos;ll love how I&apos;m building</div>
+					<div>With you by side.</div>
+				</div>
+
+
+
+				<div className="flex flex-col w-full gap-1">
+					<div>:wq,</div>
+					<div>- Jack</div>
 				</div>
 
 			</div>
