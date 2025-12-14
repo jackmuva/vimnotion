@@ -1,6 +1,5 @@
 "use server";
 
-import Image from "next/image";
 import Link from "next/link";
 
 export default async function FolkCraftPage() {
@@ -58,7 +57,6 @@ export default async function FolkCraftPage() {
 				</div>
 				<div className="flex flex-col w-full gap-1">
 					<div>While this may come off as parody</div>
-					<div>There&apos;s truth in every line.</div>
 					<div>You made me feel like a brand new developer.</div>
 					<div>And I&apos;ll always love you for it.</div>
 				</div>

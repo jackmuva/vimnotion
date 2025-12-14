@@ -11,6 +11,10 @@ export const MarketingHeader = () => {
 			</Link>
 			<div className="flex gap-4 h-full items-center">
 				<StartButtonOverlay variant="sm" />
+				<Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/docs/editor`}
+					className='underline font-bold font-pixel text-xl italic'>
+					docs
+				</Link>
 				<Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog`}
 					className='underline font-bold font-pixel text-xl italic'>
 					blog

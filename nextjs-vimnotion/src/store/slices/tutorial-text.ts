@@ -212,10 +212,10 @@ The other useful mode is view mode with "v"
 
 In view mode you can highlight text, move around with "w" or "b" or "f" or "h" before yanking or deleting.
 
-### Executables
-While not directly a part of Vim motions, executables are how VimNotion, NeoVim, and other extensions 
+### Commands
+While not directly a part of Vim motions, commands are how VimNotion, Neovim, and other extensions 
 execute an action like quitting, saving a file, and creating tabs. The most important ones in VimNotion
-are inspired from NeoVim, an extension of the Vim text editor.
+are inspired from Vim.
 
 * ":q" to quit a document **WITHOUT** saving
 * ":w" to save a document

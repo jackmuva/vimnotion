@@ -1,0 +1,19 @@
+import DocsNav from "@/components/custom/docs/docs-nav"
+import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header"
+
+export default function DocsLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
+	return (
+		<div className="font-libre text-lg px-2 h-dvh w-dvw pt-20 flex flex-col items-center">
+			<MarketingHeader />
+			<div className="flex flex-col w-full max-w-[1100px] gap-4">
+				<DocsNav />
+				{children}
+			</div>
+		</div>
+	)
+
+}

@@ -1,5 +1,4 @@
 import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header"
-import Link from "next/link"
 
 export default function BlogLayout({
 	children,
