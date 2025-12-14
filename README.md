@@ -27,7 +27,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 11. stripe payment
 12. account modal
 14. emoji support
-15. docs on marketing page
 16. about page
 
 
