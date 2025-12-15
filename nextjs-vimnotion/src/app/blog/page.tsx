@@ -9,20 +9,20 @@ export default async function BlogPage() {
 				<h1 className="italic text-2xl font-bold">
 					The vimnotion blog
 				</h1>
-				<div className="flex flex-col gap-2 text-base ">
+				<div className="flex flex-col gap-8 text-base ">
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/dear-vim`}
 						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
 						pb-2 hover:text-foreground/30">
-						<h2 className="text-xl">
-							Dear Vim
-						</h2>
 						<div className="flex w-full justify-between items-center">
-							<div>
-								Written by: Jack
-							</div>
+							<h2 className="text-xl">
+								Dear Vim
+							</h2>
 							<div>
 								Published: December 12, 2025
 							</div>
+						</div>
+						<div>
+							Written by: Jack
 						</div>
 						<div className="text-sm lineclamp-3">
 							20% parody, 100% real, this letter based off Kobe Bryant's "Dear Basketball" is for Vim.
@@ -31,16 +31,16 @@ export default async function BlogPage() {
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/modern-day-folk-craft`}
 						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
 						pb-2 hover:text-foreground/30">
-						<h2 className="text-xl">
-							Software and the Modern Day Folk Crafts
-						</h2>
 						<div className="flex w-full justify-between items-center">
-							<div>
-								Written by: Jack
-							</div>
+							<h2 className="text-xl">
+								Software and the Modern Day Folk Crafts
+							</h2>
 							<div>
 								Published: November 9, 2025
 							</div>
+						</div>
+						<div>
+							Written by: Jack
 						</div>
 						<div className="text-sm lineclamp-3">
 							Inspired by an essay from Soetsu Yanagi's "The Beauty of Everyday Things,"
