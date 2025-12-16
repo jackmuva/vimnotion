@@ -6,7 +6,7 @@ export default async function BlogPage() {
 	return (
 		<div className="px-2 h-dvh w-dvw pt-20 flex flex-col items-center">
 			<div className="flex flex-col w-full max-w-[1100px] gap-10">
-				<h1 className="italic text-2xl font-bold">
+				<h1 className="text-2xl font-bold">
 					The vimnotion blog
 				</h1>
 				<div className="flex flex-col gap-8 text-base ">

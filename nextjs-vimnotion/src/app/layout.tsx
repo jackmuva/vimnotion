@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Libre_Baskerville, Pixelify_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Libre_Baskerville, Pixelify_Sans, Roboto, Roboto_Mono, Roboto_Slab } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,13 +12,13 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-const libre = Libre_Baskerville({
+const libre = Roboto_Slab({
 	weight: "400",
 	variable: "--font-libre",
 	subsets: ["latin"],
 });
 
-const pixel = Pixelify_Sans({
+const pixel = Roboto_Mono({
 	weight: "400",
 	variable: "--font-pixel",
 	subsets: ["latin"],

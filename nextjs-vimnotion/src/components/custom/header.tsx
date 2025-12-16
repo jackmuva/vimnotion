@@ -12,13 +12,13 @@ export const Header = () => {
 					onClick={() => toggleSidebar()}>
 					<Menu size={17} />
 				</button>
-				<h1 className='font-pixel italic text-2xl font-bold'>
+				<h1 className='font-pixel font-bold text-xl'>
 					VimNotion
 				</h1>
 			</div>
 			<div className='flex gap-4 h-full items-center'>
 				<Link target="_blank" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/docs/editor`}
-					className='underline font-bold font-pixel text-xl italic'>
+					className='underline font-pixel text-lg'>
 					docs
 				</Link>
 			</div>

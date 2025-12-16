@@ -11,10 +11,10 @@ export default async function MarketingHome() {
 			pb-20 overflow-y-auto gap-10">
 			<MarketingHeader />
 			<div className="w-full flex flex-col items-center gap-4">
-				<h1 className="font-pixel font-bold text-7xl italic">
+				<h1 className="font-pixel font-bold text-7xl">
 					VimNotion
 				</h1>
-				<h2 className="text-3xl italic text-center">
+				<h2 className="text-3xl  text-center">
 					The most <strong className="dark:text-yellow-400 text-yellow-600">buttery smooth</strong>
 					&nbsp;text editor for notes and documents on the web
 				</h2>
@@ -22,7 +22,7 @@ export default async function MarketingHome() {
 				items-center md:items-start justify-center py-4">
 					<div className="md:basis-1/3 p-4 flex flex-col 
 					justify-center items-center rounded-xs gap-4">
-						<h3 className="italic text-xl text-center font-bold ">
+						<h3 className=" text-xl text-center font-bold ">
 							First-class Markdown
 						</h3>
 						<Image src="/markdown transition.gif"
@@ -31,7 +31,7 @@ export default async function MarketingHome() {
 					</div>
 					<div className="md:basis-1/3 p-4 flex flex-col 
 					justify-center items-center rounded-xs gap-4">
-						<h3 className="italic text-xl text-center font-bold ">
+						<h3 className=" text-xl text-center font-bold ">
 							Snappy vim motions
 						</h3>
 						<Image src="/vim-motions.gif"
@@ -40,7 +40,7 @@ export default async function MarketingHome() {
 					</div>
 					<div className="md:basis-1/3 p-4 flex flex-col 
 					justify-center items-center rounded-xs gap-4">
-						<h3 className="italic text-xl text-center font-bold ">
+						<h3 className=" text-xl text-center font-bold ">
 							Keybindings to keep you in flow
 						</h3>
 						<Image src="/search-files.gif"
@@ -50,15 +50,15 @@ export default async function MarketingHome() {
 				</div>
 			</div>
 			<div className="w-full flex flex-col items-center gap-4">
-				<h2 className="text-3xl italic pt-10 text-center">
+				<h2 className="text-3xl  pt-10 text-center">
 					Rooted in <strong className="underline">Markdown</strong> and <strong className="underline">Vim</strong>&nbsp;
 				</h2>
 				<div className="flex flex-col md:flex-row gap-4 w-11/12 max-w-[1200px]
 				items-center md:items-start justify-center py-4">
 					<div className="md:basis-1/2 p-4 flex flex-col 
 					justify-center items-center rounded-xs gap-4">
-						<h3 className="italic text-xl text-center font-bold">
-							Craft beautiful documents with the simplicity of Markdown
+						<h3 className=" text-xl text-center font-bold">
+							Craft beautiful documents with the simplicity of&nbsp;<span className="underline">Markdown</span>
 						</h3>
 						<Image src="/markdown-s.png"
 							className="rounded-sm"
@@ -66,8 +66,8 @@ export default async function MarketingHome() {
 					</div>
 					<div className="md:basis-1/2 p-4 flex flex-col 
 					justify-center items-center rounded-xs gap-4">
-						<h3 className="italic text-xl text-center font-bold">
-							Paying homage to Vim editors of the past with search, split views, and new tabs at your fingertips
+						<h3 className=" text-xl text-center font-bold">
+							Paying homage to&nbsp;<span className="underline">Vim</span>&nbsp;editors of the past with search, split views, and new tabs at your fingertips
 						</h3>
 						<Image src="/split-ss.png"
 							className="rounded-sm"
