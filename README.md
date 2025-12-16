@@ -21,13 +21,14 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-2. grep search
-9. syntax highlighting on sidebar-editor
+16. about page
 10. non-vim usability tooltip hints
+9. syntax highlighting on sidebar-editor
+2. grep search
 11. stripe payment
 12. account modal
 14. emoji support
-16. about page
+17. privacy and tos
 
 
 ## High-level Todos

@@ -108,7 +108,7 @@ export default function VimNotion() {
 	}, [data]);
 
 	return (
-		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-libre text-lg">
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-libre text-base">
 			<Header />
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer />
