@@ -177,7 +177,12 @@ export default async function VimBasedNotesPage() {
 				</div>
 				<img src={"/vimnotion-rendered.png"} />
 				<div>
-					VimNotion also adopted a subset of Vim commands for notes - <code className="bg-foreground/10 px-1 rounded">:split</code>, <code className="bg-foreground/10 px-1 rounded">:vsplit</code>, and <code className="bg-foreground/10 px-1 rounded">:tabnew</code>.
+					VimNotion adopted a subset of Vim commands for notes -
+					<code className="bg-foreground/10 px-1 rounded">:split</code>,
+					<code className="bg-foreground/10 px-1 rounded">:vsplit</code>, and
+					<code className="bg-foreground/10 px-1 rounded">:tabnew</code>.
+					VimNotion also adopted some keybindings and extensions inspired from Telescope.nvim
+					and oil.nvim, using {`<Space>`} as the leader key.
 				</div>
 				<h2>
 					End of the Journey?
