@@ -20,7 +20,7 @@ export default async function FolkCraftPage() {
 								Written by: Jack
 							</div>
 							<div>
-								Published: November 9, 2025
+								Published: December 12, 2025
 							</div>
 						</div>
 						<div className="text-sm lineclamp-3">

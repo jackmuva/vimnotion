@@ -10,6 +10,24 @@ export default async function BlogPage() {
 					The vimnotion blog
 				</h1>
 				<div className="flex flex-col gap-8 text-base ">
+					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/vim-based-note-taker`}
+						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
+						pb-2 hover:text-foreground/30">
+						<div className="flex w-full justify-between items-center">
+							<h2 className="text-xl">
+								Search for a Vim-based Note Taker
+							</h2>
+							<div>
+								Published: December 15, 2025
+							</div>
+						</div>
+						<div>
+							Written by: Jack
+						</div>
+						<div className="text-sm lineclamp-3">
+							Once I got comfortable with Vim as an IDE, I knew I wanted a Vim-based note taker. I&quot;ve looked far and wide...
+						</div>
+					</Link>
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/dear-vim`}
 						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
 						pb-2 hover:text-foreground/30">
@@ -25,7 +43,7 @@ export default async function BlogPage() {
 							Written by: Jack
 						</div>
 						<div className="text-sm lineclamp-3">
-							20% parody, 100% real, this letter based off Kobe Bryant's "Dear Basketball" is for Vim.
+							20% parody, 100% real, this letter based off Kobe Bryant&quot;s &apos;Dear Basketball&apos; is for Vim.
 						</div>
 					</Link>
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/modern-day-folk-craft`}
@@ -43,7 +61,7 @@ export default async function BlogPage() {
 							Written by: Jack
 						</div>
 						<div className="text-sm lineclamp-3">
-							Inspired by an essay from Soetsu Yanagi's "The Beauty of Everyday Things,"
+							Inspired by an essay from Soetsu Yanagi&quot;s &apos;The Beauty of Everyday Things,&apos;
 							This is taking the ethos of folkcraft into software.
 						</div>
 					</Link>

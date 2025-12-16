@@ -22,7 +22,7 @@ export default async function MarkdownDocsPage() {
 				</div>
 				<div>
 					VimNotion is all about flow, so keeping your hands on your keyboard with the ability to
-					move at the speed of your thoughts is what it's all about.
+					move at the speed of your thoughts is what it&quot;s all about.
 				</div>
 				<h2>
 					Markdown Basics
@@ -112,20 +112,20 @@ export default async function MarkdownDocsPage() {
 				</div>
 				<hr />
 				<pre>
-					Images have similar syntax, but include an "!"<br />
+					Images have similar syntax, but include an &apos;!&apos;<br />
 					![alt text for the image]({process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/8df757fa-2252-4991-81e8-ece73eaec11f)
 				</pre>
-				Images have similar syntax, but include an "!"
+				Images have similar syntax, but include an &apos;!&apos;
 				<img src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/8df757fa-2252-4991-81e8-ece73eaec11f`}
 					alt="alt text for the image" />
 				<hr />
 				<pre>
-					&gt; For block quotes, use the "&gt;" character<br />
+					&gt; For block quotes, use the &apos;&gt;&apos; character<br />
 					&gt;<br />
 					&gt; add an emty line for multi-line block quotes<br />
 				</pre>
 				<blockquote>
-					For block quotes, use the "&gt;" character
+					For block quotes, use the &apos;&gt;&apos; character
 					<br />
 					add an emty line for multi-line block quotes
 				</blockquote>

@@ -17,7 +17,7 @@ export default async function EditorDocsPage() {
 				<div>
 					However, VimNotion does not have all of the commands included in Vim, opting
 					to include the most important ones for a notes and documents app.
-					Here's what's included:
+					Here&quot;s what&quot;s included:
 				</div>
 				<div>
 					to save a file
@@ -48,8 +48,8 @@ export default async function EditorDocsPage() {
 					VimNotion Leader Keybindings
 				</h2>
 				<div>
-					VimNotion's keybindings are built-in with the editor for common actions like inserting images
-					and rendering markdown. While we don't offer configurable keybindings at this time,
+					VimNotion&quot;s keybindings are built-in with the editor for common actions like inserting images
+					and rendering markdown. While we don&quot;t offer configurable keybindings at this time,
 					the default keybindings should feel natural and intuitive.
 				</div>
 				<div className="font-bold italic">
@@ -76,10 +76,10 @@ export default async function EditorDocsPage() {
 					<pre>{`<Space>-w`}</pre>
 				</div>
 				<h2>
-					VimNotion's File Directory
+					VimNotion&quot;s File Directory
 				</h2>
 				<div>
-					VimNotion's file directory is heavily inspired by <strong>oil.nvim</strong>
+					VimNotion&quot;s file directory is heavily inspired by <strong>oil.nvim</strong>
 				</div>
 				<div>
 					Open the file directory with
