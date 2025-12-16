@@ -94,7 +94,7 @@ export const LeaderPanel = () => {
 
 	return (
 		<div id={`leader-panel`}
-			className='font-pixel text-2xl z-20 w-full bg-background-muted h-1/4 absolute bottom-0 left-0 
+			className='font-pixel text-xl z-20 w-full bg-background-muted h-1/4 absolute bottom-0 left-0 
 					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
 			<div>
 				<button id={`first-leader-option`}
@@ -130,8 +130,8 @@ export const LeaderPanel = () => {
 						toggleImageModal();
 						closePanel();
 					}}>
-					<span className="font-bold text-orange-500">[&nbsp;i &nbsp;]</span>
-				</button>nsert [ &nbsp;i &nbsp;]mage
+					<span className="font-bold text-orange-500">[i]</span>
+				</button>nsert [i]mage
 			</div>
 			<div>
 				<button className="cursor-pointer"

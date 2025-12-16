@@ -9,10 +9,10 @@ export const StartButtonOverlay = ({
 }: {
 	variant: "sm" | "normal",
 }) => {
-	const buttonStyle = variant === "sm" ? `font-bold font-pixel text-xl px-2 h-8
+	const buttonStyle = variant === "sm" ? `font-bold font-libre text-xl px-2 h-8
 					border-yellow-600 text-[#151515] border-b-4 border bg-[#ffd497]
 					hover:border-b-2 hover:translate-y-0.5` :
-		`font-bold font-pixel text-3xl px-4 h-12
+		`font-bold font-libre text-3xl px-4 h-12
 					border-yellow-600 text-[#151515] border-b-8 border-2 bg-[#ffd497]
 					hover:border-b-4 hover:translate-y-1 flex items-center`;
 	const [overlay, setOverlay] = useState<boolean>(false);
@@ -61,7 +61,7 @@ export const StartButtonOverlay = ({
 				z-30 h-[300px] max-h-11/12 max-w-11/12 w-[500px] pt-14 p-4 
 				flex flex-col items-center bg-background
 				outline outline-offset-2 outline-foreground-muted/50">
-						<h1 className="font-pixel text-4xl font-bold italic mb-10">
+						<h1 className="font-pixel text-4xl font-bold mb-10">
 							Login to VimNotion
 						</h1>
 						<div className="flex flex-col gap-4">
