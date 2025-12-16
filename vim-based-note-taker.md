@@ -15,8 +15,6 @@ I've even seen a few plugins to make Neovim notes cloud avaible.
 But the strengths of a terminal app are also its weaknesses. Terminal apps have limitations 
 like **one font size** and **text-based interfaces** that enhance simplicity and creativity (Neovim and Opencode are some of my most loved apps).
 
-![image]()
-
 These limitations are also not ideal for the type of notes app that I wanted. 
 A notes app with:
 - Different sized fonts
