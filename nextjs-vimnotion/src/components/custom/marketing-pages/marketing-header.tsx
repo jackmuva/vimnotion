@@ -15,6 +15,10 @@ export const MarketingHeader = () => {
 					className='underline font-pixel text-lg '>
 					docs
 				</Link>
+				{/* <Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/about`} */}
+				{/* 	className='underline font-pixel text-lg '> */}
+				{/* 	about */}
+				{/* </Link> */}
 				<Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog`}
 					className='underline font-pixel text-lg '>
 					blog

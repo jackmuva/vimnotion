@@ -1,6 +1,5 @@
 "use server";
 
-import Link from "next/link";
 import { MarketingHeader } from "./marketing-header";
 import Image from "next/image";
 import { StartButtonOverlay } from "./start-button-overlay";
