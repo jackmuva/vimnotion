@@ -10,7 +10,7 @@ export default async function AboutPage() {
 				</h1>
 				<div>
 					VimNotion is an ode to vim, bringing vim functionality to
-					a Notion-like notes and document editor. VimNotion's opinionated
+					a Notion-like notes and document editor. VimNotion&quot;s opinionated
 
 				</div>
 			</div>
