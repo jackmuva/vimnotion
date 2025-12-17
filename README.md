@@ -30,7 +30,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 14. emoji support
 17. privacy and tos
 
-
 ## High-level Todos
 - normie view (not vimnotion)
 - create teams
