@@ -27,6 +27,10 @@ const pixel = Roboto_Mono({
 export const metadata: Metadata = {
 	title: "vimnotion",
 	description: "notion with vim motion",
+	metadataBase: new URL('https://www.vimnotion.com'),
+	alternates: {
+		canonical: 'https://www.vimnotion.com',
+	},
 };
 
 export default function RootLayout({
