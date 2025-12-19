@@ -26,7 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			changeFrequency: 'yearly',
 			priority: 0.8,
 		},
-
+		{
+			url: 'https://www.vimnotion.com/about',
+			lastModified: new Date('2025-12-18'),
+			changeFrequency: 'yearly',
+			priority: 0.7,
+		},
 		{
 			url: 'https://www.vimnotion.com/blog',
 			lastModified: new Date('2025-12-02'),

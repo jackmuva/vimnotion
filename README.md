@@ -21,22 +21,20 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-16. about page
 10. non-vim usability tooltip hints
 18. usability bug with sidebar - you can go into new files without saving
 9. syntax highlighting on sidebar-editor
 2. grep search
-11. stripe payment
-12. account modal
-14. emoji support
 17. privacy and tos
 
 ## High-level Todos
 - normie view (not vimnotion)
 - create teams
-- extensabiity with hotkeys for apis
+- extensability with hotkeys for apis
 - version history
   - trash
 - local md downloads
 - cron job to delete all unused images
 - sidebar refactor
+- account modal
+- emoji support

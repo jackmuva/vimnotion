@@ -7,9 +7,9 @@ export default function DocsLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<div className="font-libre text-lg px-2 h-dvh w-dvw pt-20 flex flex-col items-center">
+		<div className="font-libre text-lg px-2 h-dvh w-dvw flex flex-col items-center">
 			<MarketingHeader />
-			<div className="flex flex-col w-full max-w-[1100px] gap-4">
+			<div className="flex flex-col pt-4 w-full max-w-[1100px] gap-4">
 				<DocsNav />
 				{children}
 			</div>
