@@ -6,7 +6,7 @@ import { StartButtonOverlay } from "./start-button-overlay";
 
 export default async function MarketingHome() {
 	return (
-		<div className="bg-background w-dvw h-dvh flex flex-col justify-start items-center pt-30 px-4 font-libre text-lg
+		<div className="bg-background w-dvw h-dvh flex flex-col justify-start items-center font-libre text-lg
 			pb-20 overflow-y-auto gap-10">
 			<MarketingHeader />
 			<div className="w-full flex flex-col items-center gap-4">
