@@ -188,10 +188,9 @@ body {
 
     /* customizable */
     transition: all 0.15s ease;
-    padding: 10px;
-    color: #333;
-    border-radius: 10px;
-    box-shadow: 2px 2px 1px silver;
+    padding: 5px 10px;
+    color: var(--foreground);
+    border-radius: 1.5px;
 }
 
 [data-tooltip]:hover::before {
@@ -199,8 +198,8 @@ body {
     opacity: 1;
 
     /* customizable */
-    background: yellow;
-    margin-top: -50px;
+    background: var(--background);
+    margin-top: 20px;
     margin-left: 20px;
 }
 

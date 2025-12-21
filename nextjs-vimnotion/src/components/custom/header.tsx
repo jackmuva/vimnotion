@@ -9,7 +9,8 @@ export const Header = () => {
 			z-40 absolute p-2 space-x-4 bg-background">
 			<div className='flex gap-4 h-full items-center'>
 				<button className='hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm'
-					onClick={() => toggleSidebar()}>
+					onClick={() => toggleSidebar()}
+					data-tooltip="test">
 					<Menu size={17} />
 				</button>
 				<h1 className='font-pixel font-bold text-xl'>
