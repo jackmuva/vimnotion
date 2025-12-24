@@ -190,7 +190,6 @@ body {
     transition: all 0.15s ease;
     padding: 5px 10px;
     color: var(--foreground);
-    border-radius: 1.5px;
 }
 
 [data-tooltip]:hover::before {
@@ -199,8 +198,13 @@ body {
 
     /* customizable */
     background: var(--background);
-    margin-top: 20px;
+    border-width: 1px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: var(--foreground);
     margin-left: 20px;
+    width: fit;
+    white-space: nowrap;
 }
 
 [data-tooltip]:not([data-tooltip-persistent])::before {

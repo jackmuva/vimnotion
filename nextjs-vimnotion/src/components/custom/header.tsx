@@ -10,7 +10,7 @@ export const Header = () => {
 			<div className='flex gap-4 h-full items-center'>
 				<button className='hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm'
 					onClick={() => toggleSidebar()}
-					data-tooltip="test">
+					data-tooltip="&quot;-&quot; to open sidebar. &quot;:q&quot; to quit sidebar">
 					<Menu size={17} />
 				</button>
 				<h1 className='font-pixel font-bold text-xl'>
