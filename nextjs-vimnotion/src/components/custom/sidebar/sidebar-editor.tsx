@@ -22,6 +22,7 @@ import { customTheme } from "../vim-editor/vim-editor-theme";
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
+import { FilePenIcon, FolderClosedIcon, SaveIcon } from "lucide-react";
 
 
 export const SidebarEditor = () => {
@@ -174,7 +175,30 @@ export const SidebarEditor = () => {
 	}, [isClient]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-secondary-background'>
+		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 bg-secondary-background'>
+			<div className="flex gap-2 justify-center items-center px-2">
+				<div data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line">
+					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center" >
+						<FilePenIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">new file</span>
+					</button>
+				</div>
+				<div data-tooltip="&quot;i&quot; to go into insert mode, type the directory name on a new line ending with a &quot;/&quot;">
+					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center" >
+						<FolderClosedIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">new dir</span>
+					</button>
+				</div>
+				<div data-tooltip="&quot;:w&quot; to save changes">
+					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center" >
+						<SaveIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">save</span>
+					</button>
+				</div>
+			</div>
 			<div id={`sidebar-editor`}
 				className={`h-full w-full overflow-y-scroll bg-transparent`}>
 			</div>
