@@ -61,7 +61,6 @@ export const ConfirmationModal = () => {
 				if (updateRes) {
 					setDirectoryState(structuredClone(proposedDirectoryState));
 					setDirectoryConfirmation(false);
-					toggleSidebar();
 				}
 			}
 		};

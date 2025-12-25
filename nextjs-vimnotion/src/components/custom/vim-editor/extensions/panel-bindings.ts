@@ -48,6 +48,7 @@ export const applyPanelBindings = ({
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
+			toggleSidebar();
 		}
 	});
 
