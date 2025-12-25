@@ -6,11 +6,11 @@ import { StartButtonOverlay } from "./start-button-overlay";
 
 export default async function MarketingHome() {
 	return (
-		<div className="bg-background w-dvw h-dvh flex flex-col justify-start items-center font-libre text-lg
+		<div className="bg-background w-dvw h-dvh flex flex-col justify-start items-center font-robo-slab text-lg
 			pb-20 overflow-y-auto gap-10">
 			<MarketingHeader />
 			<div className="w-full flex flex-col items-center gap-4">
-				<h1 className="font-pixel font-bold text-7xl">
+				<h1 className="font-robo-mono font-bold text-7xl">
 					VimNotion
 				</h1>
 				<h2 className="text-3xl  text-center">

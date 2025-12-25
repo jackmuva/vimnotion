@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Libre_Baskerville, Pixelify_Sans, Roboto, Roboto_Mono, Roboto_Slab } from "next/font/google";
+import { Geist, Geist_Mono, Roboto_Mono, Roboto_Slab } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,15 +12,15 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-const libre = Roboto_Slab({
+const robo_slab = Roboto_Slab({
 	weight: "400",
-	variable: "--font-libre",
+	variable: "--font-robo-slab",
 	subsets: ["latin"],
 });
 
-const pixel = Roboto_Mono({
+const robo_mono = Roboto_Mono({
 	weight: "400",
-	variable: "--font-pixel",
+	variable: "--font-robo-mono",
 	subsets: ["latin"],
 });
 
@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${libre.variable} ${pixel.variable} ${geistSans.variable} ${geistMono.variable} antialiased `}>
+			<body className={`${robo_slab.variable} ${robo_mono.variable} ${geistSans.variable} ${geistMono.variable} antialiased `}>
 				{children}
 			</body>
 		</html>

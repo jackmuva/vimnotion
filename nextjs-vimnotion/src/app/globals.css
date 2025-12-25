@@ -16,8 +16,8 @@
   --color-foreground-muted: var(--foreground-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-libre: var(--font-libre);
-  --font-pixel: var(--font-pixel);
+  --font-robo-slab: var(--font-robo-slab);
+  --font-robo-mono: var(--font-robo-mono);
 }
 
 @media (prefers-color-scheme: dark) {
