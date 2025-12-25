@@ -1,5 +1,5 @@
-import DocsNav from "@/components/custom/docs/docs-nav"
-import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header"
+import DocsNav from "@/components/docs/docs-nav"
+import { MarketingHeader } from "@/components/marketing-pages/marketing-header"
 
 export default function DocsLayout({
 	children,

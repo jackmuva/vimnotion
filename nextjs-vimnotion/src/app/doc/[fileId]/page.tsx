@@ -1,6 +1,6 @@
 "use server";
 
-import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header";
+import { MarketingHeader } from "@/components/marketing-pages/marketing-header";
 import { VnObject } from "@/types/primitive-types";
 import Markdown from "react-markdown";
 

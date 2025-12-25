@@ -1,4 +1,4 @@
-import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header"
+import { MarketingHeader } from "@/components/marketing-pages/marketing-header"
 
 export default function BlogLayout({
 	children,
