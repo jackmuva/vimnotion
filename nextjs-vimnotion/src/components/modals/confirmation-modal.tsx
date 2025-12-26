@@ -47,7 +47,6 @@ export const ConfirmationModal = () => {
 			if (event.key === 'n') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleSidebar();
 				setDirectoryConfirmation(false);
 			}
 		};

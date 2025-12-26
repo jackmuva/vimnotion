@@ -177,9 +177,18 @@ export const SidebarEditor = () => {
 	}, [isClient]);
 
 	const insertNew = (name: string) => {
+		let lastI = 0;
+		if (vimEditor?.state.doc) {
+			for (let i = vimEditor?.state.doc.toString().length - 1; i >= 0; i--) {
+				if (vimEditor?.state.doc.toString()[i] !== "\n") {
+					lastI = i;
+					break;
+				}
+			}
+		}
 		vimEditor?.dispatch({
 			changes: {
-				from: vimEditor?.state.doc.length,
+				from: lastI + 1,
 				insert: `\n${name}`
 			}
 		});
@@ -188,26 +197,29 @@ export const SidebarEditor = () => {
 	return (
 		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 bg-secondary-background'>
 			<div className="flex gap-2 justify-center items-center px-2">
-				<div data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line">
-					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
-						onClick={() => setDirectoryConfirmation(true)}>
+						onClick={() => insertNew("new-file")}>
 						<FilePenIcon size={16} className="text-foreground/90" />
 						<span className="text-xs">new file</span>
 					</button>
 				</div>
-				<div data-tooltip="&quot;i&quot; to go into insert mode, type the directory name on a new line ending with a &quot;/&quot;">
-					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the directory name on a new line ending with a &quot;/&quot;"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
-						onClick={() => insertNew("new-file")}>
+						onClick={() => insertNew("new-directory/")}>
 						<FolderClosedIcon size={16} className="text-foreground/90" />
 						<span className="text-xs">new dir</span>
 					</button>
 				</div>
-				<div data-tooltip="&quot;:w&quot; to save changes">
-					<button className="flex-1 border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+				<div low-data-tooltip="&quot;:w&quot; to save changes"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
-						onClick={() => insertNew("new-directory/")}>
+						onClick={() => setDirectoryConfirmation(true)}>
 						<SaveIcon size={16} className="text-foreground/90" />
 						<span className="text-xs">save</span>
 					</button>

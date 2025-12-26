@@ -39,7 +39,7 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		getEditingDirectory,
+		detectAllDirectoryChanges,
 	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
@@ -156,7 +156,7 @@ export const VimEditor = ({
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
 			openFileInBuffer: () => openFileInBuffer(),
-			getEditingDirectory: () => getEditingDirectory(),
+			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 		});
 		applyPanelBindings({
