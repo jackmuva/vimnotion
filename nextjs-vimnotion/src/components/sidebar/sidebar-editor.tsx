@@ -226,7 +226,8 @@ export const SidebarEditor = () => {
 				</div>
 			</div>
 			<div id={`sidebar-editor`}
-				className={`h-full w-full overflow-y-scroll bg-transparent`}>
+				right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
+				className={`h-fit w-full overflow-y-scroll bg-transparent`}>
 			</div>
 		</div>
 
