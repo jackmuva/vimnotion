@@ -9,16 +9,17 @@ export const Header = () => {
 			z-40 absolute p-2 space-x-4 bg-background">
 			<div className='flex gap-4 h-full items-center'>
 				<button className='hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm'
-					onClick={() => toggleSidebar()}>
+					onClick={() => toggleSidebar()}
+					low-data-tooltip="&quot;-&quot; to open sidebar. &quot;:q&quot; to quit sidebar">
 					<Menu size={17} />
 				</button>
-				<h1 className='font-pixel font-bold text-xl'>
+				<h1 className='font-robo-mono font-bold text-xl'>
 					VimNotion
 				</h1>
 			</div>
 			<div className='flex gap-4 h-full items-center'>
 				<Link target="_blank" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/docs/editor`}
-					className='underline font-pixel text-lg'>
+					className='underline font-robo-mono text-lg'>
 					docs
 				</Link>
 			</div>

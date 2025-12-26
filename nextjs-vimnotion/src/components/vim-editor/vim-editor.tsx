@@ -38,7 +38,9 @@ export const VimEditor = ({
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor, } = useEditorStore((state) => state);
+		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
+		detectAllDirectoryChanges,
+	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -88,7 +90,6 @@ export const VimEditor = ({
 		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 			if (newImageUrl) {
-				console.log("new image url: ", newImageUrl);
 				const mdImage = `![your-image-name](${newImageUrl})`
 				const cursorPosition: number = vimEditor.state.selection.main.head;
 				const transaction = vimEditor.state.update({
@@ -120,7 +121,6 @@ export const VimEditor = ({
 		const view = new EditorView({
 			doc: pane[paneId].buffer,
 			extensions: [
-				// make sure vim is included before other keymaps
 				customTheme,
 				vim(),
 				basicSetup,
@@ -156,7 +156,8 @@ export const VimEditor = ({
 			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
 			openFileInBuffer: () => openFileInBuffer(),
-
+			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
+			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 		});
 		applyPanelBindings({
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),

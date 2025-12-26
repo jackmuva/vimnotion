@@ -83,7 +83,7 @@ export const WindowPanel = () => {
 
 	return (
 		<div id={`window-panel`}
-			className='font-pixel text-xl z-30 w-full bg-background-muted h-1/4 absolute bottom-0 left-0
+			className='font-robo-mono text-xl z-30 w-full bg-background-muted h-1/4 absolute bottom-0 left-0
 					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
 			<div>
 				<button

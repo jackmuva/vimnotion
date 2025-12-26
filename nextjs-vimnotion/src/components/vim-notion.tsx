@@ -1,19 +1,19 @@
 'use client';
-import { Header } from "@/components/custom/header";
-import { Sidebar } from "@/components/custom/sidebar/sidebar";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
 import { useEffect } from "react";
-import { LeaderPanel } from "@/components/custom/leader-panels/leader-panel";
-import { WindowPanel } from "@/components/custom/leader-panels/window-panel";
-import { TabContainer } from "@/components/custom/tab-container";
+import { LeaderPanel } from "@/components/leader-panels/leader-panel";
+import { WindowPanel } from "@/components/leader-panels/window-panel";
+import { TabContainer } from "@/components/tab-container";
 import { useEditorStore } from "@/store/editor-store";
-import { LeaderButton } from "@/components/custom/leader-button";
+import { LeaderButton } from "@/components/leader-button";
 import useSWR from "swr";
-import { ConfirmationModal } from "@/components/custom/modals/confirmation-modal";
-import { SearchPanel } from "@/components/custom/leader-panels/search-panel";
-import { SearchModal } from "@/components/custom/modals/search-modal";
-import { ImageModal } from "@/components/custom/modals/image-modal";
-import { PublishModal } from "@/components/custom/modals/publish-modal";
+import { ConfirmationModal } from "@/components/modals/confirmation-modal";
+import { SearchPanel } from "@/components/leader-panels/search-panel";
+import { SearchModal } from "@/components/modals/search-modal";
+import { ImageModal } from "@/components/modals/image-modal";
+import { PublishModal } from "@/components/modals/publish-modal";
 
 export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -108,7 +108,7 @@ export default function VimNotion() {
 	}, [data]);
 
 	return (
-		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-libre text-base">
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-robo-slab text-base">
 			<Header />
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
 			<TabContainer />

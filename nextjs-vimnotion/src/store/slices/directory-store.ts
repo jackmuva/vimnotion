@@ -25,6 +25,7 @@ export const createDirectorySlice = (
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
 	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
+	getEditingDirectory: () => get().editingDirectory,
 
 	getLocation: () => get().location,
 	setLocation: (location: string) => {

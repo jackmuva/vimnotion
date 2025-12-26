@@ -1,5 +1,6 @@
 import { Vim } from "@replit/codemirror-vim"
 import { PanelType } from '@/types/editor-types';
+import { DirectoryChanges } from "@/types/sidebar-types";
 
 export const applySidebarBindings = ({
 	toggleLeaderPanel,
@@ -9,6 +10,8 @@ export const applySidebarBindings = ({
 	getOilLine,
 	openFileInBuffer,
 	getActivePanel,
+	detectAllDirectoryChanges,
+	setDirectoryConfirmation,
 }: {
 	toggleLeaderPanel: () => void,
 	toggleSidebar: () => void,
@@ -17,12 +20,17 @@ export const applySidebarBindings = ({
 	getOilLine: () => string,
 	openFileInBuffer: () => void,
 	getActivePanel: () => PanelType,
+	detectAllDirectoryChanges: () => DirectoryChanges,
+	setDirectoryConfirmation: () => void,
 }) => {
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.SIDEBAR) {
+			const newChanges: DirectoryChanges = detectAllDirectoryChanges();
 			if (getOilLine().at(-1) === "/") {
 				setLocation(getLocation() + getOilLine());
+			} else if (newChanges.created.length !== 0 || newChanges.deleted.length !== 0 || newChanges.moved.length !== 0) {
+				setDirectoryConfirmation();
 			} else {
 				openFileInBuffer();
 				toggleSidebar();

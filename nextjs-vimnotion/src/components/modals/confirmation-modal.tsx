@@ -47,7 +47,6 @@ export const ConfirmationModal = () => {
 			if (event.key === 'n') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleSidebar();
 				setDirectoryConfirmation(false);
 			}
 		};
@@ -61,7 +60,6 @@ export const ConfirmationModal = () => {
 				if (updateRes) {
 					setDirectoryState(structuredClone(proposedDirectoryState));
 					setDirectoryConfirmation(false);
-					toggleSidebar();
 				}
 			}
 		};
@@ -76,7 +74,7 @@ export const ConfirmationModal = () => {
 	}, [setDirectoryConfirmation, changes, proposedDirectoryState, toggleSidebar, setDirectoryState]);
 
 	return (
-		<div className="font-pixel text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+		<div className="font-robo-mono text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
 			z-30 bg-background h-96 max-w-11/12 w-[700px] p-4 
 			flex flex-col justify-between outline  outline-offset-2 
 			outline-foreground-muted/50">

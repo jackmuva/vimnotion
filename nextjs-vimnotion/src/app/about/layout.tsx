@@ -1,4 +1,4 @@
-import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header"
+import { MarketingHeader } from "@/components/marketing-pages/marketing-header"
 
 export default function BlogLayout({
 	children,
@@ -6,7 +6,7 @@ export default function BlogLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<div className="font-libre text-lg">
+		<div className="font-robo-slab text-lg">
 			<MarketingHeader />
 			{children}
 		</div>

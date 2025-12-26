@@ -21,8 +21,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-10. non-vim usability tooltip hints
-18. usability bug with sidebar - you can go into new files without saving
 9. syntax highlighting on sidebar-editor
 2. grep search
 17. privacy and tos

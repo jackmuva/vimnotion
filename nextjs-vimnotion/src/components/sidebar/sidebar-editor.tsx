@@ -22,6 +22,7 @@ import { customTheme } from "../vim-editor/vim-editor-theme";
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
+import { FilePenIcon, FolderClosedIcon, SaveIcon } from "lucide-react";
 
 
 export const SidebarEditor = () => {
@@ -30,7 +31,9 @@ export const SidebarEditor = () => {
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 	const { location, setOilLine, directoryState, pushSidebarBufferHistory, setSidebarBufferMap,
-		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges, directoryConfirmation } = useEditorStore((state) => state);
+		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges, directoryConfirmation,
+		setDirectoryConfirmation,
+	} = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -173,10 +176,58 @@ export const SidebarEditor = () => {
 		setVimEditor(view);
 	}, [isClient]);
 
+	const insertNew = (name: string) => {
+		let lastI = 0;
+		if (vimEditor?.state.doc) {
+			for (let i = vimEditor?.state.doc.toString().length - 1; i >= 0; i--) {
+				if (vimEditor?.state.doc.toString()[i] !== "\n") {
+					lastI = i;
+					break;
+				}
+			}
+		}
+		vimEditor?.dispatch({
+			changes: {
+				from: lastI + 1,
+				insert: `\n${name}`
+			}
+		});
+	}
+
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-secondary-background'>
+		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 bg-secondary-background'>
+			<div className="flex gap-2 justify-center items-center px-2">
+				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center"
+						onClick={() => insertNew("new-file")}>
+						<FilePenIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">new file</span>
+					</button>
+				</div>
+				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the directory name on a new line ending with a &quot;/&quot;"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center"
+						onClick={() => insertNew("new-directory/")}>
+						<FolderClosedIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">new dir</span>
+					</button>
+				</div>
+				<div low-data-tooltip="&quot;:w&quot; to save changes"
+					className="flex-1">
+					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					justify-center"
+						onClick={() => setDirectoryConfirmation(true)}>
+						<SaveIcon size={16} className="text-foreground/90" />
+						<span className="text-xs">save</span>
+					</button>
+				</div>
+			</div>
 			<div id={`sidebar-editor`}
-				className={`h-full w-full overflow-y-scroll bg-transparent`}>
+				right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
+				className={`h-fit w-full overflow-y-scroll bg-transparent`}>
 			</div>
 		</div>
 

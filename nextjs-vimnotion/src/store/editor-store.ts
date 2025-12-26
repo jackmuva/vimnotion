@@ -79,6 +79,7 @@ export type EditorState = {
 	setDirectoryState: (tree: DirectoryTree) => void;
 	setProposedDirectoryState: (tree: DirectoryTree) => void;
 	setEditingDirectory: (isEdit: boolean) => void;
+	getEditingDirectory: () => boolean;
 
 	getLocation: () => string;
 	setLocation: (location: string) => void;

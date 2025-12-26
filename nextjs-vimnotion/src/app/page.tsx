@@ -1,7 +1,7 @@
 "use server"
 
-import MarketingHome from "@/components/custom/marketing-pages/marketing-home";
-import VimNotion from "@/components/custom/vim-notion";
+import MarketingHome from "@/components/marketing-pages/marketing-home";
+import VimNotion from "@/components/vim-notion";
 import { cookies } from 'next/headers'
 
 export default async function Home() {

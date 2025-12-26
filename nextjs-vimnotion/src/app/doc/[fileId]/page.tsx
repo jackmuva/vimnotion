@@ -1,6 +1,6 @@
 "use server";
 
-import { MarketingHeader } from "@/components/custom/marketing-pages/marketing-header";
+import { MarketingHeader } from "@/components/marketing-pages/marketing-header";
 import { VnObject } from "@/types/primitive-types";
 import Markdown from "react-markdown";
 
@@ -12,7 +12,7 @@ export default async function DocHome({ params }: { params: Promise<{ fileId: st
 	const vnData: { Data: VnObject[] } = await res.json();
 
 	return (
-		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-libre text-lg flex-col">
+		<div className="bg-background w-dvw h-dvh flex justify-center items-center font-robo-slab text-lg flex-col">
 			<MarketingHeader />
 			<div id={`md-editor-${vnData.Data[0].id}`}
 				className={`pb-20 h-full max-w-[1100px] w-full overflow-y-scroll`}>

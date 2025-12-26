@@ -16,8 +16,8 @@
   --color-foreground-muted: var(--foreground-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-libre: var(--font-libre);
-  --font-pixel: var(--font-pixel);
+  --font-robo-slab: var(--font-robo-slab);
+  --font-robo-mono: var(--font-robo-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -179,3 +179,106 @@ body {
 	}
 
 }
+
+[low-data-tooltip]::before {
+    /* needed - do not touch */
+    content: attr(low-data-tooltip);
+    position: absolute;
+    opacity: 0;
+
+    /* customizable */
+    transition: all 0.15s ease;
+    color: var(--foreground);
+	white-space: nowrap;
+}
+
+[low-data-tooltip]:hover::before {
+    /* needed - do not touch */
+    opacity: 1;
+
+    /* customizable */
+    background: var(--background);
+    border-width: 1px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: var(--foreground);
+    margin-left: 25px;
+    margin-top: 25px;
+	padding: 2px 10px;
+    width: fit;
+    white-space: nowrap;
+    z-index: 30;
+}
+
+[low-data-tooltip]:not([data-tooltip-persistent])::before {
+    pointer-events: none;
+}
+
+[high-data-tooltip]::before {
+    /* needed - do not touch */
+    content: attr(high-data-tooltip);
+    position: absolute;
+    opacity: 0;
+
+    /* customizable */
+    transition: all 0.15s ease;
+    color: var(--foreground);
+    white-space: nowrap;
+}
+
+[high-data-tooltip]:hover::before {
+    /* needed - do not touch */
+    opacity: 1;
+
+    /* customizable */
+    background: var(--background);
+    border-width: 1px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: var(--foreground);
+    margin-left: 30px;
+    margin-bottom: 30px;
+	padding: 2px 10px;
+    width: fit;
+    white-space: nowrap;
+    z-index: 30;
+}
+
+[high-data-tooltip]:not([data-tooltip-persistent])::before {
+    pointer-events: none;
+}
+
+[right-data-tooltip]::before {
+    /* needed - do not touch */
+    content: attr(right-data-tooltip);
+    position: absolute;
+    opacity: 0;
+
+    /* customizable */
+    transition: all 0.15s ease;
+    color: var(--foreground);
+	white-space: nowrap;
+}
+
+[right-data-tooltip]:hover::before {
+    /* needed - do not touch */
+    opacity: 1;
+
+    /* customizable */
+    background: var(--background);
+    border-width: 1px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: var(--foreground);
+    margin-left: 100px;
+    padding: 2px 10px;
+    width: fit;
+    white-space: nowrap;
+    z-index: 30;
+}
+
+[right-data-tooltip]:not([data-tooltip-persistent])::before {
+    pointer-events: none;
+}
+
+
