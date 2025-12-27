@@ -21,9 +21,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-9. syntax highlighting on sidebar-editor
 2. grep search
-17. privacy and tos
+3. code highlighting
+4. use delete history for bulk pastes
 
 ## High-level Todos
 - normie view (not vimnotion)
