@@ -1,6 +1,17 @@
 "use server";
 
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Dear Vim | VimNotion",
+	description: "A heartfelt letter to Vim, inspired by Kobe Bryant's 'Dear Basketball'. A tribute to the editor that changed my approach to software development.",
+	openGraph: {
+		title: "Dear Vim | VimNotion",
+		description: "A heartfelt letter to Vim, inspired by Kobe Bryant's 'Dear Basketball'.",
+		type: "article",
+	},
+};
 
 export default async function FolkCraftPage() {
 	return (

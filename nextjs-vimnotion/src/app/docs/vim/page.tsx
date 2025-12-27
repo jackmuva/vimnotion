@@ -1,5 +1,20 @@
 "use server";
 
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const metadata: Metadata = {
+		title: "Vim Guide | VimNotion",
+		description: "Get started with Vim in VimNotion. Learn essential keybindings, navigation, editing, and Vim philosophy.",
+		openGraph: {
+			title: "Vim Guide | VimNotion",
+			description: "Get started with Vim in VimNotion. Learn essential keybindings and navigation.",
+			type: "article",
+		},
+	};
+	return metadata;
+}
+
 export default async function VimDocsPage() {
 	return (
 		<div className="w-full">

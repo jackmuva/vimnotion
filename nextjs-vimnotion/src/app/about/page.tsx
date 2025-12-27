@@ -1,6 +1,20 @@
 "use server";
 
 import { TwitterIcon } from "lucide-react";
+import { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const metadata: Metadata = {
+		title: "About VimNotion",
+		description: "VimNotion is a writing app built with first class vim and markdown support. VimNotion pays homage to Vim and Notion.",
+		openGraph: {
+			title: "About VimNotion",
+			description: "VimNotion is a writing app built with first class vim and markdown support. VimNotion pays homage to Vim and Notion.",
+			type: "article",
+		},
+	};
+	return metadata;
+}
 
 export default async function AboutPage() {
 	return (

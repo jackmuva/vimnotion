@@ -1,5 +1,20 @@
 "use server";
 
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const metadata: Metadata = {
+		title: "Markdown Guide | VimNotion",
+		description: "Complete guide to Markdown syntax in VimNotion. Learn how to write formatted notes and documents with Markdown.",
+		openGraph: {
+			title: "Markdown Guide | VimNotion",
+			description: "Complete guide to Markdown syntax in VimNotion.",
+			type: "article",
+		},
+	};
+	return metadata;
+}
+
 export default async function MarkdownDocsPage() {
 	return (
 		<div className="w-full">
