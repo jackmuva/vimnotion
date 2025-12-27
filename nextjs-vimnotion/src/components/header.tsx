@@ -13,7 +13,7 @@ export const Header = () => {
 					low-data-tooltip="&quot;-&quot; to open sidebar. &quot;:q&quot; to quit sidebar">
 					<Menu size={17} />
 				</button>
-				<h1 className='font-robo-mono font-bold text-xl'>
+				<h1 className='font-robo-mono text-xl'>
 					VimNotion
 				</h1>
 			</div>
