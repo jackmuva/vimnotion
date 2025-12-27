@@ -15,39 +15,12 @@ export default async function MarketingHome() {
 				</h1>
 				<h2 className="text-3xl  text-center">
 					The most <strong className="dark:text-yellow-400 text-yellow-600">buttery smooth</strong>
-					&nbsp;text editor for notes and documents on the web
+					&nbsp;app for <span className="underline">notes and writing</span> on the web
 				</h2>
-				<div className="flex flex-col md:flex-row gap-4 w-11/12 max-w-[1200px]
-				items-center md:items-start justify-center py-4">
-					<div className="md:basis-1/3 p-4 flex flex-col 
-					justify-center items-center rounded-xs gap-4">
-						<h3 className=" text-xl text-center font-bold ">
-							First-class Markdown
-						</h3>
-						<Image src="/markdown transition.gif"
-							className="md:basis-1/3 rounded-xs"
-							alt="markdown video" width={300} height={50} />
-					</div>
-					<div className="md:basis-1/3 p-4 flex flex-col 
-					justify-center items-center rounded-xs gap-4">
-						<h3 className=" text-xl text-center font-bold ">
-							Snappy vim motions
-						</h3>
-						<Image src="/vim-motions.gif"
-							className="md:basis-1/3 rounded-xs"
-							alt="vim motion" width={300} height={50} />
-					</div>
-					<div className="md:basis-1/3 p-4 flex flex-col 
-					justify-center items-center rounded-xs gap-4">
-						<h3 className=" text-xl text-center font-bold ">
-							Keybindings to keep you in flow
-						</h3>
-						<Image src="/search-files.gif"
-							className="md:basis-1/3 rounded-xs"
-							alt="navigation video" width={300} height={50} />
-					</div>
-				</div>
 			</div>
+			<h2>
+
+			</h2>
 			<div className="w-full flex flex-col items-center gap-4">
 				<h2 className="text-3xl  pt-10 text-center">
 					Rooted in <strong className="underline">Markdown</strong> and <strong className="underline">Vim</strong>&nbsp;
