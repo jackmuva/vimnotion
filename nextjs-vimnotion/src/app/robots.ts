@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
 			allow: '/',
 			disallow: '/private/',
 		},
-		sitemap: 'https://vimnotion.com/sitemap.xml',
+		sitemap: 'https://www.vimnotion.com/sitemap.xml',
 	}
 }
