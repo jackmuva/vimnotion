@@ -57,23 +57,23 @@ export default async function EditorDocsPage() {
 				</div>
 				<div>
 					to render [m]arkdown
-					<pre>{`<Space>-m`}</pre>
+					<pre>{`<Space>m`}</pre>
 				</div>
 				<div>
 					to [s]earch all files
-					<pre>{`<Space>-s`}</pre>
+					<pre>{`<Space>s`}</pre>
 				</div>
 				<div>
 					to [i]nsert an [i]mage
-					<pre>{`<Space>-i`}</pre>
+					<pre>{`<Space>i`}</pre>
 				</div>
 				<div>
 					to [p]ublish a page publically
-					<pre>{`<Space>-p`}</pre>
+					<pre>{`<Space>p`}</pre>
 				</div>
 				<div>
 					to navigate [w]indows after splitting your view
-					<pre>{`<Space>-w`}</pre>
+					<pre>{`<Space>w`}</pre>
 				</div>
 				<h2>
 					VimNotion&quot;s File Directory
