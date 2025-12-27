@@ -76,7 +76,7 @@ export default async function EditorDocsPage() {
 					<pre>{`<Space>w`}</pre>
 				</div>
 				<h2>
-					VimNotion&quot;s File Directory
+					VimNotion&apos;s File Directory
 				</h2>
 				<div>
 					VimNotion&quot;s file directory is heavily inspired by <strong>oil.nvim</strong>
