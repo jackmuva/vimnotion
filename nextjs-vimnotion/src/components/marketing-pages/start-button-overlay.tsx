@@ -12,7 +12,7 @@ export const StartButtonOverlay = ({
 	const buttonStyle = variant === "sm" ? `font-robo-slab text-lg px-2 h-8
 					border-yellow-600 text-[#151515] border-b-4 border bg-[#ffd497]
 					hover:border-b-2 hover:translate-y-0.5` :
-		`font-bold font-robo-slab text-3xl px-8 h-12
+		`font-robo-slab text-3xl px-8 h-12
 					border-yellow-600 text-[#151515] border-b-8 border-2 bg-[#ffd497]
 					hover:border-b-4 hover:translate-y-1 flex items-center`;
 	const [overlay, setOverlay] = useState<boolean>(false);

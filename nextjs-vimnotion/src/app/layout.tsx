@@ -13,13 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 const robo_slab = Roboto_Slab({
-	weight: "400",
 	variable: "--font-robo-slab",
 	subsets: ["latin"],
 });
 
 const robo_mono = Roboto_Mono({
-	weight: "400",
 	variable: "--font-robo-mono",
 	subsets: ["latin"],
 });
