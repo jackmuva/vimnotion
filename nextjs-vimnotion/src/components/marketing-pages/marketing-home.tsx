@@ -16,8 +16,8 @@ export default async function MarketingHome() {
 				<h2 className="text-3xl text-center">
 					A writing app for users who want to love their tools
 				</h2>
-				<img src="/speed-of-thoughts.gif" alt="gif demo of vimnotion" className="w-11/12 max-w-[1000px] rounded-sm outline 
-				outline-offset-2 outline-foreground/20" />
+				<img src="/speed-of-thoughts.gif" alt="gif demo of vimnotion" className="rounded-sm outline 
+				outline-offset-2 outline-foreground/20" width={1100} height={500} />
 			</div>
 			<div className="w-full flex flex-col gap-5 items-center">
 				<h2 className="text-4xl text-center">

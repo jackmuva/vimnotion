@@ -1,6 +1,17 @@
 "use server";
 
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Search for a Vim-based Note Taker | VimNotion",
+	description: "My journey searching for the perfect Vim-first note-taking tool, from Neovim and Obsidian to Inkdrop, and why I built VimNotion.",
+	openGraph: {
+		title: "Search for a Vim-based Note Taker | VimNotion",
+		description: "My journey searching for the perfect Vim-first note-taking tool and building VimNotion.",
+		type: "article",
+	},
+};
 
 export default async function VimBasedNotesPage() {
 	return (

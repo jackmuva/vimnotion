@@ -1,6 +1,17 @@
 "use server";
 
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Blog | VimNotion",
+	description: "Thoughts on Vim, notes, software craftsmanship, and building tools for developers.",
+	openGraph: {
+		title: "Blog | VimNotion",
+		description: "Thoughts on Vim, notes, software craftsmanship, and building tools for developers.",
+		type: "website",
+	},
+};
 
 export default async function BlogPage() {
 	return (

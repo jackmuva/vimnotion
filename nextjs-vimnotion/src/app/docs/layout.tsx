@@ -1,5 +1,16 @@
 import DocsNav from "@/components/docs/docs-nav"
 import { MarketingHeader } from "@/components/marketing-pages/marketing-header"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Documentation | VimNotion",
+	description: "Learn how to use VimNotion's Vim editor, Markdown rendering, and powerful features for note-taking and document editing.",
+	openGraph: {
+		title: "Documentation | VimNotion",
+		description: "Learn how to use VimNotion's Vim editor, Markdown rendering, and powerful features.",
+		type: "website",
+	},
+};
 
 export default function DocsLayout({
 	children,

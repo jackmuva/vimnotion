@@ -1,5 +1,20 @@
 "use server";
 
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const metadata: Metadata = {
+		title: "Editor Documentation | VimNotion",
+		description: "Master VimNotion's editor with Vim commands, leader keybindings, and file directory management.",
+		openGraph: {
+			title: "Editor Documentation | VimNotion",
+			description: "Master VimNotion's editor with Vim commands, leader keybindings, and file directory management.",
+			type: "article",
+		},
+	};
+	return metadata;
+}
+
 export default async function EditorDocsPage() {
 	return (
 		<div className="w-full">
