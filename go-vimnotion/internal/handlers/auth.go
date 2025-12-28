@@ -38,6 +38,7 @@ func createJwtCookies(db *sql.DB, userData models.UserData) (http.Cookie, http.C
 		repository.InsertVnObject(db, models.VnObject{
 			Id:         rootId,
 			Name:       "root",
+			Email:      userData.Email,
 			IsFile:     false,
 			Contents:   "",
 			UpdateDate: time.Now().UTC().String(),
@@ -45,6 +46,7 @@ func createJwtCookies(db *sql.DB, userData models.UserData) (http.Cookie, http.C
 		repository.InsertVnObject(db, models.VnObject{
 			Id:         trashId,
 			Name:       "trash",
+			Email:      userData.Email,
 			IsFile:     false,
 			Contents:   "",
 			UpdateDate: time.Now().UTC().String(),

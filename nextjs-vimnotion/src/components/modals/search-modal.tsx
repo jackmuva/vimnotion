@@ -32,7 +32,7 @@ export const SearchModal = () => {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [searchResults, setSearchResults] = useState<SearchResults>({});
 	const { refreshFilePaths, openFileInBuffer, searchByFilename,
-		toggleSearchModal } = useEditorStore((state) => state);
+		setSearchModal, searchModal } = useEditorStore((state) => state);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const selectedIndexRef = useRef(selectedIndex);
@@ -64,7 +64,7 @@ export const SearchModal = () => {
 				if (inputModeRef.current) {
 					setInputMode(false);
 				} else {
-					toggleSearchModal();
+					setSearchModal(null);
 				}
 			}
 		};
@@ -102,7 +102,7 @@ export const SearchModal = () => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				openFileInBuffer(searchResultsRef.current[Object.keys(searchResultsRef.current)[selectedIndexRef.current]].id);
-				toggleSearchModal();
+				setSearchModal(null);
 			}
 		};
 		document.addEventListener('keydown', handleCrKeyDown);

@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/golang-jwt/jwt/v5"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
+	"vimnotion.com/server/internal/services"
 )
 
 func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
@@ -54,6 +56,7 @@ func GetVnObjectById(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 		fileId := r.PathValue("id")
+
 		objs, err := repository.GetVnObjectById(db, fileId)
 		if err != nil {
 			fmt.Printf("Unable to Get data from db: %s\n", err)
@@ -89,6 +92,70 @@ func GetPublicVnObjectById(db *sql.DB) http.HandlerFunc {
 		}
 		fileId := r.PathValue("id")
 		objs, err := repository.GetPublicVnObjectById(db, fileId)
+		if err != nil {
+			fmt.Printf("Unable to Get data from db: %s\n", err)
+			response := models.DataResponse{StatusCode: 500}
+			jsonMessage, err := json.Marshal(response)
+			if err != nil {
+				fmt.Printf("unable to marshal: %s\n", err)
+			}
+			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
+		}
+		if len(objs) == 0 {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
+		data := objs[0]
+		response := struct {
+			StatusCode int
+			Data       models.VnObject
+		}{
+			StatusCode: 200,
+			Data:       data,
+		}
+		jsonMessage, err := json.Marshal(response)
+		if err != nil {
+			fmt.Printf("unable to write error json: %s\n", err)
+			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonMessage)
+	}
+}
+
+func GrepVnObjects(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+		searchTerm := r.URL.Query().Get("q")
+
+		tokenCookie, err := r.Cookie("token")
+		if err != nil {
+			message := "need to auth"
+			response := models.DataResponse{Message: &message, StatusCode: 400}
+			jsonMessage, err := json.Marshal(response)
+			if err != nil {
+				fmt.Printf("unable to write error json: %s\n", err)
+			}
+			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
+			return
+		}
+		token, err := services.VerifyJwt(tokenCookie.Value)
+		if err != nil {
+			message := "invalid token"
+			response := models.DataResponse{Message: &message, StatusCode: 401}
+			jsonMessage, err := json.Marshal(response)
+			if err != nil {
+				fmt.Printf("unable to write error json: %s\n", err)
+			}
+			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
+			return
+		}
+		claims := token.Claims.(jwt.MapClaims)
+		email := claims["email"]
+
+		objs, err := repository.SearchVnObjectByContent(db, searchTerm, email.(string))
 		if err != nil {
 			fmt.Printf("Unable to Get data from db: %s\n", err)
 			response := models.DataResponse{StatusCode: 500}

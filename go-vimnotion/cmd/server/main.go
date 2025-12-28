@@ -29,6 +29,7 @@ func main() {
 	mux.Handle("/api/vnobject/public/{id}", handlers.GetVnObjectById(tursoDb))
 	mux.Handle("/image/{id}", handlers.GetImageById(tursoDb))
 	mux.Handle("/api/image", middleware.AuthMiddleware(handlers.InsertImage(tursoDb)))
+	mux.Handle("/api/vnobject/grep", middleware.AuthMiddleware(handlers.GrepVnObjects(tursoDb)))
 	mux.HandleFunc("/", handlers.Healthcheck)
 
 	corsHandler := middleware.EnableCors(mux)

@@ -4,3 +4,8 @@ export type SearchResults = {
 		regexMatches: RegExpMatchArray
 	}
 }
+
+export enum SearchType {
+	FILENAME = "FILENAME",
+	GREP = "GREP",
+}

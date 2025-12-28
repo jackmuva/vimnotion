@@ -1,5 +1,6 @@
 import { PanelType } from "@/types/editor-types";
 import { EditorState } from "../editor-store";
+import { SearchType } from "@/types/search-types";
 
 export const createToggleSlice = (
 	set: {
@@ -12,7 +13,7 @@ export const createToggleSlice = (
 	openLeaderPanel: false,
 	openWindowPanel: false,
 	openSearchPanel: false,
-	openSearchModal: false,
+	searchModal: false,
 	openImageModal: false,
 	openPublishModal: false,
 
@@ -62,15 +63,15 @@ export const createToggleSlice = (
 		set({ openSearchPanel: !searchPanel });
 	},
 
-	toggleSearchModal: () => {
-		const searchModal = get().openSearchModal;
+	setSearchModal: (searchType: SearchType | null) => {
+		const searchModal = get().searchModal;
 		if (searchModal) {
 			get().setActivePanel(PanelType.MAIN);
+			set({ searchModal: null });
 		} else {
 			get().setActivePanel(PanelType.MODAL);
+			set({ searchModal: searchType });
 		}
-
-		set({ openSearchModal: !searchModal });
 	},
 
 	toggleImageModal: () => {

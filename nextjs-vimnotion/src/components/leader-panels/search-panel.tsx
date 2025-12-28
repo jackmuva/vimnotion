@@ -1,8 +1,9 @@
 import { useEditorStore } from "@/store/editor-store";
+import { SearchType } from "@/types/search-types";
 import { useEffect } from "react";
 
 export const SearchPanel = () => {
-	const { toggleSearchModal, toggleSearchPanel } = useEditorStore((state) => state);
+	const { setSearchModal, toggleSearchPanel } = useEditorStore((state) => state);
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
@@ -16,7 +17,17 @@ export const SearchPanel = () => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				toggleSearchPanel();
-				toggleSearchModal();
+				setSearchModal(SearchType.FILENAME);
+			}
+		};
+		document.addEventListener('keydown', handleFKey);
+
+		const handleGKey = (event: KeyboardEvent) => {
+			if (event.key === 'g') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleSearchPanel();
+				setSearchModal(SearchType.GREP);
 			}
 		};
 		document.addEventListener('keydown', handleFKey);
@@ -24,6 +35,7 @@ export const SearchPanel = () => {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleFKey);
+			document.removeEventListener('keydown', handleGKey);
 		}
 
 	}, [])
@@ -35,12 +47,22 @@ export const SearchPanel = () => {
 				<button id={`first-search-option`}
 					className="cursor-pointer"
 					onClick={() => {
-						toggleSearchModal();
+						setSearchModal(SearchType.FILENAME);
 						toggleSearchPanel();
 					}}>
 					<span className="font-bold text-orange-500">[f]</span>
 				</button>ilename
 			</div>
+			<div>
+				<button className="cursor-pointer"
+					onClick={() => {
+						setSearchModal(SearchType.GREP);
+						toggleSearchPanel();
+					}}>
+					<span className="font-bold text-orange-500">[f]</span>
+				</button>ilename
+			</div>
+
 		</div>
 	);
 }

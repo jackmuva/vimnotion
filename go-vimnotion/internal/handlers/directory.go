@@ -122,7 +122,7 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 			Structure: payload.Structure,
 		})
 
-		err = CreateAllVnObjects(db, payload.Changes.Created)
+		err = CreateAllVnObjects(db, payload.Changes.Created, email.(string))
 		if err != nil {
 			message := fmt.Sprintf("failed to create objects: %s", err.Error())
 			response := models.DataResponse{Message: &message, StatusCode: 500}
@@ -165,7 +165,7 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects) error {
+func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects, email string) error {
 	const maxDbWorkers = 5
 	workerSem := make(chan struct{}, maxDbWorkers)
 	var workerWg sync.WaitGroup
@@ -182,6 +182,7 @@ func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects) erro
 			err := repository.InsertVnObject(db, models.VnObject{
 				Id:         created.Uuid,
 				Name:       created.Name,
+				Email:      email,
 				IsFile:     created.IsFile,
 				Contents:   "",
 				UpdateDate: time.Now().Format(time.RFC3339),

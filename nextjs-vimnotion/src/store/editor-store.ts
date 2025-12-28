@@ -7,14 +7,14 @@ import { createPanelSlice, DrillDownResult } from './slices/panel-store';
 import { createTabSlice } from './slices/tab-store';
 import { createDirectorySlice } from './slices/directory-store';
 import { createSearchSlice } from './slices/search-store';
-import { SearchResults } from '@/types/search-types';
+import { SearchResults, SearchType } from '@/types/search-types';
 
 export type EditorState = {
 	openSidebar: boolean;
 	openLeaderPanel: boolean;
 	openWindowPanel: boolean;
 	openSearchPanel: boolean;
-	openSearchModal: boolean;
+	searchModal: SearchType | null;
 	openImageModal: boolean;
 	openPublishModal: boolean;
 
@@ -22,7 +22,7 @@ export type EditorState = {
 	toggleLeaderPanel: () => void;
 	toggleWindowPanel: () => void;
 	toggleSearchPanel: () => void;
-	toggleSearchModal: () => void;
+	setSearchModal: (searchType: SearchType | null) => void;
 	toggleImageModal: () => void;
 	togglePublishModal: () => void;
 

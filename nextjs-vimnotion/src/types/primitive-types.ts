@@ -5,4 +5,5 @@ export type VnObject = {
 	contents: string,
 	updateDate: string,
 	public: boolean,
+	email?: string,
 }

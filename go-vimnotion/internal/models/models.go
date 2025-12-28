@@ -13,6 +13,7 @@ type DirectoryStructure struct {
 type VnObject struct {
 	Id         string `json:"id"`
 	Name       string `json:"name"`
+	Email      string `json:"email"`
 	IsFile     bool   `json:"isFile"`
 	Contents   string `json:"contents"`
 	UpdateDate string `json:"updateDate"`
