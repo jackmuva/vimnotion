@@ -1,7 +1,8 @@
 export type SearchResults = {
 	[filePath: string]: {
 		id: string,
-		regexMatches: RegExpMatchArray
+		regexMatches: RegExpMatchArray,
+		content?: string,
 	}
 }
 

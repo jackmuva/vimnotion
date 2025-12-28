@@ -1,6 +1,7 @@
 import { DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
 import { SearchResults } from "@/types/search-types";
+import { VnObject } from "@/types/primitive-types";
 
 export const createSearchSlice = (
 	set: {
@@ -57,6 +58,15 @@ export const createSearchSlice = (
 	searchByGrep: (pat: string): SearchResults => {
 		const searchRes: SearchResults = {};
 
+		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/grep?q=${pat}`,
+			{
+				credentials: 'include'
+			}
+		).then((res: Response) => {
+			res.json().then((body: { Data: VnObject[] }) => {
+				console.log(body.Data);
+			});
+		});
 		return searchRes;
 	},
 

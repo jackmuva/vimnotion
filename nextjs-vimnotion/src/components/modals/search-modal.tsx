@@ -1,7 +1,7 @@
 import { debounce } from "@/lib/utils";
 import { useEditorStore } from "@/store/editor-store";
 import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { SearchResults } from "@/types/search-types";
+import { SearchResults, SearchType } from "@/types/search-types";
 
 const renderPathWithHighlights = (path: string, matches: RegExpMatchArray | null) => {
 	if (!matches || matches.length === 0) return path;
@@ -32,7 +32,7 @@ export const SearchModal = () => {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [searchResults, setSearchResults] = useState<SearchResults>({});
 	const { refreshFilePaths, openFileInBuffer, searchByFilename,
-		setSearchModal, searchModal } = useEditorStore((state) => state);
+		setSearchModal, searchModal, searchByGrep } = useEditorStore((state) => state);
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const selectedIndexRef = useRef(selectedIndex);
@@ -40,7 +40,12 @@ export const SearchModal = () => {
 	const inputModeRef = useRef(inputMode);
 
 	const debouncedSearch = useCallback(debounce((term: string) => {
-		const searchRes: SearchResults = searchByFilename(term);
+		let searchRes: SearchResults = {};
+		if (searchModal === SearchType.FILENAME) {
+			searchRes = searchByFilename(term);
+		} else if (searchModal === SearchType.GREP) {
+			searchRes = searchByGrep(term);
+		}
 		setSearchResults(searchRes);
 	}, 0), [searchByFilename]);
 

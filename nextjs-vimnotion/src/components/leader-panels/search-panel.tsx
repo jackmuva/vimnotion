@@ -30,7 +30,7 @@ export const SearchPanel = () => {
 				setSearchModal(SearchType.GREP);
 			}
 		};
-		document.addEventListener('keydown', handleFKey);
+		document.addEventListener('keydown', handleGKey);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
@@ -59,8 +59,8 @@ export const SearchPanel = () => {
 						setSearchModal(SearchType.GREP);
 						toggleSearchPanel();
 					}}>
-					<span className="font-bold text-orange-500">[f]</span>
-				</button>ilename
+					<span className="font-bold text-orange-500">[g]</span>
+				</button>rep
 			</div>
 
 		</div>
