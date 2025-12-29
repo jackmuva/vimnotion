@@ -4,7 +4,6 @@ import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from
 import { SearchResults, SearchType } from "@/types/search-types";
 
 const renderPathWithHighlights = (text: string, matches: RegExpMatchArray | null) => {
-	console.log(matches);
 	if (!matches || matches.length === 0) return text;
 	const parts: (string | ReactNode)[] = [];
 	let lastIndex = 0;
@@ -92,7 +91,6 @@ export const SearchModal = () => {
 
 		const handleJKeyDown = (event: KeyboardEvent) => {
 			if (!inputModeRef.current && event.key === 'j') {
-				console.log("j pressed");
 				if (selectedIndexRef.current < Object.keys(searchResultsRef.current).length - 1) {
 					setSelectedIndex(selectedIndexRef.current + 1);
 				}
