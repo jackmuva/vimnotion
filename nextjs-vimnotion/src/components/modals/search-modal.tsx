@@ -138,12 +138,12 @@ export const SearchModal = () => {
 
 	return (
 		<div className="font-robo-mono text-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-			z-30 h-[600px] max-h-11/12 max-w-11/12 w-[900px] pt-14 p-4 
+			z-30 h-[600px] max-h-11/12 max-w-11/12 w-[900px] 
 			flex flex-col items-center bg-background">
 			<div className="h-full w-full flex flex-col justify-between">
 				<div className="w-full h-full flex gap-4">
 					<div className={`flex-1 outline-offset-2 outline outline-foreground-muted/50 
-					p-3 grow mb-4`}>
+					p-3 mb-4`}>
 						{Object.keys(searchResults).map((path, i) => {
 							return (<div key={searchResults[path].id}
 								className={`${!inputMode && selectedIndex === i ?
@@ -158,26 +158,28 @@ export const SearchModal = () => {
 						{grepLoading && <div className="animate-pulse w-full text-base">Loading...</div>}
 					</div>
 					{searchModal === SearchType.GREP && <div className={`flex-1 outline-offset-2 
-						outline outline-foreground-muted/50 p-3 grow mb-4 overflow-y-auto 
+						outline outline-foreground-muted/50 p-3 mb-4 overflow-y-auto 
 						text-xs whitespace-pre-wrap`}>
 						{searchResults[Object.keys(searchResults)[selectedIndex]] &&
 							renderPathWithHighlights(searchResults[Object.keys(searchResults)[selectedIndex]].content!,
 								searchResults[Object.keys(searchResults)[selectedIndex]].regexMatches)}
 					</div>}
 				</div>
-				<input type="text" className="w-full outline outline-offset-2 outline-foreground-muted/50 
+				<div className="w-full bg-background">
+					<input type="text" className="w-full outline outline-offset-2 outline-foreground-muted/50 
 					bg-foreground-muted/10 px-1 py-0.5"
-					id="search-modal-input"
-					value={searchTerm}
-					disabled={!inputMode}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => {
-						if (searchModal === SearchType.GREP) {
-							setSearchResults({});
-							setGrepLoading(true);
-						}
-						setSearchTerm(e.target.value)
-						debouncedSearch(e.target.value)
-					}} />
+						id="search-modal-input"
+						value={searchTerm}
+						disabled={!inputMode}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => {
+							if (searchModal === SearchType.GREP) {
+								setSearchResults({});
+								setGrepLoading(true);
+							}
+							setSearchTerm(e.target.value)
+							debouncedSearch(e.target.value)
+						}} />
+				</div>
 			</div>
 		</div >
 	);
