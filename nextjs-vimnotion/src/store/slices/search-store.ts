@@ -55,18 +55,25 @@ export const createSearchSlice = (
 
 		return searchRes;
 	},
-	searchByGrep: (pat: string): SearchResults => {
+	searchByGrep: async (pat: string): Promise<SearchResults> => {
 		const searchRes: SearchResults = {};
 
-		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/grep?q=${pat}`,
+		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/grep?q=${pat}`,
 			{
 				credentials: 'include'
 			}
-		).then((res: Response) => {
-			res.json().then((body: { Data: VnObject[] }) => {
-				console.log(body.Data);
-			});
-		});
+		);
+		const body: { Data: VnObject[] } = await res.json();
+		for (const vnObject of body.Data) {
+			const matches: null | RegExpMatchArray = vnObject.contents.match(pat);
+			if (matches) {
+				searchRes[vnObject.name] = {
+					id: vnObject.id,
+					regexMatches: matches,
+					content: vnObject.contents
+				}
+			}
+		}
 		return searchRes;
 	},
 

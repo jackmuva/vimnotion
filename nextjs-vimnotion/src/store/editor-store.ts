@@ -107,7 +107,7 @@ export type EditorState = {
 	filePaths: { [path: string]: string };
 	refreshFilePaths: () => void;
 	searchByFilename: (term: string) => SearchResults;
-	searchByGrep: (pat: string) => SearchResults;
+	searchByGrep: (pat: string) => Promise<SearchResults>;
 
 	newImageUrl: string;
 	setNewImageUrl: (url: string) => void;

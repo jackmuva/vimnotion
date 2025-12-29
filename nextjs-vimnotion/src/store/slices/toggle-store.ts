@@ -13,7 +13,7 @@ export const createToggleSlice = (
 	openLeaderPanel: false,
 	openWindowPanel: false,
 	openSearchPanel: false,
-	searchModal: false,
+	searchModal: null,
 	openImageModal: false,
 	openPublishModal: false,
 

@@ -43,11 +43,15 @@ export const SearchModal = () => {
 		let searchRes: SearchResults = {};
 		if (searchModal === SearchType.FILENAME) {
 			searchRes = searchByFilename(term);
+			setSearchResults(searchRes);
 		} else if (searchModal === SearchType.GREP) {
-			searchRes = searchByGrep(term);
+			searchByGrep(term).then((res: SearchResults) => {
+				setSearchResults(res);
+				return;
+			});
 		}
-		setSearchResults(searchRes);
-	}, 0), [searchByFilename]);
+	}, searchModal === SearchType.FILENAME ? 0 : 1000),
+		[setSearchResults, searchByFilename, searchByGrep]);
 
 	useEffect(() => {
 		selectedIndexRef.current = selectedIndex;
@@ -63,7 +67,7 @@ export const SearchModal = () => {
 
 	useEffect(() => {
 		refreshFilePaths();
-		debouncedSearch(searchTerm);
+		if (searchModal === SearchType.FILENAME) debouncedSearch(searchTerm);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				if (inputModeRef.current) {
@@ -137,14 +141,15 @@ export const SearchModal = () => {
 				<div className="w-full outline-offset-2 outline outline-foreground-muted/50 
 					p-3 grow mb-4">
 					{Object.keys(searchResults).map((path, i) => {
-						return (
-							<div key={searchResults[path].id}
-								className={`${!inputMode && selectedIndex === i ?
-									"rounded-sm bg-foreground/10 " : ""}
+						return (<div key={searchResults[path].id}
+							className={`${!inputMode && selectedIndex === i ?
+								"rounded-sm bg-foreground/10 " : ""}
 									py-0.5 px-1 flex`}>
-								{renderPathWithHighlights(path, searchResults[path].regexMatches)}
-							</div>
-						);
+							{searchModal === SearchType.FILENAME ?
+								renderPathWithHighlights(path, searchResults[path].regexMatches) :
+								path
+							}
+						</div>);
 					})}
 				</div>
 				<input type="text" className="w-full outline outline-offset-2 outline-foreground-muted/50 
