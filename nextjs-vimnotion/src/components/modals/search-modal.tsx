@@ -3,26 +3,35 @@ import { useEditorStore } from "@/store/editor-store";
 import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { SearchResults, SearchType } from "@/types/search-types";
 
-const renderPathWithHighlights = (path: string, matches: RegExpMatchArray | null) => {
-	if (!matches || matches.length === 0) return path;
+const renderPathWithHighlights = (text: string, matches: RegExpMatchArray | null) => {
+	console.log(matches);
+	if (!matches || matches.length === 0) return text;
 	const parts: (string | ReactNode)[] = [];
 	let lastIndex = 0;
 	matches.forEach((match, idx) => {
-		const matchIndex = path.indexOf(match, lastIndex);
-		if (matchIndex > lastIndex) {
-			parts.push(path.substring(lastIndex, matchIndex));
+		if (match === "") {
+			parts.push(text);
+		} else {
+			while (text.indexOf(match, lastIndex) !== -1) {
+				const matchIndex = text.indexOf(match, lastIndex);
+				if (matchIndex > lastIndex) {
+					parts.push(text.substring(lastIndex, matchIndex));
+				}
+				parts.push(
+					<span key={`match-${idx}-${lastIndex}`} className="text-orange-500 font-bold">
+						{match}
+					</span>
+				);
+				lastIndex = matchIndex + match.length;
+			}
+			if (lastIndex < text.length) {
+				parts.push(text.substring(lastIndex));
+			}
+			lastIndex = 0;
 		}
-		parts.push(
-			<span key={`match-${idx}`} className="text-orange-500 font-bold">
-				{match}
-			</span>
-		);
-		lastIndex = matchIndex + match.length;
 	});
 
-	if (lastIndex < path.length) {
-		parts.push(path.substring(lastIndex));
-	}
+
 
 	return parts;
 };
