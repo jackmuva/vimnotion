@@ -21,7 +21,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-1. some grep bugs when no results and only highlighting first occurence
 2. fix horizontal scroll on marketing pages
 3. sidebar location should be last active page
 3. code highlighting

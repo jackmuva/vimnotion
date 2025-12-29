@@ -27,8 +27,34 @@ func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
 
 func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		tokenCookie, err := r.Cookie("token")
+		if err != nil {
+			message := "need to auth"
+			response := models.DataResponse{Message: &message, StatusCode: 400}
+			jsonMessage, err := json.Marshal(response)
+			if err != nil {
+				fmt.Printf("unable to write error json: %s\n", err)
+			}
+			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
+			return
+		}
+		token, err := services.VerifyJwt(tokenCookie.Value)
+		if err != nil {
+			message := "invalid token"
+			response := models.DataResponse{Message: &message, StatusCode: 401}
+			jsonMessage, err := json.Marshal(response)
+			if err != nil {
+				fmt.Printf("unable to write error json: %s\n", err)
+			}
+			http.Error(w, string(jsonMessage), http.StatusUnauthorized)
+			return
+		}
+		claims := token.Claims.(jwt.MapClaims)
+		email := claims["email"]
+
 		var payload models.VnObject
-		err := json.NewDecoder(r.Body).Decode(&payload)
+		err = json.NewDecoder(r.Body).Decode(&payload)
+		payload.Email = email.(string)
 		if err != nil {
 			http.Error(w, "Unable to read body", http.StatusBadRequest)
 			fmt.Printf("unable to read body: %s\n", err)
