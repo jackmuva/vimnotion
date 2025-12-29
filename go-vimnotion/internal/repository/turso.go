@@ -37,7 +37,7 @@ func ConnectTurso() (*sql.DB, error) {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, email TEXT, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT, public BOOLEAN)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT, public BOOLEAN, email TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
@@ -120,7 +120,7 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
 			fmt.Println("Error scanning row:", err)
 		}
 
@@ -135,6 +135,7 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 }
 
 func SearchVnObjectByContent(db *sql.DB, search string, email string) ([]models.VnObject, error) {
+	fmt.Printf("args: %s, %s\n", email, search)
 	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND contents LIKE '% || ? || '%'", email, search)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
@@ -172,7 +173,7 @@ func GetPublicVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.Email, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
 			fmt.Println("Error scanning row:", err)
 		}
 
