@@ -136,9 +136,10 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 
 func SearchVnObjectByContent(db *sql.DB, search string, email string) ([]models.VnObject, error) {
 	fmt.Printf("args: %s, %s\n", email, search)
-	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND contents LIKE '% || ? || '%'", email, search)
+	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND isFile=1 AND contents LIKE ?", email, "%"+search+"%")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -147,8 +148,9 @@ func SearchVnObjectByContent(db *sql.DB, search string, email string) ([]models.
 	for rows.Next() {
 		var vnObject models.VnObject
 
-		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.Email, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public); err != nil {
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
 			fmt.Println("Error scanning row:", err)
+			return nil, err
 		}
 
 		vnObjects = append(vnObjects, vnObject)

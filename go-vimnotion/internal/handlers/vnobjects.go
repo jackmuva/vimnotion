@@ -169,13 +169,12 @@ func GrepVnObjects(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Image not found", http.StatusNotFound)
 			return
 		}
-		data := objs[0]
 		response := struct {
 			StatusCode int
-			Data       models.VnObject
+			Data       []models.VnObject
 		}{
 			StatusCode: 200,
-			Data:       data,
+			Data:       objs,
 		}
 		jsonMessage, err := json.Marshal(response)
 		if err != nil {
