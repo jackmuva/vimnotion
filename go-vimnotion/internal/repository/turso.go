@@ -135,8 +135,7 @@ func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
 }
 
 func SearchVnObjectByContent(db *sql.DB, search string, email string) ([]models.VnObject, error) {
-	fmt.Printf("args: %s, %s\n", email, search)
-	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND isFile=1 AND contents LIKE ?", email, "%"+search+"%")
+	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND isFile=1 AND contents LIKE ? LIMIT 100", email, "%"+search+"%")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return nil, err
