@@ -21,7 +21,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-2. grep search
 3. code highlighting
 4. use delete history for bulk pastes
 

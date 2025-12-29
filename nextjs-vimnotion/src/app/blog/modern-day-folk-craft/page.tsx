@@ -4,15 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-	title: "Software and the Modern Day Folk Crafts | VimNotion",
-	description: "Exploring how Soetsu Yanagi's philosophy of mingei (folk craftsmanship) applies to modern software development and the open source community.",
-	openGraph: {
+
+export async function generateMetadata(): Promise<Metadata> {
+	const metadata: Metadata = {
 		title: "Software and the Modern Day Folk Crafts | VimNotion",
-		description: "Exploring how mingei philosophy applies to modern software development.",
-		type: "article",
-	},
-};
+		description: "Exploring how Soetsu Yanagi's philosophy of mingei (folk craftsmanship) applies to modern software development and the open source community.",
+		openGraph: {
+			title: "Software and the Modern Day Folk Crafts | VimNotion",
+			description: "Exploring how mingei philosophy applies to modern software development.",
+			type: "article",
+		},
+	};
+	return metadata
+}
 
 export default async function FolkCraftPage() {
 	return (

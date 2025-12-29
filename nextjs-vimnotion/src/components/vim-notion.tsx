@@ -19,7 +19,7 @@ export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
 	const searchPanel = useEditorStore((state) => state.openSearchPanel);
-	const searchModal = useEditorStore((state) => state.openSearchModal);
+	const searchModal = useEditorStore((state) => state.searchModal);
 	const imageModal = useEditorStore((state) => state.openImageModal);
 	const publishModal = useEditorStore((state) => state.openPublishModal);
 	const { openSidebar, directoryConfirmation, setDirectoryState,
