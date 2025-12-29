@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BlogPage() {
 	return (
-		<div className="px-2 h-dvh w-dvw pt-4 flex flex-col items-center">
+		<div className="h-dvh pt-4 flex flex-col items-center">
 			<div className="flex flex-col w-full max-w-[1100px] gap-10">
 				<h1 className="text-3xl font-bold">
 					The vimnotion blog

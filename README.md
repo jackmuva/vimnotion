@@ -21,7 +21,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-2. fix scrollbars on all pages
 3. sidebar location should be last active page
 3. code highlighting
 4. use delete history for bulk pastes

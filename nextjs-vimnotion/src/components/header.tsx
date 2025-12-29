@@ -19,7 +19,7 @@ export const Header = () => {
 			</div>
 			<div className='flex gap-4 h-full items-center'>
 				<Link target="_blank" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/docs/editor`}
-					className='underline font-robo-mono text-lg'>
+					className='font-robo-mono text-lg'>
 					docs
 				</Link>
 			</div>

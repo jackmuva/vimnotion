@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
 	return (
-		<div className="px-2 h-dvh w-dvw flex flex-col items-center">
+		<div className="h-dvh w-full flex flex-col items-center">
 			<div id="md-editor-about" className="flex flex-col w-full max-w-[1100px] gap-4">
 				<h2>
 					Have you ever wanted Notion with&nbsp;<strong>vim motions</strong>?

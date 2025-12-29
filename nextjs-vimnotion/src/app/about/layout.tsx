@@ -1,6 +1,6 @@
 import { MarketingHeader } from "@/components/marketing-pages/marketing-header"
 
-export default function BlogLayout({
+export default function AboutLayout({
 	children,
 }: {
 	children: React.ReactNode
