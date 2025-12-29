@@ -6,7 +6,7 @@ import { StartButtonOverlay } from "./start-button-overlay";
 
 export default async function MarketingHome() {
 	return (
-		<div className="bg-background h-dvh w-dvw flex flex-col justify-start items-center font-robo-slab text-lg
+		<div className="bg-background h-dvh w-full px-2 flex flex-col justify-start items-center font-robo-slab text-lg
 			pb-20 overflow-y-auto gap-32 no-scrollbar">
 			<MarketingHeader />
 			<div className="w-full flex flex-col gap-8 items-center">
@@ -46,16 +46,12 @@ export default async function MarketingHome() {
 						<span className="underline font-bold">Vim motions</span>, split panes, tabs all at your fingertips
 					</h3>
 				</div>
-				<div className="flex flex-col md:flex-row w-11/12 max-w-[1200px] items-center md:items-start justify-center gap-4 md:gap-10">
+				<div className="flex flex-col md:flex-row w-11/12 max-w-[1200px] items-center md:items-start justify-center gap-10">
 					<img src="/markdown-s.png"
-						height={50}
-						width={600}
-						className="flex-1 rounded-sm border border-foreground/20"
+						className="md:max-w-1/2 rounded-sm border border-foreground/20"
 						alt="markdown" />
 					<img src="/split-ss.png"
-						height={50}
-						width={600}
-						className="flex-1 rounded-sm border border-foreground/20"
+						className="md:max-w-1/2 flex-1 rounded-sm border border-foreground/20"
 						alt="split screen" />
 				</div>
 			</div>
