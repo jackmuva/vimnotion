@@ -321,6 +321,7 @@ export const createPanelSlice = (
 		let succ = false;
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 		const paneId: string = Object.keys(activePane)[0];
+		console.log("saving: ", activePane[paneId].fileId);
 		const vnObject: VnObject = {
 			id: activePane[paneId].fileId.split("|")[0],
 			name: activePane[paneId].fileId.split("|")[1],
