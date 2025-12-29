@@ -198,8 +198,8 @@ export const SidebarEditor = () => {
 		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 bg-secondary-background'>
 			<div className="flex gap-2 justify-center items-center px-2">
 				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line"
-					className="flex-1">
-					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					className="flex-1 font-robo-mono">
+					<button className="font-robo-mono w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
 						onClick={() => insertNew("new-file")}>
 						<FilePenIcon size={16} className="text-foreground/90" />
@@ -207,8 +207,8 @@ export const SidebarEditor = () => {
 					</button>
 				</div>
 				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the directory name on a new line ending with a &quot;/&quot;"
-					className="flex-1">
-					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					className="flex-1 font-robo-mono">
+					<button className="font-robo-mono w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
 						onClick={() => insertNew("new-directory/")}>
 						<FolderClosedIcon size={16} className="text-foreground/90" />
@@ -216,8 +216,8 @@ export const SidebarEditor = () => {
 					</button>
 				</div>
 				<div low-data-tooltip="&quot;:w&quot; to save changes"
-					className="flex-1">
-					<button className="w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					className="flex-1 font-robo-mono">
+					<button className="font-robo-mono w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
 						onClick={() => setDirectoryConfirmation(true)}>
 						<SaveIcon size={16} className="text-foreground/90" />
@@ -227,7 +227,7 @@ export const SidebarEditor = () => {
 			</div>
 			<div id={`sidebar-editor`}
 				right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
-				className={`h-fit w-full overflow-y-scroll bg-transparent`}>
+				className={`font-robo-mono h-fit w-full overflow-y-scroll bg-transparent`}>
 			</div>
 		</div>
 
