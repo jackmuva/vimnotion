@@ -23,9 +23,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ## Immediate Todos
 3. sidebar location should be last active page
 3. code highlighting
-5. tables
 4. use delete history for bulk pastes
 6. <ctrl>d and u
+7. backlink!
 
 ## High-level Todos
 - normie view (not vimnotion)

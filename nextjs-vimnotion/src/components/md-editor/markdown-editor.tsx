@@ -3,6 +3,7 @@ import { EditorType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import Markdown from "react-markdown";
+import remarkGfm from 'remark-gfm'
 
 export const MarkdownEditor = ({
 	paneId
@@ -44,7 +45,7 @@ export const MarkdownEditor = ({
 			</h1>
 			<div id={`md-editor-${paneId}`}
 				className={`h-full max-w-[1100px] w-full overflow-y-scroll`}>
-				<Markdown>
+				<Markdown remarkPlugins={[remarkGfm]}>
 					{pane[paneId].buffer}
 				</Markdown>
 			</div>
