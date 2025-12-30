@@ -87,6 +87,10 @@ body {
     list-style-type: disc;
   }
 
+  & li:has(input[type="checkbox"]) {
+    list-style-type: none;
+  }
+
   & ol {
     list-style-type: decimal;
   }
@@ -148,14 +152,14 @@ body {
 
   /* Tables */
   & table {
-    width: 100%;
+    width: 80%;
     border-collapse: collapse;
     margin: 1rem 0;
   }
 
   & th, & td {
     padding: 0.5rem;
-    border: 1px solid var(--background-muted);
+    border: 1px solid var(--foreground-muted);
   }
 
   & th {
