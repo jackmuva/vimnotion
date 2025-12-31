@@ -44,7 +44,6 @@ export const createDirectorySlice = (
 			}
 		}
 
-
 		set({
 			location: location,
 			lastValidLocation: lastValidIndex === 0 ? locArr[0] + "/" : locArr.slice(0, lastValidIndex + 1).join("/") + "/"
@@ -267,9 +266,6 @@ export const createDirectorySlice = (
 	},
 
 	setDirectoryConfirmation: (open: boolean) => {
-		if (!open) {
-			get().setLocation(get().lastValidLocation);
-		}
 		set({ directoryConfirmation: open })
 	},
 
@@ -317,35 +313,6 @@ export const createDirectorySlice = (
 	openFileInBuffer: (id?: string) => {
 		const fromSearch = id ? true : false;
 		const fileId: string = fromSearch ? id!.split("|")[0] : get().getOilLine().split("|")[0];
-		if (fromSearch) {
-			let newLoc: string | null = null;
-			const root: DirectoryTree = get().directoryState;
-			const q: DirectoryTree[] = [];
-			const location: string[] = [];
-
-			q.push({ [Object.keys(root)[0]]: root[Object.keys(root)[0]] });
-			location.push("");
-
-			while (q.length > 0) {
-				const tree: DirectoryTree | undefined = q.shift();
-				const loc: string | undefined = location.shift();
-
-				const key = Object.keys(tree!)[0]!;
-				const locString: string = loc + key;
-				const uuid: string = key.split("|")[0];
-				if (uuid === fileId) {
-					newLoc = loc ?? null;
-					break;
-				}
-
-				for (const childKey of Object.keys(tree![key].children)) {
-					q.push({ [childKey]: tree![key].children[childKey] });
-					location.push(locString);
-				}
-			}
-			console.log("new location: ", newLoc);
-			if (newLoc) set({ location: newLoc });
-		}
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
 		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/${fileId}`,
@@ -364,5 +331,35 @@ export const createDirectorySlice = (
 		}).catch((err) => {
 			console.error("unable to get vnobject: ", err);
 		});
-	}
+	},
+
+
+	getLocationById: (id: string): string | null => {
+		let resLoc: string | null = null;
+		if (id === "START_PAGE") return resLoc;
+		const root: DirectoryTree = get().directoryState;
+		const q: DirectoryTree[] = [];
+		const location: string[] = [];
+
+		q.push({ [Object.keys(root)[0]]: root[Object.keys(root)[0]] });
+		location.push("");
+
+		while (q.length > 0) {
+			const tree: DirectoryTree | undefined = q.shift();
+			const loc: string | undefined = location.shift();
+			const key = Object.keys(tree!)[0]!;
+			const locString: string = loc + key;
+			const uuid: string = key.split("|")[0];
+			if (uuid === id.split("|")[0]) {
+				resLoc = loc ?? null;
+				break;
+			}
+
+			for (const childKey of Object.keys(tree![key].children)) {
+				q.push({ [childKey]: tree![key].children[childKey] });
+				location.push(locString);
+			}
+		}
+		return resLoc;
+	},
 });

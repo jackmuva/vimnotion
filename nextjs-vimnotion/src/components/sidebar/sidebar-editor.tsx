@@ -55,7 +55,7 @@ export const SidebarEditor = () => {
 		}
 		setSidebarBufferMap(bufferMap);
 		const buffer = Object.keys(bufferMap).join("\n") + "\n\n\n";
-		pushSidebarBufferHistory(buffer)
+		pushSidebarBufferHistory(buffer);
 		return buffer;
 	}
 

@@ -101,6 +101,7 @@ export type EditorState = {
 		},
 	};
 	dedupeProposedDirectory: () => void;
+	getLocationById: (id: string) => string | null;
 
 	openFileInBuffer: (id?: string) => void;
 

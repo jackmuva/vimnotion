@@ -39,7 +39,7 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		detectAllDirectoryChanges,
+		detectAllDirectoryChanges, getLocationById,
 	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
@@ -50,6 +50,9 @@ export const VimEditor = ({
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
+			const pane: PaneNode = getPane(paneId);
+			const loc: string | null = getLocationById(pane[Object.keys(pane)[0]].fileId);
+			if (loc) setLocation(loc);
 		}
 	});
 
