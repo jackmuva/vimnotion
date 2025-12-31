@@ -23,8 +23,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ## Immediate Todos
 3. code highlighting
 4. use delete history for bulk pastes
+5. bug with deleting an entire line
 6. <ctrl>d and u
 7. backlink!
+8. tooltips/support for non-vim users - tabs and modals
 
 ## High-level Todos
 - normie view (not vimnotion)
@@ -37,3 +39,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - sidebar refactor
 - account modal
 - emoji support
+
+## Marketing Todos
+9. video on vim note taker
+8. video on building a tool only I wanted
+10. blog
