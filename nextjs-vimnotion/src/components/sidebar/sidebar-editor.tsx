@@ -227,7 +227,7 @@ export const SidebarEditor = () => {
 			</div>
 			<div id={`sidebar-editor`}
 				right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
-				className={`text-sm font-robo-mono h-fit w-full overflow-y-scroll bg-transparent`}>
+				className={`text-sm font-robo-mono h-fit w-full overflow-y-scroll bg-transparent no-scrollbar`}>
 			</div>
 		</div>
 
