@@ -220,7 +220,7 @@ export const VimEditor = ({
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
 			<div id={`vim-editor-${paneId}`}
-				className={`h-full w-full overflow-y-scroll`}>
+				className={`no-scrollbar h-full w-full overflow-y-scroll`}>
 			</div>
 		</div>
 	);

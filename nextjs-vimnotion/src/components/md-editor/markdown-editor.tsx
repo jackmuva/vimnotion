@@ -44,7 +44,7 @@ export const MarkdownEditor = ({
 				</button>
 			</h1>
 			<div id={`md-editor-${paneId}`}
-				className={`h-full max-w-[1100px] w-full overflow-y-scroll`}>
+				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
 				<Markdown remarkPlugins={[remarkGfm]}>
 					{pane[paneId].buffer}
 				</Markdown>
