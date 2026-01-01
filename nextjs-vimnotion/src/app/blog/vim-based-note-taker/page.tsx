@@ -175,7 +175,7 @@ export default async function VimBasedNotesPage() {
 					Enter VimNotion
 				</h2>
 				<div>
-					VimNotion is a notes &amp; document text editor that holds <strong>Vim and Markdown
+					<a target="_blank" href="/">VimNotion</a> is a notes &amp; document text editor that holds <strong>Vim and Markdown
 						as first-class citizens above all else</strong>.
 				</div>
 				<div>
@@ -204,8 +204,8 @@ export default async function VimBasedNotesPage() {
 				<div>
 					I&apos;ve searched far and wide for the perfect Vim-based note taker. In that search,
 					I&apos;ve built my own <strong>vim-first</strong> note taker, VimNotion. It&apos;s some of the most
-					fun I&apos;ve had programming. If you&apos;re a vim enthusiast, I hope you&apos;ll give it
-					a try and let me know your thoughts. Until next time.
+					fun I&apos;ve had programming. If you&apos;re a vim enthusiast, I hope you&apos;ll give <a target="_blank" href="/">VimNotion</a>
+					&nbsp;a try and let me know your thoughts. Until next time.
 				</div>
 				<div className="flex flex-col w-full gap-1">
 					<div>:wq,</div>

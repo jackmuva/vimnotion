@@ -121,7 +121,7 @@ export default async function MarkdownDocsPage() {
 				</pre>
 				<div>
 					Link external websites with this bracket/parentheses syntax&nbsp;
-					<a href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/docs/editor`} target="_blank">
+					<a href={`/`} target="_blank">
 						clickable text that will link to
 					</a>
 				</div>

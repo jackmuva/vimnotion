@@ -3,7 +3,10 @@ import { EditorType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import Markdown from "react-markdown";
-import remarkGfm from 'remark-gfm'
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import { gruvboxDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 export const MarkdownEditor = ({
 	paneId
@@ -31,6 +34,7 @@ export const MarkdownEditor = ({
 		}
 	}, [pane[paneId].buffer])
 
+	console.log(gruvboxDark);
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col justify-start items-center space-y-2 p-2'>
@@ -45,7 +49,24 @@ export const MarkdownEditor = ({
 			</h1>
 			<div id={`md-editor-${paneId}`}
 				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
-				<Markdown remarkPlugins={[remarkGfm]}>
+				<Markdown remarkPlugins={[remarkGfm]}
+					rehypePlugins={[rehypeRaw]}
+					components={{
+						code({ node, inline, className, children, ...props }: any) {
+							const match = /language-(\w+)/.exec(className || '');
+
+							return !inline && match ? (
+								<SyntaxHighlighter style={gruvboxDark} PreTag="div" language={match[1]} {...props}>
+									{String(children).replace(/\n$/, '')}
+								</SyntaxHighlighter>
+							) : (
+								<code className={className} {...props}>
+									{children}
+								</code>
+							);
+						},
+					}}
+				>
 					{pane[paneId].buffer}
 				</Markdown>
 			</div>

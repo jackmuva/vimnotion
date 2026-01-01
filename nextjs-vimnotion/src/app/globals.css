@@ -130,9 +130,16 @@ body {
   }
 
   & pre {
-    background-color: var(--background-muted);
+    background-color: rgb(29, 32, 33);
     padding: 1rem;
     border-radius: 0.25rem;
+    overflow-x: auto;
+  }
+
+  & pre:has(div){
+    background-color: rgb(29, 32, 33);
+    border-radius: 0.25rem;
+    padding: 0;
     overflow-x: auto;
     margin: 1rem 0;
   }

@@ -185,7 +185,7 @@ export default async function VimDocsPage() {
 					<li>&quot;:tabnew&quot; to open a tew tab which you can toggle between with &quot;gt&quot; and &quot;gT&quot; (forward and backward)</li>
 				</ul>
 				<div>
-					For more information on VimNotion&quot;s built-in commands, see the &apos;Editor Features&apos; tab in the docs
+					For more information on VimNotion&quot;s built-in commands, see the <a href="/docs/editor" target="_self">Editor Features</a>
 				</div>
 			</div>
 		</div>

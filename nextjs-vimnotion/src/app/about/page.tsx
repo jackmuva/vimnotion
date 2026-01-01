@@ -33,6 +33,9 @@ export default async function AboutPage() {
 					For me, that was Notion.
 				</div>
 				<div>
+					(Read about other products I've tried: <a href="/blog/vim-based-note-taker" target="_blank">Search for a Vim-Based Note Taker</a>)
+				</div>
+				<div>
 					And so, I wanted to build a notes app that felt like vim, carried
 					the speed of vim, the utility of plugins like Telescope and Oil, and the commands
 					for code and notes. Commands like <code>:vsplit</code> and <code>:tabnew</code>.
