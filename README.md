@@ -22,7 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 4. use delete history for bulk pastes
-5. bug with deleting an entire line
 6. <ctrl>d and u
 8. tooltips/support for non-vim users - tabs and modals
 

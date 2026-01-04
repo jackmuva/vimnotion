@@ -71,7 +71,6 @@ export const createDirectorySlice = (
 	//TODO:when a user has folder/folder/file, parse
 	//TODO:Copy functionality
 	//TODO: multi line copy and pastes
-	//BUG:The rename functionality doesn't work when you delete an entire line
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
 		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);
@@ -113,7 +112,7 @@ export const createDirectorySlice = (
 		const newBufferLines: string[] = newBuffer!.split("\n");
 		const oldBufferLines: string[] = oldBuffer!.split("\n");
 		for (let i = 0; i < newBufferLines.length; i++) {
-			if (newBufferLines[i] && i < oldBufferLines.length && bufferMap[oldBufferLines[i]]) {
+			if (newBufferLines[i] && i < oldBufferLines.length && bufferMap[oldBufferLines[i]] && !oldBufferLines.includes(newBufferLines[i])) {
 				bufferMap[newBufferLines[i]] = bufferMap[oldBufferLines[i]].split("|")[0] + "|" + newBufferLines[i];
 				renames[newBufferLines[i]] = oldBufferLines[i];
 			}
@@ -128,7 +127,6 @@ export const createDirectorySlice = (
 				leafAtLocation.children[fullId] = lastDeleted[fullId];
 				bufferMap[fullId.split("|")[1]] = fullId;
 			} else if (fn in renames) {
-				//TODO:This should also copy contents
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
 					type: fn.at(-1) === "/" ? DirectoryObjectType.DIRECTORY : DirectoryObjectType.FILE,
 					children: leafAtLocation.children[bufferMap[renames[fn]]].children,

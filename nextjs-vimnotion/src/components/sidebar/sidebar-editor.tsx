@@ -45,6 +45,7 @@ export const SidebarEditor = () => {
 	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
+			if (!loc) continue;
 			if (loc && curDir[loc + "/"].children !== undefined) {
 				curDir = curDir[loc + "/"].children;
 			}
