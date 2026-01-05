@@ -34,7 +34,6 @@ export const MarkdownEditor = ({
 		}
 	}, [pane[paneId].buffer])
 
-	console.log(gruvboxDark);
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col justify-start items-center space-y-2 p-2'>
