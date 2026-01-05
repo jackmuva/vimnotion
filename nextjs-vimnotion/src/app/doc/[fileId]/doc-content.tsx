@@ -4,7 +4,12 @@ import { useEffect } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import { SyntaxHighlighterWrapper } from "./syntax-highlighter-wrapper";
+import dynamic from "next/dynamic";
+import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+const SyntaxHighlighter = dynamic(
+	() => import("react-syntax-highlighter").then((mod) => mod.Prism),
+	{ ssr: false }
+);
 
 interface DocContentProps {
 	id: string;
@@ -21,11 +26,8 @@ export function DocContent({ id, content }: DocContentProps) {
 	}, [content])
 
 	return (
-		<div
-			id={`md-editor-${id}`}
-			className="no-scrollbar pb-20 h-full max-w-[1100px] w-full overflow-y-scroll"
-			suppressHydrationWarning
-		>
+		<div id={`md-editor-${id}`}
+			className="no-scrollbar pb-20 h-full max-w-[1100px] w-full overflow-y-scroll">
 			<Markdown
 				remarkPlugins={[remarkGfm]}
 				rehypePlugins={[rehypeRaw]}
@@ -34,10 +36,11 @@ export function DocContent({ id, content }: DocContentProps) {
 						const match = /language-(\w+)/.exec(className || '');
 
 						return !inline && match ? (
-							<SyntaxHighlighterWrapper
-								language={match[1]}
-								children={String(children).replace(/\n$/, '')}
-							/>
+							<SyntaxHighlighter language={match[1]}
+								PreTag="div"
+								style={gruvboxDark}>
+								{String(children).replace(/\n$/, '')}
+							</SyntaxHighlighter>
 						) : (
 							<code className={className} {...props}>
 								{children}
