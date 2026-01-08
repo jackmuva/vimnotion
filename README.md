@@ -21,10 +21,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-1. fix code highlight on doc page; flickers rn
 4. use delete history for bulk pastes
 6. <ctrl>d and u
 8. tooltips/support for non-vim users - tabs and modals
+9. toggling between markdown and vim scrolls to the right spot
 
 ## High-level Todos
 - normie view (not vimnotion)

@@ -6,10 +6,10 @@ import type { Metadata } from "next";
 export async function generateMetadata(): Promise<Metadata> {
 	const metadata: Metadata = {
 		title: "Blog | VimNotion",
-		description: "Thoughts on Vim, notes, software craftsmanship, and building tools for developers.",
+		description: "Blog content on Vim, software, design, and Jack's random thoughts",
 		openGraph: {
 			title: "Blog | VimNotion",
-			description: "Thoughts on Vim, notes, software craftsmanship, and building tools for developers.",
+			description: "Blog content on Vim, software, design, and Jack's random thoughts",
 			type: "website",
 		},
 	};
@@ -21,7 +21,7 @@ export default async function BlogPage() {
 		<div className="px-2 pt-4 flex flex-col items-center">
 			<div className="flex flex-col w-full max-w-[1100px] gap-10">
 				<h1 className="text-3xl font-bold">
-					The vimnotion blog
+					Jack's blog hosted on VimNotion
 				</h1>
 				<div className="flex flex-col gap-8 text-base ">
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/vim-based-note-taker`}
