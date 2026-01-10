@@ -24,6 +24,13 @@ export const customTheme = Prec.highest(
 			//NOTE:we can change text color here
 			// color: "white",
 		},
+		"& .cm-scroller": {
+			scrollbarWidth: "none",
+			msOverflowStyle: "none",
+		},
+		"& .cm-scroller::-webkit-scrollbar": {
+			display: "none",
+		},
 	})
 )
 
