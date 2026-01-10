@@ -20,7 +20,7 @@ export const customTheme = Prec.highest(
 			backgroundColor: "transparent",
 		},
 		"&": {
-			minHeight: "100%",
+			height: "100%",
 			//NOTE:we can change text color here
 			// color: "white",
 		},

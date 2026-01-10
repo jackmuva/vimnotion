@@ -70,16 +70,13 @@ export const VimEditor = ({
 	});
 
 	const cursorListener = EditorView.updateListener.of((v) => {
+		const currentPane: PaneNode = getPane(paneId);
+		const updatedPane: PaneNode = { ...currentPane };
+
 		if (v.selectionSet) {
-			const currentPane: PaneNode = getPane(paneId);
-			const updatedPane: PaneNode = {
-				[paneId]: {
-					...currentPane[paneId],
-					cursorPosition: v.view.state.selection.ranges[0].from,
-				}
-			};
-			updatePane(updatedPane);
+			updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
 		}
+		updatePane(updatedPane);
 	});
 
 	useEffect(() => {
@@ -191,20 +188,19 @@ export const VimEditor = ({
 		});
 		setVimEditor(view);
 
-		const handleScroll = (e: Event) => {
+		const handleScroll = () => {
+			console.log("scrolltop: ", view.scrollDOM.scrollTop);
 			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane: PaneNode = {
 				[paneId]: {
 					...currentPane[paneId],
-					scrollPosition: editorElement.scrollTop,
+					scrollPosition: view.scrollDOM.scrollTop,
 				}
 			};
 			updatePane(updatedPane);
 		}
 
-		editorElement.addEventListener("scroll", handleScroll);
-		editorElement.scrollTop = getPane(paneId)[paneId].scrollPosition;
-
+		view.scrollDOM.addEventListener("scroll", handleScroll);
 
 		const currentPane: PaneNode = getPane(paneId);
 		view.dispatch({
@@ -213,10 +209,11 @@ export const VimEditor = ({
 				head: currentPane[paneId].cursorPosition,
 			},
 		});
+		view.scrollDOM.scrollTop = currentPane[paneId].scrollPosition;
 
 		return () => {
-			editorElement.removeEventListener('scroll', handleScroll);
-		};
+			view.scrollDOM.removeEventListener("scroll", handleScroll)
+		}
 	}, [isClient]);
 
 	useEffect(() => {
@@ -263,7 +260,7 @@ export const VimEditor = ({
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
 			<div id={`vim-editor-${paneId}`}
-				className={`no-scrollbar h-full w-full overflow-y-scroll`}>
+				className={`no-scrollbar h-full w-full`}>
 			</div>
 		</div>
 	);
