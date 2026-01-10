@@ -69,6 +69,16 @@ export const VimEditor = ({
 		}
 	});
 
+	const cursorListener = EditorView.updateListener.of((v) => {
+		if (vimEditor) {
+			const head = vimEditor.state.selection.main.head;
+			let cursor = vimEditor.state.doc.lineAt(head);
+			let line = cursor.number;
+			let col = head - cursor.from;
+			console.log("line = " + line + " col = " + col);
+		}
+	});
+
 	useEffect(() => {
 		vimEditor?.dispatch({
 			changes: {
@@ -132,6 +142,7 @@ export const VimEditor = ({
 				markdown(),
 				focusListener,
 				docChangeListener,
+				cursorListener,
 				EditorView.lineWrapping,
 			],
 			parent: editorElement,
@@ -145,6 +156,8 @@ export const VimEditor = ({
 				effects: highlight.reconfigure(syntaxHighlighting(markdownDark)),
 			});
 		}
+
+
 		applyTabBindings({
 			createNewTab: () => createNewTab(),
 			nextTab: () => nextTab(),
@@ -174,6 +187,24 @@ export const VimEditor = ({
 			renderVimTutor: () => renderVimTutor(),
 		});
 		setVimEditor(view);
+
+		const handleScroll = (e: Event) => {
+			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane: PaneNode = {
+				[paneId]: {
+					...currentPane[paneId],
+					scrollPosition: editorElement.scrollTop,
+				}
+			};
+			updatePane(updatedPane);
+		}
+
+		editorElement.addEventListener("scroll", handleScroll);
+		editorElement.scrollTop = getPane(paneId)[paneId].scrollPosition;
+
+		return () => {
+			editorElement.removeEventListener('scroll', handleScroll);
+		};
 	}, [isClient]);
 
 	useEffect(() => {

@@ -45,7 +45,7 @@ export const createPanelSlice = (
 	newRoot: () => {
 		const rootId = v4();
 		const { paneTree, setPaneTree } = get();
-		const newPaneTree = paneTree;
+		const newPaneTree: PaneNode = paneTree;
 		newPaneTree[rootId] = {
 			state: SplitState.NONE,
 			children: [],
@@ -62,6 +62,8 @@ export const createPanelSlice = (
 			buffer: START_BUFFER,
 			fileId: "START_PAGE",
 			public: false,
+			scrollPosition: 0,
+			cursorPosition: 0,
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -101,6 +103,7 @@ export const createPanelSlice = (
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
+				scrollPosition: paneTree[parentId].scrollPosition,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -118,6 +121,7 @@ export const createPanelSlice = (
 				buffer: paneTree[parentId].buffer,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
+				scrollPosition: paneTree[parentId].scrollPosition,
 			}
 		};
 		setPaneTree(newTree);
