@@ -32,7 +32,15 @@ export const MarkdownEditor = ({
 		for (const link of links) {
 			link.setAttribute('target', '_blank');
 		}
-	}, [pane[paneId].buffer])
+	}, [pane[paneId].buffer]);
+
+	useEffect(() => {
+		const mdElement = window.document.getElementById(`md-editor-${paneId}`);
+		if (!mdElement) return;
+		const height = mdElement.scrollHeight;
+		const scrollToHeight = Math.ceil(height * pane[paneId].scrollPercentage);
+		mdElement.scrollTop = scrollToHeight;
+	}, []);
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 

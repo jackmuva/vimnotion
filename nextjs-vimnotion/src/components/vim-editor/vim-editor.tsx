@@ -190,11 +190,14 @@ export const VimEditor = ({
 
 		const handleScroll = () => {
 			console.log("scrolltop: ", view.scrollDOM.scrollTop);
+			console.log("height: ", view.scrollDOM.scrollHeight);
+			console.log("proportion: ", view.scrollDOM.scrollTop / view.scrollDOM.scrollHeight);
 			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane: PaneNode = {
 				[paneId]: {
 					...currentPane[paneId],
 					scrollPosition: view.scrollDOM.scrollTop,
+					scrollPercentage: view.scrollDOM.scrollTop / view.scrollDOM.scrollHeight,
 				}
 			};
 			updatePane(updatedPane);
