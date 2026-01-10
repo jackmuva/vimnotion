@@ -53,6 +53,10 @@ export type PaneNode = {
 		public: boolean,
 		scrollPosition: number,
 		cursorPosition: number,
+		// cursorPosition: {
+		// 	line: number,
+		// 	col: number
+		// },
 	}
 }
 

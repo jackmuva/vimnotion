@@ -104,6 +104,7 @@ export const createPanelSlice = (
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
+				cursorPosition: paneTree[parentId].cursorPosition,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -122,6 +123,7 @@ export const createPanelSlice = (
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
+				cursorPosition: paneTree[parentId].cursorPosition,
 			}
 		};
 		setPaneTree(newTree);

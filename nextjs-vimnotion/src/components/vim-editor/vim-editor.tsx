@@ -50,15 +50,15 @@ export const VimEditor = ({
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
-			const pane: PaneNode = getPane(paneId);
-			const loc: string | null = getLocationById(pane[Object.keys(pane)[0]].fileId);
+			const currentPane: PaneNode = getPane(paneId);
+			const loc: string | null = getLocationById(currentPane[Object.keys(pane)[0]].fileId);
 			if (loc) setLocation(loc);
 		}
 	});
 
 	const docChangeListener = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			const currentPane = getPane(paneId);
+			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {
 					...currentPane[paneId],
@@ -70,12 +70,15 @@ export const VimEditor = ({
 	});
 
 	const cursorListener = EditorView.updateListener.of((v) => {
-		if (vimEditor) {
-			const head = vimEditor.state.selection.main.head;
-			let cursor = vimEditor.state.doc.lineAt(head);
-			let line = cursor.number;
-			let col = head - cursor.from;
-			console.log("line = " + line + " col = " + col);
+		if (v.selectionSet) {
+			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane: PaneNode = {
+				[paneId]: {
+					...currentPane[paneId],
+					cursorPosition: v.view.state.selection.ranges[0].from,
+				}
+			};
+			updatePane(updatedPane);
 		}
 	});
 
@@ -201,6 +204,15 @@ export const VimEditor = ({
 
 		editorElement.addEventListener("scroll", handleScroll);
 		editorElement.scrollTop = getPane(paneId)[paneId].scrollPosition;
+
+
+		const currentPane: PaneNode = getPane(paneId);
+		view.dispatch({
+			selection: {
+				anchor: currentPane[paneId].cursorPosition,
+				head: currentPane[paneId].cursorPosition,
+			},
+		});
 
 		return () => {
 			editorElement.removeEventListener('scroll', handleScroll);
