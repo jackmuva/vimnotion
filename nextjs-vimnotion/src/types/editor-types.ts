@@ -51,6 +51,9 @@ export type PaneNode = {
 		buffer: string,
 		fileId: string,
 		public: boolean,
+		scrollPosition: number,
+		cursorPosition: number,
+		scrollPercentage: number,
 	}
 }
 

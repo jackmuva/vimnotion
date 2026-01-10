@@ -19,7 +19,6 @@ export const EditorContainer = ({
 		setIsClient(true);
 	}, []);
 
-	//BUG:sometimes closing panes will have an empty pane
 	const hydratePanes = (paneId: string) => {
 		if (paneTree[paneId].state === SplitState.NONE && !paneTree[paneId].deleted) {
 			return (
@@ -34,9 +33,9 @@ export const EditorContainer = ({
 			(!paneTree[paneTree[paneId].children[0]].deleted ||
 				!paneTree[paneTree[paneId].children[1]].deleted)) {
 			return (
-				<div key={paneId} className={`h-full w-full flex 
+				<div key={paneId} className={`h-full w-full flex divide-solid divide-foreground/30
 				${paneTree[paneId].state === SplitState.HORIZONTAL ?
-						"flex-col" : ""}`}>
+						"flex-col divide-y" : "divide-x"}`}>
 					{paneTree[paneId].children.map((childId: string) => {
 						return hydratePanes(childId)
 					})}
