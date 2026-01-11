@@ -51,6 +51,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			priority: 0.7,
 		},
 		{
+			url: 'https://www.vimnotion.com/blog/orchestrated-vs-free-agents',
+			lastModified: new Date('2026-01-10'),
+			changeFrequency: 'monthly',
+			priority: 0.7,
+		},
+
+		{
 			url: 'https://www.vimnotion.com/blog/vim-based-note-taker',
 			lastModified: new Date('2025-12-15'),
 			changeFrequency: 'monthly',

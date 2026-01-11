@@ -18,8 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FolkCraftPage() {
 	return (
-		<div className="px-2 w-full flex flex-col items-center overflow-y-auto pt-4">
-			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-4 pb-20">
+		<div className="px-2 w-full flex flex-col items-center pt-4">
+			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-4 pb-10">
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-col gap-4">
 						<Link target="_self" href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog`}
