@@ -225,7 +225,7 @@ That'll be a question for another Saturday night.
 -Jack
 `;
 	return (
-		<div className="px-2 w-full flex flex-col items-center pt-4">
+		<div className="px-2 w-full flex flex-col items-center pt-4 no-scrollbar">
 			<div id="md-editor-blog" className="flex flex-col w-full max-w-[1100px] gap-4 pb-10">
 				<div className="flex flex-col gap-2">
 					<div className="flex flex-col gap-4">

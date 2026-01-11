@@ -37,8 +37,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body className={`${robo_slab.variable} ${robo_mono.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
+		<html lang="en" className="no-scrollbar">
+			<body className={`${robo_slab.variable} ${robo_mono.variable} ${geistSans.variable} ${geistMono.variable} antialiased no-scrollbar`}>
 				{children}
 			</body>
 		</html>

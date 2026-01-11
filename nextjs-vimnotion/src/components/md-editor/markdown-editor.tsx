@@ -28,13 +28,6 @@ export const MarkdownEditor = ({
 	}
 
 	useEffect(() => {
-		const links = document.getElementsByTagName('a');
-		for (const link of links) {
-			link.setAttribute('target', '_blank');
-		}
-	}, [pane[paneId].buffer]);
-
-	useEffect(() => {
 		const mdElement = document.getElementById(`md-editor-${paneId}`);
 		if (!mdElement) return;
 
@@ -77,6 +70,9 @@ export const MarkdownEditor = ({
 				<Markdown remarkPlugins={[remarkGfm]}
 					rehypePlugins={[rehypeRaw]}
 					components={{
+						a({ node, children, ...props }: any) {
+							return <a target="_blank" {...props}>{children}</a>;
+						},
 						p({ node, children, ...props }: any) {
 							const line = node?.position?.start?.line;
 							return <p data-source-line={line} {...props}>{children}</p>;

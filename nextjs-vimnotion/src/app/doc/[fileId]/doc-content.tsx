@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -18,13 +17,6 @@ interface DocContentProps {
 
 export function DocContent({ id, content }: DocContentProps) {
 
-	useEffect(() => {
-		const links = document.getElementsByTagName('a');
-		for (const link of links) {
-			link.setAttribute('target', '_blank');
-		}
-	}, [content])
-
 	return (
 		<div id={`md-editor-${id}`}
 			className="no-scrollbar pb-20 h-full max-w-[1100px] w-full overflow-y-scroll">
@@ -32,6 +24,9 @@ export function DocContent({ id, content }: DocContentProps) {
 				remarkPlugins={[remarkGfm]}
 				rehypePlugins={[rehypeRaw]}
 				components={{
+					a({ node, children, ...props }: any) {
+						return <a target="_blank" {...props}>{children}</a>;
+					},
 					code({ node, inline, className, children, ...props }: any) {
 						const match = /language-(\w+)/.exec(className || '');
 

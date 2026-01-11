@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
 	return (
 		<div className="h-dvh w-full flex flex-col items-center">
-			<div id="md-editor-about" className="flex flex-col w-full max-w-[1100px] gap-4">
+			<div id="md-editor-about" className="flex flex-col w-full max-w-[1100px] gap-4 pb-10">
 				<h2>
 					Have you ever wanted Notion with&nbsp;<strong>vim motions</strong>?
 				</h2>
@@ -42,17 +42,15 @@ export default async function AboutPage() {
 				</div>
 				<img src={"/split-ss.png"} />
 				<div>
-					I hope you give VimNotion a try! And reach out to me with any
-					feedback and ideas!
+					I hope you give VimNotion a try! Feel free to reach out to me with any
+					feedback or ideas!
 				</div>
 				<div>
 					-Jack
 				</div>
-				<div className="flex flex-col ">
-					<pre>
-						email: jackmu@umich.edu
-					</pre>
-					<pre className="flex gap-1 items-center">
+				<pre>
+					<div className="p-2">email: jackmu@umich.edu</div>
+					<div className="p-2 flex gap-1 items-center">
 						<TwitterIcon size={20} />
 						<div>
 							/ X:
@@ -60,8 +58,9 @@ export default async function AboutPage() {
 						<a href="https://x.com/jackmuva" target="_blank">
 							@jackmuva
 						</a>
-					</pre>
-				</div>
+					</div>
+				</pre>
+
 			</div>
 		</div>
 	);

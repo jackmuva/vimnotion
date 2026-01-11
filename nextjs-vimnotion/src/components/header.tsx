@@ -5,8 +5,8 @@ import Link from 'next/link';
 export const Header = () => {
 	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
 	return (
-		<div className="top-0 left-0 border-b-2 border-background-muted/50 w-full flex justify-between items-center 
-			z-40 absolute p-2 space-x-4 bg-background">
+		<div className="absolute top-0 left-0 border-b-2 border-background-muted/50 w-full flex justify-between items-center 
+			z-40 p-2 space-x-4 bg-background">
 			<div className='flex gap-4 h-full items-center'>
 				<button className='text-sm font-robo-mono hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm'
 					onClick={() => toggleSidebar()}
