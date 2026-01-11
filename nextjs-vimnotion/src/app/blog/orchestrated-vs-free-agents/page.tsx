@@ -200,8 +200,9 @@ locally for low-latency RAG - these are all examples of better tooling for agent
 
 Better models and harnesses means building a world where agents can reason out even complex tasks.
 But what I didn't mention from running the sandboxed deepagent is that the **token and cost usage was 
-astronomically higher than the orchestrated agent**. Controlling the exact inputs for agents 
-is extremely token efficient and takes less LLM turns.
+astronomically higher than the orchestrated agent**. The free agent cost ~2 dollars to run this prompt 
+a few times as I tested the tooling. Controlling the exact inputs for the orchestrated agent 
+was extremely token efficient and took much fewer LLM turns.
 
 ### 3. Gain control, sacrifice flexibility
 
