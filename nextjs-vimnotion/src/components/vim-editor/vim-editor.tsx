@@ -50,15 +50,15 @@ export const VimEditor = ({
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
-			const pane: PaneNode = getPane(paneId);
-			const loc: string | null = getLocationById(pane[Object.keys(pane)[0]].fileId);
+			const currentPane: PaneNode = getPane(paneId);
+			const loc: string | null = getLocationById(currentPane[Object.keys(pane)[0]].fileId);
 			if (loc) setLocation(loc);
 		}
 	});
 
 	const docChangeListener = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			const currentPane = getPane(paneId);
+			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {
 					...currentPane[paneId],
@@ -67,6 +67,16 @@ export const VimEditor = ({
 			};
 			updatePane(updatedPane);
 		}
+	});
+
+	const cursorListener = EditorView.updateListener.of((v) => {
+		const currentPane: PaneNode = getPane(paneId);
+		const updatedPane: PaneNode = { ...currentPane };
+
+		if (v.selectionSet) {
+			updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
+		}
+		updatePane(updatedPane);
 	});
 
 	useEffect(() => {
@@ -132,6 +142,7 @@ export const VimEditor = ({
 				markdown(),
 				focusListener,
 				docChangeListener,
+				cursorListener,
 				EditorView.lineWrapping,
 			],
 			parent: editorElement,
@@ -145,6 +156,8 @@ export const VimEditor = ({
 				effects: highlight.reconfigure(syntaxHighlighting(markdownDark)),
 			});
 		}
+
+
 		applyTabBindings({
 			createNewTab: () => createNewTab(),
 			nextTab: () => nextTab(),
@@ -174,6 +187,33 @@ export const VimEditor = ({
 			renderVimTutor: () => renderVimTutor(),
 		});
 		setVimEditor(view);
+
+		const handleScroll = () => {
+			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane: PaneNode = {
+				[paneId]: {
+					...currentPane[paneId],
+					scrollPosition: view.scrollDOM.scrollTop,
+					scrollPercentage: view.scrollDOM.scrollTop / view.scrollDOM.scrollHeight,
+				}
+			};
+			updatePane(updatedPane);
+		}
+
+		view.scrollDOM.addEventListener("scroll", handleScroll);
+
+		const currentPane: PaneNode = getPane(paneId);
+		view.dispatch({
+			selection: {
+				anchor: currentPane[paneId].cursorPosition,
+				head: currentPane[paneId].cursorPosition,
+			},
+		});
+		view.scrollDOM.scrollTop = currentPane[paneId].scrollPosition;
+
+		return () => {
+			view.scrollDOM.removeEventListener("scroll", handleScroll)
+		}
 	}, [isClient]);
 
 	useEffect(() => {
@@ -220,7 +260,7 @@ export const VimEditor = ({
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
 			<div id={`vim-editor-${paneId}`}
-				className={`no-scrollbar h-full w-full overflow-y-scroll`}>
+				className={`no-scrollbar h-full w-full`}>
 			</div>
 		</div>
 	);

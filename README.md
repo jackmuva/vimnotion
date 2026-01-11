@@ -23,9 +23,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ## Immediate Todos
 3. tab bar causes scrolling
 4. use delete history for bulk pastes
-6. <ctrl>d and u
 8. tooltips/support for non-vim users - tabs and modals
-9. toggling between markdown and vim scrolls to the right spot
 10. :e update
 
 ## High-level Todos

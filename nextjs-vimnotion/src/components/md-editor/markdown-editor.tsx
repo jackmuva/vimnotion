@@ -32,7 +32,33 @@ export const MarkdownEditor = ({
 		for (const link of links) {
 			link.setAttribute('target', '_blank');
 		}
-	}, [pane[paneId].buffer])
+	}, [pane[paneId].buffer]);
+
+	useEffect(() => {
+		const mdElement = document.getElementById(`md-editor-${paneId}`);
+		if (!mdElement) return;
+
+		const buffer = pane[paneId].buffer;
+		const cursorPos = pane[paneId].cursorPosition;
+		const textBeforeCursor = buffer.slice(0, cursorPos);
+		const cursorLine = textBeforeCursor.split('\n').length;
+
+		const elementsWithLine = mdElement.querySelectorAll('[data-source-line]');
+		let closestElement: Element | null = null;
+		let closestLine = 0;
+
+		elementsWithLine.forEach((el) => {
+			const line = parseInt(el.getAttribute('data-source-line') || '0', 10);
+			if (line <= cursorLine && line > closestLine) {
+				closestLine = line;
+				closestElement = el;
+			}
+		});
+
+		if (closestElement !== null) {
+			(closestElement as Element).scrollIntoView({ block: 'center', behavior: 'instant' });
+		}
+	}, []);
 
 	return (
 		<div className='relative h-full w-full rounded-sm z-20 bg-background 
@@ -51,6 +77,50 @@ export const MarkdownEditor = ({
 				<Markdown remarkPlugins={[remarkGfm]}
 					rehypePlugins={[rehypeRaw]}
 					components={{
+						p({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <p data-source-line={line} {...props}>{children}</p>;
+						},
+						h1({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h1 data-source-line={line} {...props}>{children}</h1>;
+						},
+						h2({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h2 data-source-line={line} {...props}>{children}</h2>;
+						},
+						h3({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h3 data-source-line={line} {...props}>{children}</h3>;
+						},
+						h4({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h4 data-source-line={line} {...props}>{children}</h4>;
+						},
+						h5({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h5 data-source-line={line} {...props}>{children}</h5>;
+						},
+						h6({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <h6 data-source-line={line} {...props}>{children}</h6>;
+						},
+						li({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <li data-source-line={line} {...props}>{children}</li>;
+						},
+						blockquote({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <blockquote data-source-line={line} {...props}>{children}</blockquote>;
+						},
+						img({ node, src, alt, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <img data-source-line={line} src={src} alt={alt} {...props} />;
+						},
+						pre({ node, children, ...props }: any) {
+							const line = node?.position?.start?.line;
+							return <pre data-source-line={line} {...props}>{children}</pre>;
+						},
 						code({ node, inline, className, children, ...props }: any) {
 							const match = /language-(\w+)/.exec(className || '');
 
