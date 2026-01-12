@@ -16,6 +16,8 @@ export const createToggleSlice = (
 	searchModal: null,
 	openImageModal: false,
 	openPublishModal: false,
+	openAiPanel: false,
+	openAiModal: false,
 
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
@@ -63,6 +65,17 @@ export const createToggleSlice = (
 		set({ openSearchPanel: !searchPanel });
 	},
 
+	toggleAiPanel: () => {
+		const aiPanel = get().openAiPanel;
+		if (aiPanel) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.LEADER);
+		}
+
+		set({ openAiPanel: !aiPanel });
+	},
+
 	setSearchModal: (searchType: SearchType | null) => {
 		const searchModal = get().searchModal;
 		if (searchModal) {
@@ -92,6 +105,16 @@ export const createToggleSlice = (
 			get().setActivePanel(PanelType.MODAL);
 		}
 		set({ openPublishModal: !publishModal });
+	},
+
+	toggleAiModal: () => {
+		const aiModal = get().openAiModal;
+		if (aiModal) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.MODAL);
+		}
+		set({ openAiModal: !aiModal });
 	},
 
 });

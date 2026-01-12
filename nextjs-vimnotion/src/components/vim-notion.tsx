@@ -14,11 +14,15 @@ import { SearchPanel } from "@/components/leader-panels/search-panel";
 import { SearchModal } from "@/components/modals/search-modal";
 import { ImageModal } from "@/components/modals/image-modal";
 import { PublishModal } from "@/components/modals/publish-modal";
+import { AiPanel } from "./leader-panels/ai-panel";
+import { AiModal } from "./modals/ai-modal";
 
 export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
 	const searchPanel = useEditorStore((state) => state.openSearchPanel);
+	const aiPanel = useEditorStore((state) => state.openAiPanel);
+	const aiModal = useEditorStore((state) => state.openAiModal);
 	const searchModal = useEditorStore((state) => state.searchModal);
 	const imageModal = useEditorStore((state) => state.openImageModal);
 	const publishModal = useEditorStore((state) => state.openPublishModal);
@@ -52,6 +56,15 @@ export default function VimNotion() {
 			}
 		}
 	}, [searchPanel]);
+
+	useEffect(() => {
+		if (aiPanel) {
+			const button = document.getElementById(`first-ai-option`);
+			if (button) {
+				button.focus();
+			}
+		}
+	}, [aiPanel]);
 
 	useEffect(() => {
 		if (directoryConfirmation) {
@@ -89,6 +102,15 @@ export default function VimNotion() {
 		}
 	}, [publishModal]);
 
+	useEffect(() => {
+		if (aiModal) {
+			const input = document.getElementById(`ai-modal-input`);
+			if (input) {
+				input.focus();
+			}
+		}
+	}, [aiModal]);
+
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
@@ -115,11 +137,13 @@ export default function VimNotion() {
 			{leaderPanel && <LeaderPanel />}
 			{windowPanel && <WindowPanel />}
 			{searchPanel && <SearchPanel />}
+			{aiPanel && <AiPanel />}
 			<LeaderButton />
 			{directoryConfirmation && <ConfirmationModal />}
 			{searchModal && <SearchModal />}
 			{imageModal && <ImageModal />}
 			{publishModal && <PublishModal />}
+			{aiModal && <AiModal />}
 		</div>
 	);
 }
