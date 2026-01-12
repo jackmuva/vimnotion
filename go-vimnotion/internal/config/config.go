@@ -18,6 +18,7 @@ type Config struct {
 	FrontendDomain   string
 	TursoDatabaseUrl string
 	TursoAuthToken   string
+	AiGatewayKey     string
 }
 
 var config *Config
@@ -41,6 +42,7 @@ func Get() *Config {
 			FrontendDomain:   os.Getenv("FRONTEND_DOMAIN"),
 			TursoDatabaseUrl: os.Getenv("TURSO_DATABASE_URL"),
 			TursoAuthToken:   os.Getenv("TURSO_AUTH_TOKEN"),
+			AiGatewayKey:     os.Getenv("AI_GATEWAY_API_KEY"),
 		}
 	})
 	return config

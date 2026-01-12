@@ -47,6 +47,7 @@ export const SearchModal = () => {
 	const selectedIndexRef = useRef(selectedIndex);
 	const searchResultsRef = useRef(searchResults);
 	const inputModeRef = useRef(inputMode);
+	const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
 	const debouncedSearch = useCallback(debounce((term: string) => {
 		let searchRes: SearchResults = {};
@@ -65,6 +66,7 @@ export const SearchModal = () => {
 
 	useEffect(() => {
 		selectedIndexRef.current = selectedIndex;
+		itemRefs.current[selectedIndex]?.scrollIntoView({ block: 'nearest' });
 	}, [selectedIndex]);
 
 	useEffect(() => {
@@ -150,9 +152,10 @@ export const SearchModal = () => {
 			<div className="h-full w-full flex flex-col justify-between">
 				<div className="w-full h-full flex gap-4">
 					<div className={`flex-1 outline-offset-2 outline outline-foreground-muted/50 
-					p-3 mb-4`}>
+					p-3 mb-4 overflow-y-auto`}>
 						{Object.keys(searchResults).map((path, i) => {
 							return (<div key={searchResults[path].id}
+								ref={(el) => { itemRefs.current[i] = el; }}
 								className={`${!inputMode && selectedIndex === i ?
 									"rounded-sm bg-foreground/10 " : ""}
 									py-0.5 px-1 flex`}>

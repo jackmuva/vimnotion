@@ -75,7 +75,6 @@ export const PublishModal = () => {
 						<span className="font-bold text-orange-500">[n]</span>
 					</button>o, cancel
 				</div>
-
 			</div>
 		</div>
 	);
