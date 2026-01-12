@@ -25,7 +25,11 @@ func ReturnAscii() http.HandlerFunc {
 			return
 		}
 		var messages []models.AiMessage
-		messages = append(messages, payload)
+		var systemMessage = models.AiMessage{
+			Role:    "developer",
+			Content: "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else.",
+		}
+		messages = append(messages, systemMessage, payload)
 		cfg := config.Get()
 		requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 		requestBody := map[string]any{

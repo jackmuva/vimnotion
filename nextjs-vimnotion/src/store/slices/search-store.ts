@@ -78,8 +78,12 @@ export const createSearchSlice = (
 	},
 
 	newImageUrl: "",
-
 	setNewImageUrl: (url: string) => {
 		set({ newImageUrl: url });
+	},
+
+	newAiBlock: "",
+	setNewAiBlock: (aiRes: string) => {
+		set({ newAiBlock: aiRes });
 	},
 });

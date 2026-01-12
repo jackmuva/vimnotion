@@ -116,6 +116,9 @@ export type EditorState = {
 
 	newImageUrl: string;
 	setNewImageUrl: (url: string) => void;
+
+	newAiBlock: string;
+	setNewAiBlock: (url: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({

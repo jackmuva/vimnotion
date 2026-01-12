@@ -39,7 +39,7 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		detectAllDirectoryChanges, getLocationById,
+		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock
 	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
@@ -117,9 +117,23 @@ export const VimEditor = ({
 					vimEditor.dispatch(transaction);
 				}
 				setNewImageUrl("");
+			} else if (newAiBlock) {
+				const cursorPosition: number = vimEditor.state.selection.main.head;
+				const transaction = vimEditor.state.update({
+					changes: {
+						from: cursorPosition,
+						insert: newAiBlock,
+					},
+					selection: { anchor: cursorPosition + 1 },
+					scrollIntoView: true,
+				});
+				if (transaction) {
+					vimEditor.dispatch(transaction);
+				}
+				setNewAiBlock("");
 			}
 		}
-	}, [activeId, activePanel, directoryConfirmation, newImageUrl, setNewImageUrl])
+	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl])
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
