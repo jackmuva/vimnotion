@@ -39,3 +39,4 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - account modal
 - emoji support
 - ai with context to certain files (maybe with the @ shortcut)
+
