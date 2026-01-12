@@ -28,6 +28,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## High-level Todos
 - normie view (not vimnotion)
+  - focus on making this a great writing experience
+  - vim-like commands like <ESC> for command and ":" for executions and actions
 - create teams
 - extensability with hotkeys for apis
 - version history
