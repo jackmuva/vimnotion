@@ -18,6 +18,7 @@ export const customTheme = Prec.highest(
 		},
 		"&.cm-editor": {
 			backgroundColor: "transparent",
+			outline: "none",
 		},
 		"&": {
 			height: "100%",

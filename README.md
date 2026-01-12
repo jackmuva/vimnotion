@@ -34,6 +34,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
   - trash
 - local md downloads
 - cron job to delete all unused images
-- sidebar refactor
 - account modal
 - emoji support
+- ai with context to certain files (maybe with the @ shortcut)

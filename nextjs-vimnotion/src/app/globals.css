@@ -139,6 +139,7 @@ body {
 
   & pre {
     background-color: rgb(29, 32, 33);
+    color: rgb(235, 219, 178);
     padding: 1rem;
     border-radius: 0.25rem;
     overflow-x: auto;
