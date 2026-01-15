@@ -25,6 +25,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 4. use delete history for bulk pastes
 8. tooltips/support for non-vim users - tabs and modals
 10. :e update
+11. all buffers of the same file should change
 
 ## High-level Todos
 - normie view (not vimnotion)
