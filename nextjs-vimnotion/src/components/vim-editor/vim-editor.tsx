@@ -213,7 +213,6 @@ export const VimEditor = ({
 			};
 			updatePane(updatedPane);
 		}
-
 		view.scrollDOM.addEventListener("scroll", handleScroll);
 
 		const currentPane: PaneNode = getPane(paneId);
