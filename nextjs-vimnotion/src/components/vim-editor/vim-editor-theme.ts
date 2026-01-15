@@ -13,6 +13,9 @@ export const customTheme = Prec.highest(
 			outline: "solid 1px #818cf8",
 			color: "transparent !important",
 		},
+		"&.cm-focused > .cm-scroller > .cm-cursorLayer": {
+			animation: "none !important",
+		},
 		".cm-gutters": {
 			background: "none",
 		},
