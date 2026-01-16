@@ -49,6 +49,7 @@ export type PaneNode = {
 		deleted: boolean,
 		editorType: EditorType,
 		buffer: string,
+		bufferVersion: number,
 		fileId: string,
 		public: boolean,
 		scrollPosition: number,

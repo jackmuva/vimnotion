@@ -78,7 +78,7 @@ export const ConfirmationModal = () => {
 			z-30 bg-background h-96 max-w-11/12 w-[700px] p-4 
 			flex flex-col justify-between outline  outline-offset-2 
 			outline-foreground-muted/50">
-			<div className="w-full flex flex-col">
+			<div className="w-full flex flex-col overflow-y-auto">
 				{changes.created.map((newObj, i) => {
 					return (
 						<div className="flex gap-4" key={i}>
