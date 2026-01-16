@@ -21,7 +21,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [ ] tab bar causes scrolling
+- [x] tab bar causes scrolling
 - [ ] tooltips/support for non-vim users - tabs and modals
 - [x] all buffers of the same file should change
 
