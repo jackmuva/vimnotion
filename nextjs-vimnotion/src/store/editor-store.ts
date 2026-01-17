@@ -50,12 +50,11 @@ export type EditorState = {
 	cycleNeighbor: () => string;
 	renderMdTutor: () => void;
 	renderVimTutor: () => void;
-
-	saveVnObjectBuffer: () => boolean;
-	publishVnObject: (publish: boolean) => boolean;
-
 	getPaneById: (paneId: string) => PaneNode;
 	updatePane: (pane: PaneNode) => void;
+	saveVnObjectBuffer: () => boolean;
+	publishVnObject: (publish: boolean) => boolean;
+	updateAllBuffers: (fileId: string, buffer: string) => boolean;
 
 	activeTab: string;
 	tabArray: string[];

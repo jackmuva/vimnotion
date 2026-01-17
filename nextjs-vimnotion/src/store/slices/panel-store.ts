@@ -361,9 +361,14 @@ export const createPanelSlice = (
 
 	},
 
-	//TODO:IMPLEMENT!!!
 	updateAllBuffers: (fileId: string, buffer: string): void => {
-
+		const newTree: PaneNode = { ...get().paneTree };
+		for (const paneId of Object.keys(newTree)) {
+			if (newTree[paneId].fileId === fileId) {
+				newTree[paneId].buffer = buffer;
+			}
+		}
+		get().setPaneTree(newTree);
 	},
 
 	publishVnObject: (publish: boolean): boolean => {

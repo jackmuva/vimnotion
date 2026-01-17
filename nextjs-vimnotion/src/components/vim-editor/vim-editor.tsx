@@ -39,7 +39,8 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane
+		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
+		updateAllBuffers,
 	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
@@ -66,6 +67,7 @@ export const VimEditor = ({
 				}
 			};
 			updatePane(updatedPane);
+			updateAllBuffers(currentPane[paneId].fileId, v.state.doc.toString());
 		}
 	});
 
