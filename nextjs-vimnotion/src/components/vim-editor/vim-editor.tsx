@@ -67,7 +67,9 @@ export const VimEditor = ({
 				}
 			};
 			updatePane(updatedPane);
-			updateAllBuffers(currentPane[paneId].fileId, v.state.doc.toString());
+			if (paneId === getActivePane()) {
+				updateAllBuffers(currentPane[paneId].fileId, v.state.doc.toString());
+			}
 		}
 	});
 
