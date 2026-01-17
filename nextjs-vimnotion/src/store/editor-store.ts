@@ -54,7 +54,7 @@ export type EditorState = {
 	updatePane: (pane: PaneNode) => void;
 	saveVnObjectBuffer: () => boolean;
 	publishVnObject: (publish: boolean) => boolean;
-	updateAllBuffers: (fileId: string, buffer: string) => boolean;
+	updateAllBuffers: (fileId: string, buffer: string) => void;
 
 	activeTab: string;
 	tabArray: string[];
