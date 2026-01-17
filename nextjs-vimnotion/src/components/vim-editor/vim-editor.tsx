@@ -39,7 +39,8 @@ export const VimEditor = ({
 	const pane: PaneNode = getPane(paneId);
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock
+		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
+		updateAllBuffers,
 	} = useEditorStore((state) => state);
 
 	const themeRef = useRef(new Compartment());
@@ -66,6 +67,9 @@ export const VimEditor = ({
 				}
 			};
 			updatePane(updatedPane);
+			if (paneId === getActivePane()) {
+				updateAllBuffers(currentPane[paneId].fileId, v.state.doc.toString());
+			}
 		}
 	});
 
@@ -87,7 +91,7 @@ export const VimEditor = ({
 				insert: pane[paneId].buffer,
 			},
 		});
-	}, [pane[paneId].fileId]);
+	}, [pane[paneId].fileId, pane[paneId].bufferVersion]);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -199,6 +203,9 @@ export const VimEditor = ({
 			toggleSidebar: toggleSidebar,
 			renderMdTutor: () => renderMdTutor(),
 			renderVimTutor: () => renderVimTutor(),
+			refetchFileInBuffer: (fileId: string) => openFileInBuffer(fileId),
+			getActivePane: () => getActivePane(),
+			getPane: (paneId: string) => getPane(paneId),
 		});
 		setVimEditor(view);
 

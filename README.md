@@ -21,11 +21,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-3. tab bar causes scrolling
-4. use delete history for bulk pastes
-8. tooltips/support for non-vim users - tabs and modals
-10. :e update
-11. all buffers of the same file should change
+- [x] tab bar causes scrolling
+- [ ] tooltips/support for non-vim users - tabs and modals
+- [x] all buffers of the same file should change
 
 ## High-level Todos
 - normie view (not vimnotion)

@@ -20,6 +20,8 @@ export const createPanelSlice = (
 	activePane: "",
 	paneTree: {} as PaneNode,
 
+	getActivePane: (): string => get().activePane,
+
 	getPaneById: (paneId: string): PaneNode => {
 		const { paneTree } = get();
 		return {
@@ -60,6 +62,7 @@ export const createPanelSlice = (
 			deleted: false,
 			editorType: EditorType.VIM,
 			buffer: START_BUFFER,
+			bufferVersion: 1,
 			fileId: "START_PAGE",
 			public: false,
 			scrollPosition: 0,
@@ -102,6 +105,7 @@ export const createPanelSlice = (
 				deleted: false,
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
+				bufferVersion: paneTree[parentId].bufferVersion,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -122,6 +126,7 @@ export const createPanelSlice = (
 				deleted: false,
 				editorType: EditorType.VIM,
 				buffer: paneTree[parentId].buffer,
+				bufferVersion: paneTree[parentId].bufferVersion,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -330,7 +335,6 @@ export const createPanelSlice = (
 		let succ = false;
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 		const paneId: string = Object.keys(activePane)[0];
-		console.log("saving: ", activePane[paneId].fileId);
 		const vnObject: VnObject = {
 			id: activePane[paneId].fileId.split("|")[0],
 			name: activePane[paneId].fileId.split("|")[1],
@@ -355,6 +359,18 @@ export const createPanelSlice = (
 		});
 		return succ;
 
+	},
+
+	updateAllBuffers: (fileId: string, buffer: string): void => {
+		const activePane = get().activePane;
+		const newTree: PaneNode = { ...get().paneTree };
+		for (const paneId of Object.keys(newTree)) {
+			if (newTree[paneId].fileId === fileId && paneId !== activePane) {
+				newTree[paneId].buffer = buffer;
+				newTree[paneId].bufferVersion = (newTree[paneId].bufferVersion || 0) + 1;
+			}
+		}
+		get().setPaneTree(newTree);
 	},
 
 	publishVnObject: (publish: boolean): boolean => {

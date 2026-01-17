@@ -34,6 +34,7 @@ export type EditorState = {
 	paneTree: PaneNode;
 	activePanel: PanelType;
 
+	getActivePane: () => string;
 	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
 	setPaneTree: (tree: PaneNode) => void;
@@ -49,12 +50,11 @@ export type EditorState = {
 	cycleNeighbor: () => string;
 	renderMdTutor: () => void;
 	renderVimTutor: () => void;
-
-	saveVnObjectBuffer: () => boolean;
-	publishVnObject: (publish: boolean) => boolean;
-
 	getPaneById: (paneId: string) => PaneNode;
 	updatePane: (pane: PaneNode) => void;
+	saveVnObjectBuffer: () => boolean;
+	publishVnObject: (publish: boolean) => boolean;
+	updateAllBuffers: (fileId: string, buffer: string) => void;
 
 	activeTab: string;
 	tabArray: string[];
@@ -77,7 +77,7 @@ export type EditorState = {
 	oilLine: string;
 	sidebarBufferHistory: string[];
 	sidebarBufferMap: { [id: string]: string };
-	lastDeleted: DirectoryTree | null;
+	lastDeleted: DirectoryTree[] | null;
 	directoryConfirmation: boolean;
 
 	setDirectoryState: (tree: DirectoryTree) => void;
@@ -93,7 +93,7 @@ export type EditorState = {
 	setOilLine: (line: string) => void;
 	pushSidebarBufferHistory: (buffer: string) => void;
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
-	setLastDeleted: (delTree: DirectoryTree) => void;
+	setLastDeleted: (delTree: DirectoryTree[]) => void;
 	evaluateOilBufferChanges: () => void;
 	setDirectoryConfirmation: (open: boolean) => void;
 	detectAllDirectoryChanges: () => DirectoryChanges;

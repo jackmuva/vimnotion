@@ -64,20 +64,19 @@ export const createDirectorySlice = (
 	},
 	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
 
-	setLastDeleted: (delTree: DirectoryTree) => {
-		set({ lastDeleted: delTree })
+	setLastDeleted: (delTrees: DirectoryTree[]) => {
+		set({ lastDeleted: delTrees })
 	},
 
 	//TODO:when a user has folder/folder/file, parse
 	//TODO:Copy functionality
-	//TODO: multi line copy and pastes
 	evaluateOilBufferChanges: () => {
 		const newBuffer: string | undefined = get().sidebarBufferHistory.at(-1);
 		const oldBuffer: string | undefined = get().sidebarBufferHistory.at(-2);
 		const toDelete: { [id: string]: string } = { ...get().sidebarBufferMap };
 		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
 		const bufferMap: { [id: string]: string } = { ...get().sidebarBufferMap };
-		const lastDeleted: DirectoryTree | null = get().lastDeleted
+		const lastDeleted: DirectoryTree[] | null = get().lastDeleted
 		let atRoot: boolean = false;
 
 		//NOTE:gets leaf at location
@@ -118,13 +117,12 @@ export const createDirectorySlice = (
 			}
 		}
 
-		//NOTE:new files
 		for (const fn of Object.keys(newBufferLinesMap)) {
 			if (!fn) continue;
-			//NOTE:Cutting (doesnt account for multi-line cuts
-			if (lastDeleted && fn === Object.keys(lastDeleted)[0].split("|")[1]) {
-				const fullId: string = Object.keys(lastDeleted)[0];
-				leafAtLocation.children[fullId] = lastDeleted[fullId];
+			if (lastDeleted && lastDeleted.map((tree) => Object.keys(tree)[0].split("|")[1]).includes(fn)) {
+				const lastDeletedTree: DirectoryTree = lastDeleted.filter((tree) => (fn === Object.keys(tree)[0].split("|")[1]))[0];
+				const fullId: string = Object.keys(lastDeletedTree)[0];
+				leafAtLocation.children[fullId] = lastDeletedTree[fullId];
 				bufferMap[fullId.split("|")[1]] = fullId;
 			} else if (fn in renames) {
 				const newTree: { type: DirectoryObjectType, children: DirectoryTree } = {
@@ -153,7 +151,12 @@ export const createDirectorySlice = (
 
 		//NOTE:delete old files
 		for (const fn of Object.keys(toDelete)) {
-			get().setLastDeleted({ [toDelete[fn]]: { ...leafAtLocation.children[toDelete[fn]] } });
+			const toDeleteTree: DirectoryTree = {
+				[toDelete[fn]]: {
+					...leafAtLocation.children[toDelete[fn]]
+				}
+			}
+			get().setLastDeleted([...get().lastDeleted ?? [], toDeleteTree]);
 			delete leafAtLocation.children[toDelete[fn]];
 			delete bufferMap[fn];
 		}
@@ -319,9 +322,11 @@ export const createDirectorySlice = (
 			}
 		).then((res: Response) => {
 			res.json().then((body: { Data: VnObject[] }) => {
+				console.log("new data: ", body);
 				activePane[Object.keys(activePane)[0]].fileId = fromSearch ? body.Data[0].id + "|" + body.Data[0].name : get().getOilLine();
 				activePane[Object.keys(activePane)[0]].buffer = body.Data[0].contents;
 				activePane[Object.keys(activePane)[0]].public = body.Data[0].public;
+				activePane[Object.keys(activePane)[0]].bufferVersion++;
 				get().updatePane(activePane);
 			}).catch((err) => {
 				console.error("unable to get vnobject: ", err);
