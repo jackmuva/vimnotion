@@ -21,9 +21,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [x] tooltips/support for non-vim users - tabs and modals
 - [ ] ai with context to certain files (maybe with the @ shortcut)
-- [ ] cron job to delete all unused images
+- [x] cron job to delete all unused images
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)

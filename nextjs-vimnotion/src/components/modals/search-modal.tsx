@@ -152,13 +152,18 @@ export const SearchModal = () => {
 			<div className="h-full w-full flex flex-col justify-between">
 				<div className="w-full h-full flex gap-4">
 					<div className={`flex-1 outline-offset-2 outline outline-foreground-muted/50 
-					p-3 mb-4 overflow-y-auto`}>
+					p-3 mb-4 overflow-y-auto`}
+						low-data-tooltip="&quot;ESC&quot; to go into normal mode. &quot;i&quot; and &quot;a&quot; to edit query">
 						{Object.keys(searchResults).map((path, i) => {
 							return (<div key={searchResults[path].id}
 								ref={(el) => { itemRefs.current[i] = el; }}
 								className={`${!inputMode && selectedIndex === i ?
 									"rounded-sm bg-foreground/10 " : ""}
-									py-0.5 px-1 flex`}>
+									py-0.5 px-1 flex hover:cursor-pointer`}
+								onClick={() => {
+									openFileInBuffer(searchResultsRef.current[Object.keys(searchResultsRef.current)[i]].id);
+									setSearchModal(null);
+								}}>
 								{searchModal === SearchType.FILENAME ?
 									renderPathWithHighlights(path, searchResults[path].regexMatches) :
 									path
