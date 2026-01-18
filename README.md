@@ -21,10 +21,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [ ] tooltips/support for non-vim users - tabs and modals
+- [x] tooltips/support for non-vim users - tabs and modals
 - [ ] ai with context to certain files (maybe with the @ shortcut)
 - [ ] cron job to delete all unused images
-- [ ] update docs on :e, ascii art
+- [x] update docs on :e, ascii art
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)
@@ -40,7 +40,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 # Marketing Todos
 - [ ] Video on "why markdown"
 - [ ] Video on "why vim"
-- [ ] blog posts that help other developers building "x"
-    - search
-    - image storage
-    - key commands useRef
+- [x] blog posts that help other developers building "x"
+    - [ ] search
+    - [ ] image storage
+    - [ ] key commands useRef
+- [ ] twitter video on emojis
+- [ ] twitter video on all buffer changes
