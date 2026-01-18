@@ -183,6 +183,7 @@ export default async function VimDocsPage() {
 					<li>&quot;:split&quot; to split your screen into two separate panels</li>
 					<li>&quot;:vs&quot; to vertically split your screen</li>
 					<li>&quot;:tabnew&quot; to open a tew tab which you can toggle between with &quot;gt&quot; and &quot;gT&quot; (forward and backward)</li>
+					<li>&quot;:e&quot; to load all edits and updates (useful if you have multiple browsers and tabs with vimnotion open</li>
 				</ul>
 				<div>
 					For more information on VimNotion&quot;s built-in commands, see the <a href="/docs/editor" target="_self">Editor Features</a>

@@ -90,6 +90,11 @@ export default async function EditorDocsPage() {
 					to navigate [w]indows after splitting your view
 					<pre>{`<Space>w`}</pre>
 				</div>
+				<div>
+					to use [a]i feature
+					<pre>{`<Space>a`}</pre>
+				</div>
+
 				<h2>
 					VimNotion&apos;s File Directory
 				</h2>

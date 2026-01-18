@@ -226,6 +226,7 @@ are inspired from Vim.
 * ":split" to split your screen into two separate panels
 * ":vs" to vertically split your screen
 * ":tabnew" to open a tew tab which you can toggle between with "gt" and "gT" (forward and backward)
+* ":e" to load all edits and updates (useful if you have multiple browsers and tabs with vimnotion open
 ---
 
 `;
