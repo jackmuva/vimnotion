@@ -21,9 +21,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [x] tab bar causes scrolling
 - [ ] tooltips/support for non-vim users - tabs and modals
-- [x] all buffers of the same file should change
+- [ ] emoji support
+- [ ] ai with context to certain files (maybe with the @ shortcut)
+- [ ] cron job to delete all unused images
 
 ## High-level Todos
 - normie view (not vimnotion)
@@ -34,7 +35,4 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - version history
   - trash
 - local md downloads
-- cron job to delete all unused images
 - account modal
-- emoji support
-- ai with context to certain files (maybe with the @ shortcut)

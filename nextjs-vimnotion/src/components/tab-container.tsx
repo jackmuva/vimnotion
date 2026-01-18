@@ -26,7 +26,7 @@ export const TabContainer = () => {
 	return (
 		<div className="h-full w-full flex flex-col space-y-0">
 			{tabs.length > 1 &&
-				<div className="flex space-x-4">
+				<div className="flex space-x-4 shrink-0">
 					{tabs.map((tab, i) => {
 						return (
 							<div key={tab} className={` ${tab === activeTab ?
@@ -38,9 +38,11 @@ export const TabContainer = () => {
 					})}
 				</div>
 			}
-			<EditorContainer rootId={tabMap[activeTab].root}
-				toggleLeaderPanel={toggleLeaderPanel}
-				toggleSidebar={toggleSidebar} />
+			<div className="flex-1 min-h-0">
+				<EditorContainer rootId={tabMap[activeTab].root}
+					toggleLeaderPanel={toggleLeaderPanel}
+					toggleSidebar={toggleSidebar} />
+			</div>
 		</div>
 	);
 }
