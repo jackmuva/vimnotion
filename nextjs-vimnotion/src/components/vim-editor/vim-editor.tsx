@@ -1,6 +1,6 @@
 import { basicSetup, EditorView } from 'codemirror';
 import { vim } from "@replit/codemirror-vim"
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Compartment } from '@codemirror/state';
 import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
@@ -11,6 +11,13 @@ import { applyTabBindings } from './extensions/tab-bindings';
 import { applySidebarBindings } from './extensions/sidebar-bindings';
 import { applyPanelBindings } from './extensions/panel-bindings';
 import { syntaxHighlighting } from "@codemirror/language"
+import {
+	Completion,
+	CompletionContext,
+	autocompletion,
+} from '@codemirror/autocomplete';
+import data from '@emoji-mart/data';
+import type { EmojiMartData } from '@emoji-mart/data';
 
 export const VimEditor = ({
 	paneId,
@@ -42,6 +49,39 @@ export const VimEditor = ({
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
 		updateAllBuffers,
 	} = useEditorStore((state) => state);
+
+	const emojiCompletionOptions: Completion[] = useMemo(() => {
+		// To prioritize view initialization, generate options after view initialization is complete
+		const emojiData = data as EmojiMartData;
+		return Object.keys(emojiData.emojis).map((key: string) => {
+			return {
+				label: `:${key}:`, // String to match with the input text
+				displayLabel: key, // String to display in the suggestion list
+				detail: emojiData.emojis[key].skins[0].native, // Detailed information to display in the suggestion list (Emoji)
+				apply: emojiData.emojis[key].skins[0].native, // String to insert when selected (Emoji)
+			};
+		});
+	}, [vimEditor]);
+
+	const emojiCompletions = useCallback(
+		(context: CompletionContext) => {
+			const regex = /(?<=(^|\s|\p{Emoji}))(?<!:{2}):[0-9a-zA-Z_\-+]+:{0,1}$/u;
+			const word = context.matchBefore(regex);
+			if (!word) return null;
+			return {
+				from: word.from,
+				options: emojiCompletionOptions,
+				// Reuse candidates as long as the word matches this regular expression
+				validFor: /^:[0-9a-zA-Z_\-+]+:{0,1}$/,
+			};
+		}, [emojiCompletionOptions]);
+
+	const emojiAutocomplete = useMemo(() =>
+		autocompletion({
+			activateOnTyping: true,
+			icons: false,
+			override: [emojiCompletions],
+		}), [emojiCompletions]);
 
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
@@ -162,6 +202,7 @@ export const VimEditor = ({
 				docChangeListener,
 				cursorListener,
 				EditorView.lineWrapping,
+				emojiAutocomplete,
 			],
 			parent: editorElement,
 		});
