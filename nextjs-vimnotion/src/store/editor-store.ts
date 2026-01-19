@@ -52,8 +52,8 @@ export type EditorState = {
 	renderVimTutor: () => void;
 	getPaneById: (paneId: string) => PaneNode;
 	updatePane: (pane: PaneNode) => void;
-	saveVnObjectBuffer: () => boolean;
-	publishVnObject: (publish: boolean) => boolean;
+	saveVnObjectBuffer: () => Promise<boolean>;
+	publishVnObject: (publish: boolean) => Promise<boolean>;
 	updateAllBuffers: (fileId: string, buffer: string) => void;
 
 	activeTab: string;

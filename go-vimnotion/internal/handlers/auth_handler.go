@@ -4,10 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
@@ -21,37 +19,10 @@ func createJwtCookies(db *sql.DB, userData models.UserData) (http.Cookie, http.C
 		fmt.Printf("Unable to get user: %s\n", err)
 	}
 	if len(user) == 0 {
-		rootId := uuid.New().String()
-		trashId := uuid.New().String()
-		var structureBuilder strings.Builder
-		structureBuilder.WriteString("{\"")
-		structureBuilder.WriteString(rootId)
-		structureBuilder.WriteString("|root/\": {\"type\":\"DIRECTORY\",\"children\":{\"")
-		structureBuilder.WriteString(trashId)
-		structureBuilder.WriteString("|trash/\":{\"type\":\"DIRECTORY\",\"children\":{}}}}}")
-
-		repository.InsertUser(db, models.User{Email: userData.Email, Name: userData.Name})
-		repository.InsertDirectoryStructure(db, models.DirectoryStructure{
-			Email:     userData.Email,
-			Structure: structureBuilder.String(),
-		})
-		repository.InsertVnObject(db, models.VnObject{
-			Id:         rootId,
-			Name:       "root",
-			Email:      userData.Email,
-			IsFile:     false,
-			Contents:   "",
-			UpdateDate: time.Now().UTC().String(),
-		})
-		repository.InsertVnObject(db, models.VnObject{
-			Id:         trashId,
-			Name:       "trash",
-			Email:      userData.Email,
-			IsFile:     false,
-			Contents:   "",
-			UpdateDate: time.Now().UTC().String(),
-		})
-
+		err := services.InitializeUserDirectory(db, userData.Email, userData.Name)
+		if err != nil {
+			fmt.Printf("Unable to initialize user directory: %s\n", err)
+		}
 	}
 
 	jwt := services.CreateJwt(userData)

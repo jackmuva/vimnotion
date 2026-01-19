@@ -7,8 +7,8 @@ export const PublishModal = () => {
 		togglePublishModal } = useEditorStore((state) => state);
 	const activeTree: PaneNode = getPaneById(activePane);
 
-	const togglePub = () => {
-		publishVnObject(!activeTree[Object.keys(activeTree)[0]].public)
+	const togglePub = async () => {
+		await publishVnObject(!activeTree[Object.keys(activeTree)[0]].public)
 	}
 
 	useEffect(() => {

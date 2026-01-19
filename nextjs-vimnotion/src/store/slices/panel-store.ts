@@ -3,6 +3,7 @@ import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
+import { updateVnObject } from "@/services/vnobject-service";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -331,8 +332,7 @@ export const createPanelSlice = (
 		return curPane;
 	},
 
-	saveVnObjectBuffer: (): boolean => {
-		let succ = false;
+	saveVnObjectBuffer: async (): Promise<boolean> => {
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 		const paneId: string = Object.keys(activePane)[0];
 		const vnObject: VnObject = {
@@ -343,22 +343,7 @@ export const createPanelSlice = (
 			updateDate: (new Date).toISOString(),
 			public: activePane[paneId].public,
 		}
-		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
-			{
-				method: "PUT",
-				body: JSON.stringify(vnObject),
-				credentials: 'include'
-			}
-		).then((res: Response) => {
-			if (res.ok) {
-				console.log("success");
-				succ = true;
-			}
-		}).catch((err) => {
-			console.error("unable to get vnobject: ", err);
-		});
-		return succ;
-
+		return await updateVnObject(vnObject);
 	},
 
 	updateAllBuffers: (fileId: string, buffer: string): void => {
@@ -373,8 +358,7 @@ export const createPanelSlice = (
 		get().setPaneTree(newTree);
 	},
 
-	publishVnObject: (publish: boolean): boolean => {
-		let succ = false;
+	publishVnObject: async (publish: boolean): Promise<boolean> => {
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 		const paneId: string = Object.keys(activePane)[0];
 		const vnObject: VnObject = {
@@ -385,22 +369,11 @@ export const createPanelSlice = (
 			updateDate: (new Date).toISOString(),
 			public: publish,
 		}
-		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject`,
-			{
-				method: "PUT",
-				body: JSON.stringify(vnObject),
-				credentials: 'include'
-			}
-		).then((res: Response) => {
-			if (res.ok) {
-				succ = true;
-				get().updatePane({ [paneId]: { ...activePane[paneId], public: publish } });
-			}
-		}).catch((err) => {
-			console.error("unable to get vnobject: ", err);
-		});
-		return succ;
-
+		const success = await updateVnObject(vnObject);
+		if (success) {
+			get().updatePane({ [paneId]: { ...activePane[paneId], public: publish } });
+		}
+		return success;
 	},
 
 	renderMdTutor: () => {
