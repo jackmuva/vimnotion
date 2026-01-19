@@ -239,6 +239,10 @@ func DeleteAllVnObjects(db *sql.DB, delObjects []models.DeletedObjects) error {
 	var errMutex sync.Mutex
 	var errors []error
 
+	// Collect all image references before deleting VnObjects
+	var imageRefsMutex sync.Mutex
+	var allImageRefs []models.ImageReference
+
 	for _, obj := range delObjects {
 		workerWg.Add(1)
 		go func(obj models.DeletedObjects, db *sql.DB) {
@@ -246,13 +250,50 @@ func DeleteAllVnObjects(db *sql.DB, delObjects []models.DeletedObjects) error {
 			workerSem <- struct{}{}
 			defer func() { <-workerSem }()
 
-			err := repository.DeleteVnObject(db, obj.Uuid)
+			// Get image references before deleting
+			imageRefs, err := repository.GetImageReferenceByVnObject(db, obj.Uuid)
+			if err != nil {
+				fmt.Printf("unable to get image references for %s: %s\n", obj.Uuid, err)
+			} else {
+				imageRefsMutex.Lock()
+				allImageRefs = append(allImageRefs, imageRefs...)
+				imageRefsMutex.Unlock()
+			}
+
+			err = repository.DeleteVnObject(db, obj.Uuid)
 			if err != nil {
 				errMutex.Lock()
 				errors = append(errors, err)
 				errMutex.Unlock()
 			}
 		}(obj, db)
+	}
+	workerWg.Wait()
+
+	imageIdsToCheck := make(map[string]bool)
+	for _, ref := range allImageRefs {
+		imageIdsToCheck[ref.ImageId] = true
+	}
+
+	for imageId := range imageIdsToCheck {
+		workerWg.Add(1)
+		go func(imageId string) {
+			defer workerWg.Done()
+			workerSem <- struct{}{}
+			defer func() { <-workerSem }()
+
+			count, err := repository.GetImageReferenceCount(db, imageId)
+			if err != nil {
+				fmt.Printf("unable to get image reference count for %s: %s\n", imageId, err)
+				return
+			}
+			if count.Count == 0 {
+				err = repository.DeleteImage(db, imageId)
+				if err != nil {
+					fmt.Printf("unable to delete orphaned image %s: %s\n", imageId, err)
+				}
+			}
+		}(imageId)
 	}
 	workerWg.Wait()
 
