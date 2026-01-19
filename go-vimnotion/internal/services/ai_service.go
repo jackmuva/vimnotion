@@ -29,7 +29,7 @@ func callAiGateway(messages []models.AiMessage) (*models.ChatCompletionResponse,
 	requestBody := map[string]any{
 		"model":    "openai/gpt-5-mini",
 		"messages": messages,
-		"stream":   false,
+		"stream":   true,
 	}
 
 	bodyBytes, err := json.Marshal(requestBody)
