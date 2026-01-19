@@ -270,8 +270,6 @@ func DeleteAllVnObjects(db *sql.DB, delObjects []models.DeletedObjects) error {
 	}
 	workerWg.Wait()
 
-	// Clean up orphaned images
-	// Use a map to track unique imageIds we need to check
 	imageIdsToCheck := make(map[string]bool)
 	for _, ref := range allImageRefs {
 		imageIdsToCheck[ref.ImageId] = true
