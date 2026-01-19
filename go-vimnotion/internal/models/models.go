@@ -71,18 +71,7 @@ type DirectoryChanges struct {
 	Moved   []MovedObjects   `json:"moved"`
 }
 
-type AiMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type ChatCompletionResponse struct {
-	Choices []struct {
-		Message struct {
-			Role    string `json:"role"`
-			Content string `json:"content"`
-		} `json:"message"`
-		Index        int    `json:"index"`
-		FinishReason string `json:"finish_reason"`
-	} `json:"choices"`
+type ImageReference struct {
+	ImageId    string `json:"imageId"`
+	VnObjectId string `json:"vnObjectId"`
 }

@@ -312,6 +312,43 @@ func InsertImageReference(db *sql.DB, imageId string, objectId string) error {
 	return nil
 }
 
+func DeleteImageReference(db *sql.DB, imageId string, objectId string) error {
+	_, err := db.Exec("DELETE FROM ImageReference WHERE imageId=? AND vnObjectId=?", imageId, objectId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func GetImageReferenceByVnObject(db *sql.DB, objectId string) ([]models.ImageReference, error) {
+	rows, err := db.Query("SELECT * FROM ImageReference WHERE vnObjectId=?", objectId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var imageReferences []models.ImageReference
+
+	for rows.Next() {
+		var imageReference models.ImageReference
+
+		if err := rows.Scan(&imageReference.ImageId, &imageReference.VnObjectId); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		imageReferences = append(imageReferences, imageReference)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return imageReferences, nil
+}
+
 func GetImageReferenceCount(db *sql.DB, imageId string) (*struct{ Count int }, error) {
 	rows, err := db.Query("SELECT COUNT(*) as Count FROM ImageReference WHERE imageId=?", imageId)
 	if err != nil {

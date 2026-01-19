@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 	"vimnotion.com/server/internal/models"
@@ -66,6 +67,35 @@ func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 			fmt.Printf("unable to updat vnobject: %s\n", err)
 			return
 		}
+
+		imageRefs, err := repository.GetImageReferenceByVnObject(db, payload.Id)
+		if err != nil {
+			fmt.Printf("unable to get image references: %s\n", err)
+		} else {
+			for _, ref := range imageRefs {
+				if !strings.Contains(payload.Contents, ref.ImageId) {
+					err = repository.DeleteImageReference(db, ref.ImageId, payload.Id)
+					if err != nil {
+						fmt.Printf("unable to delete image reference: %s\n", err)
+						continue
+					}
+
+					count, err := repository.GetImageReferenceCount(db, ref.ImageId)
+					if err != nil {
+						fmt.Printf("unable to get image reference count: %s\n", err)
+						continue
+					}
+
+					if count.Count == 0 {
+						err = repository.DeleteImage(db, ref.ImageId)
+						if err != nil {
+							fmt.Printf("unable to delete image: %s\n", err)
+						}
+					}
+				}
+			}
+		}
+
 		response := models.DataResponse{StatusCode: 200}
 		jsonMessage, err := json.Marshal(response)
 		if err != nil {
