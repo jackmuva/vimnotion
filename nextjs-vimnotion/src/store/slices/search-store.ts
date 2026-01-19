@@ -1,7 +1,7 @@
 import { DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
 import { SearchResults } from "@/types/search-types";
-import { VnObject } from "@/types/primitive-types";
+import { grepVnObjects } from "@/services/vnobject-service";
 
 export const createSearchSlice = (
 	set: {
@@ -57,14 +57,9 @@ export const createSearchSlice = (
 	},
 	searchByGrep: async (pat: string): Promise<SearchResults> => {
 		const searchRes: SearchResults = {};
+		const vnObjects = await grepVnObjects(pat);
 
-		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/grep?q=${pat}`,
-			{
-				credentials: 'include'
-			}
-		);
-		const body: { Data: VnObject[] } = await res.json();
-		for (const vnObject of body.Data) {
+		for (const vnObject of vnObjects) {
 			const matches: null | RegExpMatchArray = vnObject.contents.match(pat);
 			if (matches) {
 				searchRes[vnObject.name] = {

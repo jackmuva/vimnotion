@@ -2,7 +2,7 @@ import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/si
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
-import { VnObject } from "@/types/primitive-types";
+import { getVnObjectById } from "@/services/vnobject-service";
 
 export const createDirectorySlice = (
 	set: {
@@ -311,29 +311,19 @@ export const createDirectorySlice = (
 		get().setProposedDirectoryState(proposedDirectoryState);
 	},
 
-	openFileInBuffer: (id?: string) => {
+	openFileInBuffer: async (id?: string) => {
 		const fromSearch = id ? true : false;
 		const fileId: string = fromSearch ? id!.split("|")[0] : get().getOilLine().split("|")[0];
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
-		fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/vnobject/${fileId}`,
-			{
-				credentials: 'include'
-			}
-		).then((res: Response) => {
-			res.json().then((body: { Data: VnObject[] }) => {
-				console.log("new data: ", body);
-				activePane[Object.keys(activePane)[0]].fileId = fromSearch ? body.Data[0].id + "|" + body.Data[0].name : get().getOilLine();
-				activePane[Object.keys(activePane)[0]].buffer = body.Data[0].contents;
-				activePane[Object.keys(activePane)[0]].public = body.Data[0].public;
-				activePane[Object.keys(activePane)[0]].bufferVersion++;
-				get().updatePane(activePane);
-			}).catch((err) => {
-				console.error("unable to get vnobject: ", err);
-			});
-		}).catch((err) => {
-			console.error("unable to get vnobject: ", err);
-		});
+		const vnObject = await getVnObjectById(fileId);
+		if (vnObject) {
+			activePane[Object.keys(activePane)[0]].fileId = fromSearch ? vnObject.id + "|" + vnObject.name : get().getOilLine();
+			activePane[Object.keys(activePane)[0]].buffer = vnObject.contents;
+			activePane[Object.keys(activePane)[0]].public = vnObject.public;
+			activePane[Object.keys(activePane)[0]].bufferVersion++;
+			get().updatePane(activePane);
+		}
 	},
 
 
