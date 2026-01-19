@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,6 +13,8 @@ import (
 	"vimnotion.com/server/internal/repository"
 	"vimnotion.com/server/internal/services"
 )
+
+var imageMarkdownRegex = regexp.MustCompile(`!\[.*?\]\([^)]*?/image/([a-f0-9-]+)\)`)
 
 func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -72,6 +75,26 @@ func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			fmt.Printf("unable to get image references: %s\n", err)
 		} else {
+			existingRefs := make(map[string]bool)
+			for _, ref := range imageRefs {
+				existingRefs[ref.ImageId] = true
+			}
+
+			matches := imageMarkdownRegex.FindAllStringSubmatch(payload.Contents, -1)
+			for _, match := range matches {
+				if len(match) > 1 {
+					imageId := match[1]
+					if !existingRefs[imageId] {
+						err = repository.InsertImageReference(db, imageId, payload.Id)
+						if err != nil {
+							fmt.Printf("unable to insert image reference: %s\n", err)
+						} else {
+							existingRefs[imageId] = true
+						}
+					}
+				}
+			}
+
 			for _, ref := range imageRefs {
 				if !strings.Contains(payload.Contents, ref.ImageId) {
 					err = repository.DeleteImageReference(db, ref.ImageId, payload.Id)
