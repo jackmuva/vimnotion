@@ -52,8 +52,12 @@ func ConnectTurso() (*sql.DB, error) {
 		"vnObjectId TEXT NOT NULL, " +
 		"PRIMARY KEY(imageId, vnObjectId), " +
 		"FOREIGN KEY(imageId) REFERENCES Image(id) ON DELETE CASCADE, " +
-		"FOREIGN KEY(vnObjectId) REFERENCES VnObject(id) ON DELETE CASCADE, " +
+		"FOREIGN KEY(vnObjectId) REFERENCES VnObject(id) ON DELETE CASCADE" +
 		")")
+	if err != nil {
+		fmt.Printf("error creating table: %s", err)
+		return nil, err
+	}
 
 	return db, nil
 }
