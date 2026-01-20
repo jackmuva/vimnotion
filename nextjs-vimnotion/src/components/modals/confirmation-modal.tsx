@@ -1,5 +1,6 @@
+import { updateDirectoryStructure } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
-import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
+import { DirectoryChanges } from "@/types/sidebar-types";
 import { useEffect, useState } from "react";
 
 export const ConfirmationModal = () => {
@@ -10,21 +11,6 @@ export const ConfirmationModal = () => {
 		deleted: [],
 		moved: [],
 	});
-
-	const updateDirectoryStructure = async (changes: DirectoryChanges, structure: DirectoryTree): Promise<boolean> => {
-		const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`, {
-			method: "PUT",
-			headers: {
-				"Content-type": "application/json",
-			},
-			body: JSON.stringify({
-				changes: changes,
-				structure: JSON.stringify(structure)
-			}),
-			credentials: "include",
-		});
-		return res.ok;
-	}
 
 	useEffect(() => {
 		const newChanges: DirectoryChanges = detectAllDirectoryChanges();

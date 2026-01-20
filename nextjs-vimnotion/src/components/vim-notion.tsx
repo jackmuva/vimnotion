@@ -16,6 +16,7 @@ import { ImageModal } from "@/components/modals/image-modal";
 import { PublishModal } from "@/components/modals/publish-modal";
 import { AiPanel } from "./leader-panels/ai-panel";
 import { AiModal } from "./modals/ai-modal";
+import { getDirectory } from "@/services/api-service";
 
 export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -113,11 +114,8 @@ export default function VimNotion() {
 
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
-		const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/directory`,
-			{
-				credentials: 'include'
-			});
-		return await req.json();
+		const directory = await getDirectory();
+		return directory;
 	});
 
 	useEffect(() => {

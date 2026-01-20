@@ -54,7 +54,6 @@ export type PaneNode = {
 		public: boolean,
 		scrollPosition: number,
 		cursorPosition: number,
-		scrollPercentage: number,
 	}
 }
 

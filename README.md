@@ -22,8 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] ai with context to certain files (maybe with the @ shortcut)
-- [ ] service classes in frontend and backend
-- [ ] pass auth in context in the backend
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)

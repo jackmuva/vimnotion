@@ -1,7 +1,7 @@
 import { DirectoryTree } from "@/types/sidebar-types";
 import { EditorState } from "../editor-store";
 import { SearchResults } from "@/types/search-types";
-import { grepVnObjects } from "@/services/vnobject-service";
+import { grepVnObjects } from "@/services/api-service";
 
 export const createSearchSlice = (
 	set: {

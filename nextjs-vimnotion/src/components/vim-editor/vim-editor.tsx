@@ -256,7 +256,6 @@ export const VimEditor = ({
 				[paneId]: {
 					...currentPane[paneId],
 					scrollPosition: view.scrollDOM.scrollTop,
-					scrollPercentage: view.scrollDOM.scrollTop / view.scrollDOM.scrollHeight,
 				}
 			};
 			updatePane(updatedPane);

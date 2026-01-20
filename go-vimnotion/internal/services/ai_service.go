@@ -1,10 +1,10 @@
 package services
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"vimnotion.com/server/internal/config"
@@ -13,53 +13,53 @@ import (
 
 const asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
 
-func GenerateAsciiArt(userMessage models.AiMessage) (*models.ChatCompletionResponse, error) {
+func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage models.AiMessage) error {
 	systemMessage := models.AiMessage{
 		Role:    "developer",
 		Content: asciiArtSystemPrompt,
 	}
 	messages := []models.AiMessage{systemMessage, userMessage}
 
-	return callAiGateway(messages)
+	return callAiGateway(w, flusher, messages)
 }
 
-func callAiGateway(messages []models.AiMessage) (*models.ChatCompletionResponse, error) {
+func callAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	requestBody := map[string]any{
-		"model":    "openai/gpt-5-mini",
+		"model":    "google/gemini-3-flash",
 		"messages": messages,
-		"stream":   false,
+		"stream":   true,
 	}
 
 	bodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
-		return nil, fmt.Errorf("unable to serialize request: %w", err)
+		return fmt.Errorf("unable to serialize request: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, requestUrl, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return nil, fmt.Errorf("unable to create AI Gateway request: %w", err)
+		return fmt.Errorf("unable to create AI Gateway request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+cfg.AiGatewayKey)
 
-	res, err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("unable to get AI Gateway response: %w", err)
+		return fmt.Errorf("unable to get AI Gateway response: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("unable to read AI Gateway body: %w", err)
-	}
-
-	var chatCompletion models.ChatCompletionResponse
-	err = json.Unmarshal(body, &chatCompletion)
-	if err != nil {
-		return nil, fmt.Errorf("unable to deserialize AI response: %w", err)
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("AI Gateway returned status %d", resp.StatusCode)
 	}
 
-	return &chatCompletion, nil
+	scanner := bufio.NewScanner(resp.Body)
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Fprintf(w, "%s\n", line)
+		flusher.Flush()
+	}
+
+	return scanner.Err()
 }
