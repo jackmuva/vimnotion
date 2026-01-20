@@ -27,7 +27,7 @@ func callAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []model
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	requestBody := map[string]any{
-		"model":    "openai/gpt-5-mini",
+		"model":    "google/gemini-3-flash",
 		"messages": messages,
 		"stream":   true,
 	}

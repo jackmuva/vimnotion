@@ -2,7 +2,7 @@ import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/si
 import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
-import { getVnObjectById } from "@/services/vnobject-service";
+import { getVnObjectById } from "@/services/api-service";
 
 export const createDirectorySlice = (
 	set: {

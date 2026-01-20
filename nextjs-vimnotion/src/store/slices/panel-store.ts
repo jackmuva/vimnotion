@@ -3,7 +3,7 @@ import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
-import { updateVnObject } from "@/services/vnobject-service";
+import { updateVnObject } from "@/services/api-service";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -68,7 +68,6 @@ export const createPanelSlice = (
 			public: false,
 			scrollPosition: 0,
 			cursorPosition: 0,
-			scrollPercentage: 0,
 		}
 		setPaneTree(newPaneTree);
 		return rootId;
@@ -111,7 +110,6 @@ export const createPanelSlice = (
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
 				cursorPosition: paneTree[parentId].cursorPosition,
-				scrollPercentage: paneTree[parentId].scrollPercentage,
 			},
 			[secondChildId]: {
 				state: SplitState.NONE,
@@ -132,7 +130,6 @@ export const createPanelSlice = (
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
 				cursorPosition: paneTree[parentId].cursorPosition,
-				scrollPercentage: paneTree[parentId].scrollPercentage,
 			}
 		};
 		setPaneTree(newTree);
