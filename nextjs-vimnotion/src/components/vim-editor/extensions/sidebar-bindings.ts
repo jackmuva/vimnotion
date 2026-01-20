@@ -25,11 +25,16 @@ export const applySidebarBindings = ({
 }) => {
 	Vim.defineAction("goIntoDir", () => {
 		const activePanel: PanelType = getActivePanel();
+		console.log("active panel: ", activePanel);
 		if (activePanel === PanelType.SIDEBAR) {
+			console.log("in sidebar conditional");
 			const newChanges: DirectoryChanges = detectAllDirectoryChanges();
+			console.log("new changes: ", newChanges);
 			if (getOilLine().at(-1) === "/") {
+				console.log("location: ", getLocation() + getOilLine());
 				setLocation(getLocation() + getOilLine());
 			} else if (newChanges.created.length !== 0 || newChanges.deleted.length !== 0 || newChanges.moved.length !== 0) {
+				console.log("cp0");
 				setDirectoryConfirmation();
 			} else {
 				openFileInBuffer();

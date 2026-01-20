@@ -167,7 +167,9 @@ export const createDirectorySlice = (
 	},
 
 	detectAllDirectoryChanges: (): DirectoryChanges => {
+		console.log("in detech method");
 		get().dedupeProposedDirectory();
+		console.log("out of dedupe method");
 		const res: DirectoryChanges = {
 			created: [],
 			deleted: [],
@@ -272,6 +274,7 @@ export const createDirectorySlice = (
 
 	//OPTIM:This is a workaround, i think this could be simpler
 	dedupeProposedDirectory: () => {
+		console.log("in dedupe method");
 		const proposedDirectoryState: DirectoryTree = { ...get().proposedDirectoryState };
 		let subTree: DirectoryTree = proposedDirectoryState;
 
