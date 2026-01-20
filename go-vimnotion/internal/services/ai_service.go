@@ -1,11 +1,13 @@
 package services
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
@@ -13,7 +15,7 @@ import (
 
 const asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
 
-func GenerateAsciiArt(userMessage models.AiMessage) (*models.ChatCompletionResponse, error) {
+func GenerateAsciiArt(userMessage models.AiMessage) ([]string, error) {
 	systemMessage := models.AiMessage{
 		Role:    "developer",
 		Content: asciiArtSystemPrompt,
@@ -23,7 +25,7 @@ func GenerateAsciiArt(userMessage models.AiMessage) (*models.ChatCompletionRespo
 	return callAiGateway(messages)
 }
 
-func callAiGateway(messages []models.AiMessage) (*models.ChatCompletionResponse, error) {
+func callAiGateway(messages []models.AiMessage) ([]string, error) {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	requestBody := map[string]any{
@@ -44,22 +46,22 @@ func callAiGateway(messages []models.AiMessage) (*models.ChatCompletionResponse,
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+cfg.AiGatewayKey)
 
-	res, err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get AI Gateway response: %w", err)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("unable to read AI Gateway body: %w", err)
+	scanner := bufio.NewScanner(resp.Body)
+	var lines []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		lines = append(lines, line)
+		fmt.Fprintln(os.Stdout, line)
 	}
 
-	var chatCompletion models.ChatCompletionResponse
-	err = json.Unmarshal(body, &chatCompletion)
-	if err != nil {
-		return nil, fmt.Errorf("unable to deserialize AI response: %w", err)
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("Unable to get text from stream")
 	}
-
-	return &chatCompletion, nil
+	return lines, nil
 }

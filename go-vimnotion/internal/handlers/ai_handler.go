@@ -30,21 +30,18 @@ func ReturnAscii() http.HandlerFunc {
 			fmt.Printf("AI service error: %s\n", err)
 			return
 		}
-
-		response := struct {
-			StatusCode int
-			Data       models.ChatCompletionResponse
-		}{
-			StatusCode: 200,
-			Data:       *chatCompletion,
-		}
-		jsonMessage, err := json.Marshal(response)
-		if err != nil {
-			fmt.Printf("unable to write error json: %s\n", err)
-			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonMessage)
+
+		for _, chunk := range chatCompletion {
+			fmt.Fprintf(w, chunk)
+			flusher.Flush()
+		}
 	}
 }
