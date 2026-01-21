@@ -156,7 +156,7 @@ export const createDirectorySlice = (
 					...leafAtLocation.children[toDelete[fn]]
 				}
 			}
-			get().setLastDeleted([...get().lastDeleted ?? [], toDeleteTree]);
+			if (!Object.values(renames).includes(fn)) get().setLastDeleted([...get().lastDeleted ?? [], toDeleteTree]);
 			delete leafAtLocation.children[toDelete[fn]];
 			delete bufferMap[fn];
 		}
