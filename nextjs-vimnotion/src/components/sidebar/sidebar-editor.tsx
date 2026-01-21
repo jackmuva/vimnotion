@@ -46,7 +46,7 @@ export const SidebarEditor = () => {
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (!loc) continue;
-			if (loc && curDir[loc + "/"].children !== undefined) {
+			if (loc && curDir[loc + "/"] && curDir[loc + "/"].children) {
 				curDir = curDir[loc + "/"].children;
 			}
 		}
