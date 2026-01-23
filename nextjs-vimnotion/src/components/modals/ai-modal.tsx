@@ -71,8 +71,6 @@ export const AiModal = () => {
 		setMode("CONFIRM");
 	}
 
-	console.log(ascii);
-
 	useEffect(() => {
 		setActivePanel(PanelType.MODAL);
 

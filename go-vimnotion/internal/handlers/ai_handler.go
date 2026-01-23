@@ -36,7 +36,6 @@ func ReturnAscii() http.HandlerFunc {
 
 		err = services.GenerateAsciiArt(w, flusher, payload)
 		if err != nil {
-			// Note: headers already sent, can only log
 			fmt.Printf("AI service error: %s\n", err)
 			return
 		}
