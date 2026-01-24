@@ -43,7 +43,6 @@ const glowingCoral = "#eda09c";
 const luminousOrchid = "#d1b6cb";
 const iceBlue = "#c8d6dc";
 
-
 export const markdownDark = HighlightStyle.define([
 	{
 		tag: tags.heading1,
@@ -138,15 +137,15 @@ export const markdownDark = HighlightStyle.define([
 	},
 ]);
 
-// Kanagawa Lotus palette (light theme inspired)
-const kanagawaViolet = "#766b90";
-const kanagawaRed = "#c4746e";
-const kanagawaGreen = "#597c5c";
-const kanagawaYellow = "#c4b28a";
-const kanagawaBlue = "#4d8fd4";
-const kanagawaPink = "#b35b79";
-const kanagawaAqua = "#597c5c";
-const kanagawaGray = "#716e61";
+// Kanagawa Lotus palette (light theme inspired, darkened ~10%)
+const kanagawaViolet = "#6a6082";
+const kanagawaRed = "#b06963";
+const kanagawaGreen = "#506f53";
+const kanagawaYellow = "#b0a07c";
+const kanagawaBlue = "#4580bf";
+const kanagawaPink = "#a1526d";
+const kanagawaAqua = "#506f53";
+const kanagawaGray = "#656257";
 
 
 export const markdownLight = HighlightStyle.define([
