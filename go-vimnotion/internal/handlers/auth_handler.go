@@ -13,26 +13,18 @@ import (
 	"vimnotion.com/server/internal/services/oauth"
 )
 
-func createJwtCookies(db *sql.DB, userData models.UserData) (http.Cookie, http.Cookie) {
-	user, err := repository.GetUser(db, userData.Email)
+func CreateJwtCookies(userData models.UserData) (http.Cookie, http.Cookie) {
+	jwt, err := services.CreateJwt(userData)
 	if err != nil {
-		fmt.Printf("Unable to get user: %s\n", err)
+		fmt.Printf("Unable to create jwt: %s\n", err)
 	}
-	if len(user) == 0 {
-		err := services.InitializeUserDirectory(db, userData.Email, userData.Name)
-		if err != nil {
-			fmt.Printf("Unable to initialize user directory: %s\n", err)
-		}
-	}
-
-	jwt := services.CreateJwt(userData)
 
 	expire := time.Now().Add(time.Hour * 24 * 7)
 	cfg := config.Get()
 
 	cookie := http.Cookie{
 		Name:     "token",
-		Value:    jwt,
+		Value:    *jwt,
 		Expires:  expire,
 		MaxAge:   60 * 60 * 24 * 7,
 		Path:     "/",
@@ -67,7 +59,19 @@ func GoogleCallback(db *sql.DB) http.HandlerFunc {
 		code := r.URL.Query().Get("code")
 		token, _ := oauth.GetGoogleToken(code)
 		userData := oauth.GetGoogleUser(token)
-		cookie, isAuthedCookie := createJwtCookies(db, userData)
+
+		user, err := repository.GetUser(db, userData.Email)
+		if err != nil {
+			fmt.Printf("Unable to get user: %s\n", err)
+		}
+		if len(user) == 0 {
+			err := services.InitializeUserDirectory(db, userData.Email, userData.Name)
+			if err != nil {
+				fmt.Printf("Unable to initialize user directory: %s\n", err)
+			}
+		}
+
+		cookie, isAuthedCookie := CreateJwtCookies(userData)
 		cfg := config.Get()
 
 		http.SetCookie(w, &cookie)
@@ -87,7 +91,19 @@ func GithubCallback(db *sql.DB) http.HandlerFunc {
 		code := r.URL.Query().Get("code")
 		token := oauth.GetGithubToken(code)
 		userData := oauth.GetGithubUser(token)
-		cookie, isAuthedCookie := createJwtCookies(db, userData)
+
+		user, err := repository.GetUser(db, userData.Email)
+		if err != nil {
+			fmt.Printf("Unable to get user: %s\n", err)
+		}
+		if len(user) == 0 {
+			err := services.InitializeUserDirectory(db, userData.Email, userData.Name)
+			if err != nil {
+				fmt.Printf("Unable to initialize user directory: %s\n", err)
+			}
+		}
+
+		cookie, isAuthedCookie := CreateJwtCookies(userData)
 		cfg := config.Get()
 
 		http.SetCookie(w, &cookie)

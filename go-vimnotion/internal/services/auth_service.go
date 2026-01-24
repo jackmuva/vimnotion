@@ -8,7 +8,7 @@ import (
 	"vimnotion.com/server/internal/models"
 )
 
-func CreateJwt(userData models.UserData) string {
+func CreateJwt(userData models.UserData) (*string, error) {
 	cfg := config.Get()
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":    userData.Username,
@@ -21,9 +21,9 @@ func CreateJwt(userData models.UserData) string {
 
 	tokenString, tokenErr := claims.SignedString([]byte(cfg.AuthSecret))
 	if tokenErr != nil {
-		fmt.Printf("[TOKEN ERROR]: %s\n", tokenErr)
+		return nil, tokenErr
 	}
-	return tokenString
+	return &tokenString, nil
 }
 
 func VerifyJwt(tokenString string) (*jwt.Token, error) {
