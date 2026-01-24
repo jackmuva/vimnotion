@@ -124,14 +124,23 @@ export const VimEditor = ({
 	});
 
 	useEffect(() => {
-		vimEditor?.dispatch({
-			changes: {
-				from: 0,
-				to: vimEditor?.state.doc.length,
-				insert: pane[paneId].buffer,
-			},
-		});
-	}, [pane[paneId].fileId, pane[paneId].bufferVersion]);
+		if (vimEditor) {
+			vimEditor.dispatch({
+				changes: {
+					from: 0,
+					to: vimEditor.state.doc.length,
+					insert: pane[paneId].buffer,
+				},
+			});
+			vimEditor.dispatch({
+				selection: {
+					anchor: pane[paneId].cursorPosition,
+					head: pane[paneId].cursorPosition,
+				},
+			});
+			vimEditor.scrollDOM.scrollTop = pane[paneId].scrollPosition;
+		}
+	}, [pane[paneId].fileId, pane[paneId].bufferVersion, getPane]);
 
 	useEffect(() => {
 		setIsClient(true);
