@@ -23,7 +23,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ## Immediate Todos
 - [x] ai with context to certain files (maybe with the @ shortcut)
 - [ ] Bug with split views retaining their cursor position
-- [ ] fonts too light on light mode
+- [ ] Token refreshes with activity
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)

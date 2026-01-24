@@ -2,7 +2,7 @@ import { basicSetup, EditorView } from 'codemirror';
 import { vim } from "@replit/codemirror-vim"
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Compartment } from '@codemirror/state';
-import { bespin as darkTheme, rosePineDawn as lightTheme } from 'thememirror';
+import { bespin as darkTheme, espresso as lightTheme } from 'thememirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { customTheme, markdownDark, markdownLight } from './vim-editor-theme';
 import { useEditorStore } from '@/store/editor-store';
