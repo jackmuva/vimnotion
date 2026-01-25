@@ -1,11 +1,25 @@
 import { useEditorStore } from "@/store/editor-store";
 import { useEffect } from "react";
-import { PanelType } from "@/types/editor-types";
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 
 export const AiPanel = () => {
 	const setActivePanel: (panel: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 	const closePanel = useEditorStore((state) => state.toggleAiPanel);
 	const toggleAsciiModal = useEditorStore((state) => state.toggleAsciiModal);
+	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
+	const activePane: string = useEditorStore((state) => state.activePane);
+	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
+
+	const shiftToAgent = (): void => {
+		const paneNode: PaneNode = getPane(activePane);
+		const updateNode: PaneNode = {
+			[activePane]: {
+				...paneNode[activePane],
+				editorType: EditorType.AGENT,
+			},
+		}
+		updatePane(updateNode);
+	}
 
 	useEffect(() => {
 		setActivePanel(PanelType.LEADER);
@@ -15,6 +29,16 @@ export const AiPanel = () => {
 			}
 		};
 		document.addEventListener('keydown', handleKeyDown);
+
+		const handleAKey = (event: KeyboardEvent) => {
+			if (event.key === 'a') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				shiftToAgent();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleAKey);
 
 		const handleDKey = (event: KeyboardEvent) => {
 			if (event.key === 'd') {
@@ -29,6 +53,7 @@ export const AiPanel = () => {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleDKey);
+			document.removeEventListener('keydown', handleAKey);
 		};
 	}, [closePanel, setActivePanel]);
 
@@ -40,6 +65,16 @@ export const AiPanel = () => {
 				<button id="first-ai-option"
 					className="cursor-pointer"
 					onClick={() => {
+						closePanel();
+					}} >
+					<span className="font-bold text-orange-500">[a]</span>
+				</button>
+				gent
+			</div>
+			<div>
+				<button id="first-ai-option"
+					className="cursor-pointer"
+					onClick={() => {
 						toggleAsciiModal();
 						closePanel();
 					}} >
@@ -47,7 +82,6 @@ export const AiPanel = () => {
 				</button>
 				iagram in ascii
 			</div>
-
 		</div>
 	);
 

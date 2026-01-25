@@ -15,6 +15,7 @@ export enum SplitState {
 export enum EditorType {
 	VIM = "VIM",
 	MARKDOWN = "MARKDOWN",
+	AGENT = "AGENT",
 }
 
 export enum ChildType {

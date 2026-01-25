@@ -36,9 +36,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 # Marketing Todos
 - [ ] Video on "why markdown"
 - [ ] Video on "why vim"
-- [x] blog posts that help other developers building "x"
+- [ ] blog posts that help other developers building "x"
     - [ ] search
     - [ ] image storage
     - [ ] key commands useRef
-- [ ] twitter video on emojis
-- [ ] twitter video on all buffer changes
+    - [ ] agents from scratch

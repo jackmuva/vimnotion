@@ -1,7 +1,8 @@
 import { EditorType, PaneNode } from "@/types/editor-types";
-import { VimEditor } from "./vim-editor/vim-editor";
+import { VimEditor } from "./editors/vim-editor";
 import { useEditorStore } from "@/store/editor-store";
-import { MarkdownEditor } from "./md-editor/markdown-editor";
+import { MarkdownEditor } from "./editors/markdown-editor";
+import { AgentEditor } from "./editors/agent-editor";
 
 export const EditorPane = ({
 	paneId,
@@ -22,7 +23,11 @@ export const EditorPane = ({
 					toggleSidebar={toggleSidebar}
 					toggleLeaderPanel={toggleLeaderPanel} />
 			) : (
-				<MarkdownEditor paneId={paneId} />
+				pane[paneId].editorType === EditorType.MARKDOWN ? (
+					<MarkdownEditor paneId={paneId} />
+				) : (
+					<AgentEditor paneId={paneId} />
+				)
 			)}
 		</div >
 	);
