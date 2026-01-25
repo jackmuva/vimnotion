@@ -16,7 +16,7 @@ export const AiModal = () => {
 	const [input, setInput] = useState<string>("");
 	const [ascii, setAscii] = useState<null | string>(null);
 	const [mode, setMode] = useState<"INPUT" | "CONFIRM" | "LOADING">("INPUT");
-	const { toggleAiModal, setActivePanel, setNewAiBlock } = useEditorStore((state) => state);
+	const { toggleAsciiModal, setActivePanel, setNewAiBlock } = useEditorStore((state) => state);
 	const inputRef = useRef(input);
 	const modeRef = useRef(mode);
 	const asciiRef = useRef(ascii);
@@ -76,7 +76,7 @@ export const AiModal = () => {
 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
-				toggleAiModal();
+				toggleAsciiModal();
 			}
 		};
 		document.addEventListener('keydown', handleKeyDown);
@@ -99,7 +99,7 @@ export const AiModal = () => {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					setNewAiBlock(asciiRef.current);
-					toggleAiModal();
+					toggleAsciiModal();
 				}
 			}
 		};
@@ -121,7 +121,7 @@ export const AiModal = () => {
 			document.removeEventListener('keydown', handleYKeyDown);
 			document.removeEventListener('keydown', handleNKeyDown);
 		}
-	}, [toggleAiModal, setActivePanel]);
+	}, [toggleAsciiModal, setActivePanel]);
 
 	useEffect(() => {
 		if (mode === "CONFIRM") {
@@ -193,7 +193,7 @@ export const AiModal = () => {
 									onClick={() => {
 										if (asciiRef.current) {
 											setNewAiBlock(asciiRef.current);
-											toggleAiModal();
+											toggleAsciiModal();
 										}
 									}}>
 									<span className="font-bold text-orange-500">[y]</span>
