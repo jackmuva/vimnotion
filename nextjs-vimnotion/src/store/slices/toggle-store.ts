@@ -17,7 +17,7 @@ export const createToggleSlice = (
 	openImageModal: false,
 	openPublishModal: false,
 	openAiPanel: false,
-	openAiModal: false,
+	openAsciiModal: false,
 
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
@@ -107,14 +107,14 @@ export const createToggleSlice = (
 		set({ openPublishModal: !publishModal });
 	},
 
-	toggleAiModal: () => {
-		const aiModal = get().openAiModal;
+	toggleAsciiModal: () => {
+		const aiModal = get().openAsciiModal;
 		if (aiModal) {
 			get().setActivePanel(PanelType.MAIN);
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-		set({ openAiModal: !aiModal });
+		set({ openAsciiModal: !aiModal });
 	},
 
 });

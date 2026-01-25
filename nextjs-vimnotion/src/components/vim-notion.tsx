@@ -23,7 +23,7 @@ export default function VimNotion() {
 	const windowPanel = useEditorStore((state) => state.openWindowPanel);
 	const searchPanel = useEditorStore((state) => state.openSearchPanel);
 	const aiPanel = useEditorStore((state) => state.openAiPanel);
-	const aiModal = useEditorStore((state) => state.openAiModal);
+	const asciiModal = useEditorStore((state) => state.openAsciiModal);
 	const searchModal = useEditorStore((state) => state.searchModal);
 	const imageModal = useEditorStore((state) => state.openImageModal);
 	const publishModal = useEditorStore((state) => state.openPublishModal);
@@ -104,13 +104,13 @@ export default function VimNotion() {
 	}, [publishModal]);
 
 	useEffect(() => {
-		if (aiModal) {
+		if (asciiModal) {
 			const input = document.getElementById(`ai-modal-input`);
 			if (input) {
 				input.focus();
 			}
 		}
-	}, [aiModal]);
+	}, [asciiModal]);
 
 
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
@@ -141,7 +141,7 @@ export default function VimNotion() {
 			{searchModal && <SearchModal />}
 			{imageModal && <ImageModal />}
 			{publishModal && <PublishModal />}
-			{aiModal && <AiModal />}
+			{asciiModal && <AiModal />}
 		</div>
 	);
 }

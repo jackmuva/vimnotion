@@ -5,7 +5,7 @@ import { PanelType } from "@/types/editor-types";
 export const AiPanel = () => {
 	const setActivePanel: (panel: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 	const closePanel = useEditorStore((state) => state.toggleAiPanel);
-	const toggleAiModal = useEditorStore((state) => state.toggleAiModal);
+	const toggleAsciiModal = useEditorStore((state) => state.toggleAsciiModal);
 
 	useEffect(() => {
 		setActivePanel(PanelType.LEADER);
@@ -16,19 +16,19 @@ export const AiPanel = () => {
 		};
 		document.addEventListener('keydown', handleKeyDown);
 
-		const handleAKey = (event: KeyboardEvent) => {
-			if (event.key === 'a') {
+		const handleDKey = (event: KeyboardEvent) => {
+			if (event.key === 'd') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleAiModal();
+				toggleAsciiModal();
 				closePanel();
 			}
 		};
-		document.addEventListener('keydown', handleAKey);
+		document.addEventListener('keydown', handleDKey);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
-			document.removeEventListener('keydown', handleAKey);
+			document.removeEventListener('keydown', handleDKey);
 		};
 	}, [closePanel, setActivePanel]);
 
@@ -40,12 +40,12 @@ export const AiPanel = () => {
 				<button id="first-ai-option"
 					className="cursor-pointer"
 					onClick={() => {
-						toggleAiModal();
+						toggleAsciiModal();
 						closePanel();
 					}} >
-					<span className="font-bold text-orange-500">[a]</span>
+					<span className="font-bold text-orange-500">[d]</span>
 				</button>
-				scii art
+				iagram in ascii
 			</div>
 
 		</div>

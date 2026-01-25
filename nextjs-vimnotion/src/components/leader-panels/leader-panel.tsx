@@ -57,8 +57,8 @@ export const LeaderPanel = () => {
 			if (event.key === 's') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				toggleSearchPanel();
 				closePanel();
+				toggleSearchPanel();
 			}
 		};
 		document.addEventListener('keydown', handleSKey);
