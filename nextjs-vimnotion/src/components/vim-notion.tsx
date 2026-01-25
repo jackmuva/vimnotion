@@ -15,7 +15,7 @@ import { SearchModal } from "@/components/modals/search-modal";
 import { ImageModal } from "@/components/modals/image-modal";
 import { PublishModal } from "@/components/modals/publish-modal";
 import { AiPanel } from "./leader-panels/ai-panel";
-import { AiModal } from "./modals/ai-modal";
+import { AiModal } from "./modals/ascii-modal";
 import { getDirectory } from "@/services/api-service";
 
 export default function VimNotion() {
