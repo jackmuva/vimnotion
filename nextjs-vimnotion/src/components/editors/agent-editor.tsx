@@ -15,11 +15,13 @@ export const AgentEditor = ({
 
 	const inputRef = useRef<string>(input);
 	const modeRef = useRef<string>(mode);
+	const messagesRef = useRef<AiMessage[]>(messages);
 
 	useEffect(() => {
 		inputRef.current = input;
 		modeRef.current = mode;
-	}, [input, mode])
+		messagesRef.current = messages;
+	}, [input, mode, messages])
 
 	useEffect(() => {
 		if (activeId === paneId) {
@@ -74,13 +76,14 @@ export const AgentEditor = ({
 	useEffect(() => {
 		const handleCr = async (event: KeyboardEvent) => {
 			if (event.key === "Enter" && modeRef.current === "INPUT") {
+				console.log("submitted");
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				setMode("LOADING");
-				const newMessages = [...messages];
-				newMessages.push({ type: "message", role: "user", content: input });
+				const newMessages = [...messagesRef.current];
+				newMessages.push({ type: "message", role: "user", content: inputRef.current });
 				setMessages(newMessages);
-				const res: Response = await getAgentStream(messages);
+				const res: Response = await getAgentStream(newMessages);
 				setInput("");
 				await renderStream(res);
 
@@ -108,8 +111,15 @@ export const AgentEditor = ({
 				{messages.length === 0 && <div className="text-5xl font-bold dark:text-indigo-400 text-indigo-600">
 					VN <span className="text-orange-500">[e]</span>ditor
 				</div>}
-				{messages.length > 0 && <div>
-
+				{messages.length > 0 && <div className="flex flex-col w-full overflow-y-auto">
+					{messages.map((message, i) => {
+						return (
+							<div className={`${message.role === "user" ? "bg-foreground-muted/20" : ""}`}
+								key={i}>
+								{message.content}
+							</div>
+						);
+					})}
 				</div>}
 				<form className="w-full">
 					<textarea className="w-full outline outline-offset-2 outline-foreground-muted/50 

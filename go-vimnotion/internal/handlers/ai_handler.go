@@ -41,3 +41,37 @@ func ReturnAscii() http.HandlerFunc {
 		}
 	}
 }
+
+func AgentResponse() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var payload struct{ Messages []models.AiMessage }
+		err := json.NewDecoder(r.Body).Decode(&payload)
+		if err != nil {
+			http.Error(w, "Unable to read body", http.StatusBadRequest)
+			fmt.Printf("unable to read body: %s\n", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+			return
+		}
+		fmt.Printf("messages: %+v\n", payload.Messages)
+
+		err = services.CallAiGateway(w, flusher, payload.Messages)
+		if err != nil {
+			fmt.Printf("AI service error: %s\n", err)
+			return
+		}
+	}
+}

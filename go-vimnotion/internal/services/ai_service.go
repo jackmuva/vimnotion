@@ -20,14 +20,14 @@ func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage m
 	}
 	messages := []models.AiMessage{systemMessage, userMessage}
 
-	return callAiGateway(w, flusher, messages)
+	return CallAiGateway(w, flusher, messages)
 }
 
-func callAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
+func CallAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	requestBody := map[string]any{
-		"model":    "google/gemini-3-flash",
+		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
 		"stream":   true,
 	}

@@ -1,3 +1,4 @@
+import { AiMessage } from "@/types/ai-types";
 import { VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 
@@ -13,14 +14,16 @@ export const getAsciiStream = async (content: string): Promise<Response> => {
 			method: "POST",
 			body: JSON.stringify({
 				role: "user",
-				content: content
+				content: content,
+				type: "message",
 			}),
 			credentials: "include"
 		});
 	return res;
 }
 
-export const getAgentStream = async (messages: Array<any>): Promise<Response> => {
+export const getAgentStream = async (messages: Array<AiMessage>): Promise<Response> => {
+	console.log(messages);
 	const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/ai/agent`,
 		{
 			method: "POST",

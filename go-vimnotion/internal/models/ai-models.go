@@ -3,6 +3,7 @@ package models
 type AiMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
+	Type    string `json:"type"`
 }
 
 type ChatCompletionResponse struct {
