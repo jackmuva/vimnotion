@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import dynamic from "next/dynamic";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { getAiStream } from "@/services/api-service";
+import { getAsciiStream } from "@/services/api-service";
 const SyntaxHighlighter = dynamic(
 	() => import("react-syntax-highlighter").then((mod) => mod.Prism),
 	{ ssr: false }
@@ -86,7 +86,7 @@ export const AiModal = () => {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				setMode("LOADING");
-				const res: Response = await getAiStream(inputRef.current);
+				const res: Response = await getAsciiStream(inputRef.current);
 				setInput("");
 				await renderStream(res);
 			}
