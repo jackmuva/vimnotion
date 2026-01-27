@@ -2,6 +2,15 @@ import { getAgentStream } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
 import { AiMessage } from "@/types/ai-types";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import dynamic from "next/dynamic";
+import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+const SyntaxHighlighter = dynamic(
+	() => import("react-syntax-highlighter").then((mod) => mod.Prism),
+	{ ssr: false }
+);
 
 export const AgentEditor = ({
 	paneId
@@ -29,14 +38,14 @@ export const AgentEditor = ({
 			textInput?.focus();
 
 		}
-	}, [activeId]);
+	}, [activeId, mode]);
 
 	const renderStream = async (response: Response) => {
 		const reader = response.body?.getReader();
 		if (!reader) return;
 		const decoder = new TextDecoder("utf-8");
 		let text = "";
-		const newMessages = [...messages];
+		const newMessages = [...messagesRef.current];
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
@@ -63,9 +72,8 @@ export const AgentEditor = ({
 					const content = parsed.choices?.[0]?.delta?.content;
 					if (content) {
 						text += content;
-						const newMessages = [...messages];
-						newMessages.at(-1)!.content = text;
-						setMessages(newMessages);
+						curAiMessage.content = text;
+						setMessages([...newMessages]);
 					}
 				} catch { }
 			}
@@ -97,26 +105,52 @@ export const AgentEditor = ({
 	}, []);
 
 	useEffect(() => {
-		const view = document.getElementById("messages-view");
-		view?.scrollTo(0, view?.scrollHeight);
+		requestAnimationFrame(() => {
+			const view = document.getElementById("messages-view");
+			view?.scrollTo(0, view?.scrollHeight);
+		});
 	}, [messages]);
 
+	console.log("messages: ", messages);
 
 	return (
 
-		<div className='relative h-full w-full rounded-sm z-20 bg-background 
+		<div className={`relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
-			justify-center font-robo-mono '>
-			<div className="flex flex-col items-center justify-center max-w-[900px] w-full gap-8">
+			${messages.length === 0 ? "justify-center" : "justify-start"} font-robo-mono`}>
+			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 ${messages.length > 0 ? "h-full" : ""}`}>
 				{messages.length === 0 && <div className="text-5xl font-bold dark:text-indigo-400 text-indigo-600">
-					VN <span className="text-orange-500">[e]</span>ditor
+					VN <span className="text-orange-500">[E]</span>ditor
 				</div>}
-				{messages.length > 0 && <div className="flex flex-col w-full overflow-y-auto">
+				{messages.length > 0 && <div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
 					{messages.map((message, i) => {
 						return (
-							<div className={`${message.role === "user" ? "bg-foreground-muted/20" : ""}`}
+							<div className={`${message.role === "user" ? "bg-foreground-muted/20 pl-2 border-l-3 border-orange-500" : ""} px-1 py-4`}
 								key={i}>
-								{message.content}
+								<Markdown
+									remarkPlugins={[remarkGfm]}
+									rehypePlugins={[rehypeRaw]}
+									components={{
+										code({ node, inline, className, children, ...props }: any) {
+											const match = /language-(\w+)/.exec(className || '');
+
+											return !inline && match ? (
+												<SyntaxHighlighter language={match[1]}
+													PreTag="div"
+													style={gruvboxDark}>
+													{String(children).replace(/\n$/, '')}
+												</SyntaxHighlighter>
+											) : (
+												<code className={className} {...props}>
+													{children}
+												</code>
+											);
+										},
+									}}
+								>
+
+									{message.content}
+								</Markdown>
 							</div>
 						);
 					})}

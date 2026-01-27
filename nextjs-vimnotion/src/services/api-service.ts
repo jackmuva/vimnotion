@@ -23,7 +23,6 @@ export const getAsciiStream = async (content: string): Promise<Response> => {
 }
 
 export const getAgentStream = async (messages: Array<AiMessage>): Promise<Response> => {
-	console.log(messages);
 	const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/ai/agent`,
 		{
 			method: "POST",

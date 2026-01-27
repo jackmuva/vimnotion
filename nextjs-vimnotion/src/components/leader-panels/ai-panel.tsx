@@ -31,7 +31,7 @@ export const AiPanel = () => {
 		document.addEventListener('keydown', handleKeyDown);
 
 		const handleAKey = (event: KeyboardEvent) => {
-			if (event.key === 'a') {
+			if (event.key === 'e') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				shiftToAgent();
@@ -67,9 +67,9 @@ export const AiPanel = () => {
 					onClick={() => {
 						closePanel();
 					}} >
-					<span className="font-bold text-orange-500">[a]</span>
+					<span className="font-bold text-orange-500">[e]</span>
 				</button>
-				gent
+				ditor agent
 			</div>
 			<div>
 				<button id="first-ai-option"
