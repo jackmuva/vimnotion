@@ -47,3 +47,5 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] image storage
     - [ ] key commands useRef
     - [ ] agents from scratch
+    - [ ] AI and purpose
+    - [ ] AI engineering is just software engineering

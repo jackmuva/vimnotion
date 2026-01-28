@@ -66,7 +66,6 @@ func AgentResponse() http.HandlerFunc {
 			http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("messages: %+v\n", payload.Messages)
 
 		err = services.CallAiGateway(w, flusher, payload.Messages)
 		if err != nil {

@@ -16,3 +16,28 @@ type ChatCompletionResponse struct {
 		FinishReason string `json:"finish_reason"`
 	} `json:"choices"`
 }
+
+type AiTool struct {
+	Type     string     `json:"type"`
+	Function AiFunction `json:"function"`
+}
+
+type AiFunction struct {
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Parameters  AiFunctionParams `json:"parameters"`
+}
+
+type AiFunctionParams struct {
+	Type       string                          `json:"type"`
+	Properties map[string]AiFunctionProperties `json:"properties"`
+	Required   []string                        `json:"required"`
+}
+
+type AiFunctionProperties struct {
+	Type        string `json:"type"`
+	Description string `json:"description"`
+	Items       *struct {
+		Type string `json:"type"`
+	} `json:"items,omitempty"`
+}
