@@ -67,7 +67,7 @@ func AgentResponse() http.HandlerFunc {
 			return
 		}
 
-		err = services.CallAiGateway(w, flusher, payload.Messages)
+		err = services.CallMainAgent(w, flusher, payload.Messages)
 		if err != nil {
 			fmt.Printf("AI service error: %s\n", err)
 			return
