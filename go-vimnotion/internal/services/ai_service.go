@@ -158,18 +158,19 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 	var toolCallMap = make(map[string]models.ToolCallDelta)
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		// Skip empty lines (SSE separators)
 		if line == "" {
 			continue
 		}
-		// Only process data lines
 		if !strings.HasPrefix(line, "data: ") {
 			continue
 		}
 		data := line[6:]
-		// Handle end of stream
 		if data == "[DONE]" {
+			if !isTool {
+				fmt.Fprintf(w, "%s\n", line)
+				fmt.Printf("%s\n", line)
+				flusher.Flush()
+			}
 			break
 		}
 
@@ -189,37 +190,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 		}
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
-				for _, tcRaw := range toolCalls {
-					tcBytes, _ := json.Marshal(tcRaw)
-					var tc models.ToolCallDelta
-					if err := json.Unmarshal(tcBytes, &tc); err != nil {
-						continue
-					}
-					if tc.Id != nil {
-						if existing, ok := toolCallMap[*tc.Id]; ok {
-							if tc.Function.Name != nil {
-								*existing.Function.Name += *tc.Function.Name
-							}
-							if tc.Function.Arguments != nil {
-								*existing.Function.Arguments += *tc.Function.Arguments
-							}
-							toolCallMap[*tc.Id] = existing
-						} else {
-							toolCallMap[*tc.Id] = tc
-						}
-					} else {
-						// Subsequent chunks may not have Id, use index to find existing
-						for id, existing := range toolCallMap {
-							if existing.Index == tc.Index {
-								if tc.Function.Arguments != nil {
-									*existing.Function.Arguments += *tc.Function.Arguments
-								}
-								toolCallMap[id] = existing
-								break
-							}
-						}
-					}
-				}
+				CreateToolCallMap(toolCalls, toolCallMap)
 			}
 		}
 		fmt.Fprintf(w, "%s\n", line)
@@ -227,43 +198,77 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 		flusher.Flush()
 	}
 
-	// After stream ends, if there were tool calls, process them
 	if isTool && len(toolCallMap) > 0 {
-		var newMessages []models.AiMessage
-		// Copy existing messages
-		for _, msg := range messages {
-			newMessages = append(newMessages, msg)
-		}
-
-		// Build assistant message with tool_calls array
-		var toolCalls []models.AiToolCall
-		for _, v := range toolCallMap {
-			toolCalls = append(toolCalls, models.AiToolCall{
-				Id:       *v.Id,
-				Type:     "function",
-				Function: v.Function,
-			})
-		}
-		newMessages = append(newMessages, models.AiMessage{
-			Role:      "assistant",
-			ToolCalls: toolCalls,
-		})
-
-		// Build tool result messages
-		for _, v := range toolCallMap {
-			result := ""
-			if *v.Function.Name == "plan_tool" {
-				result = *v.Function.Arguments
-			}
-			newMessages = append(newMessages, models.AiMessage{
-				Role:       "tool",
-				ToolCallId: v.Id,
-				Content:    &result,
-			})
-		}
+		newMessages := AppendToolCallMessages(messages, toolCallMap)
 		return CallMainAgent(w, flusher, newMessages)
 	}
 
 	return scanner.Err()
 
+}
+
+func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta) []models.AiMessage {
+	var newMessages []models.AiMessage
+	for _, msg := range messages {
+		newMessages = append(newMessages, msg)
+	}
+
+	var toolCalls []models.AiToolCall
+	for _, v := range toolCallMap {
+		toolCalls = append(toolCalls, models.AiToolCall{
+			Id:       *v.Id,
+			Type:     "function",
+			Function: v.Function,
+		})
+	}
+	newMessages = append(newMessages, models.AiMessage{
+		Role:      "assistant",
+		ToolCalls: toolCalls,
+	})
+
+	for _, v := range toolCallMap {
+		result := ""
+		if *v.Function.Name == "plan_tool" {
+			result = *v.Function.Arguments
+		}
+		newMessages = append(newMessages, models.AiMessage{
+			Role:       "tool",
+			ToolCallId: v.Id,
+			Content:    &result,
+		})
+	}
+	return newMessages
+}
+
+func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.ToolCallDelta) {
+	for _, tcRaw := range toolCalls {
+		tcBytes, _ := json.Marshal(tcRaw)
+		var tc models.ToolCallDelta
+		if err := json.Unmarshal(tcBytes, &tc); err != nil {
+			continue
+		}
+		if tc.Id != nil {
+			if existing, ok := toolCallMap[*tc.Id]; ok {
+				if tc.Function.Name != nil {
+					*existing.Function.Name += *tc.Function.Name
+				}
+				if tc.Function.Arguments != nil {
+					*existing.Function.Arguments += *tc.Function.Arguments
+				}
+				toolCallMap[*tc.Id] = existing
+			} else {
+				toolCallMap[*tc.Id] = tc
+			}
+		} else {
+			for id, existing := range toolCallMap {
+				if existing.Index == tc.Index {
+					if tc.Function.Arguments != nil {
+						*existing.Function.Arguments += *tc.Function.Arguments
+					}
+					toolCallMap[id] = existing
+					break
+				}
+			}
+		}
+	}
 }
