@@ -1,20 +1,47 @@
 package models
 
 type AiMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-	Type    string `json:"type"`
+	Role       string       `json:"role"`
+	Content    *string      `json:"content,omitempty"`
+	ToolCalls  []AiToolCall `json:"tool_calls,omitempty"`
+	ToolCallId *string      `json:"tool_call_id,omitempty"`
 }
 
-type ChatCompletionResponse struct {
-	Choices []struct {
-		Message struct {
-			Role    string `json:"role"`
-			Content string `json:"content"`
-		} `json:"message"`
-		Index        int    `json:"index"`
-		FinishReason string `json:"finish_reason"`
-	} `json:"choices"`
+type AiToolCall struct {
+	Id       string       `json:"id"`
+	Type     string       `json:"type"`
+	Function ToolFunction `json:"function"`
+}
+
+type ChatCompletionData struct {
+	Id                string        `json:"id"`
+	Object            string        `json:"object"`
+	Created           int           `json:"created"`
+	Model             string        `json:"model"`
+	Choices           []ChatChoices `json:"choices"`
+	SystemFingerprint string        `json:"system_fingerprint"`
+}
+
+type ChatChoices struct {
+	Index        int                    `json:"index"`
+	FinishReason string                 `json:"finish_reason"`
+	Delta        map[string]interface{} `json:"delta"`
+}
+
+type MessageDelta struct {
+	Content string `json:"content"`
+}
+
+type ToolCallDelta struct {
+	Index    int          `json:"index"`
+	Id       *string      `json:"id"`
+	Type     string       `json:"type"`
+	Function ToolFunction `json:"function"`
+}
+
+type ToolFunction struct {
+	Name      *string `json:"name"`
+	Arguments *string `json:"arguments"`
 }
 
 type AiTool struct {

@@ -6,17 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 )
 
-const asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
+var asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
 
 func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage models.AiMessage) error {
 	systemMessage := models.AiMessage{
 		Role:    "developer",
-		Content: asciiArtSystemPrompt,
+		Content: &asciiArtSystemPrompt,
 	}
 	messages := []models.AiMessage{systemMessage, userMessage}
 
@@ -153,11 +154,114 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 	}
 
 	scanner := bufio.NewScanner(resp.Body)
+	var isTool bool = false
+	var toolCallMap = make(map[string]models.ToolCallDelta)
 	for scanner.Scan() {
 		line := scanner.Text()
-		fmt.Printf("%s\n", line)
+
+		// Skip empty lines (SSE separators)
+		if line == "" {
+			continue
+		}
+		// Only process data lines
+		if !strings.HasPrefix(line, "data: ") {
+			continue
+		}
+		data := line[6:]
+		// Handle end of stream
+		if data == "[DONE]" {
+			break
+		}
+
+		var chatCompletionData models.ChatCompletionData
+		err := json.Unmarshal([]byte(data), &chatCompletionData)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if len(chatCompletionData.Choices) == 0 {
+			continue
+		}
+
+		if _, ok := chatCompletionData.Choices[0].Delta["tool_calls"]; ok {
+			isTool = true
+		}
+		if isTool {
+			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
+				for _, tcRaw := range toolCalls {
+					tcBytes, _ := json.Marshal(tcRaw)
+					var tc models.ToolCallDelta
+					if err := json.Unmarshal(tcBytes, &tc); err != nil {
+						continue
+					}
+					if tc.Id != nil {
+						if existing, ok := toolCallMap[*tc.Id]; ok {
+							if tc.Function.Name != nil {
+								*existing.Function.Name += *tc.Function.Name
+							}
+							if tc.Function.Arguments != nil {
+								*existing.Function.Arguments += *tc.Function.Arguments
+							}
+							toolCallMap[*tc.Id] = existing
+						} else {
+							toolCallMap[*tc.Id] = tc
+						}
+					} else {
+						// Subsequent chunks may not have Id, use index to find existing
+						for id, existing := range toolCallMap {
+							if existing.Index == tc.Index {
+								if tc.Function.Arguments != nil {
+									*existing.Function.Arguments += *tc.Function.Arguments
+								}
+								toolCallMap[id] = existing
+								break
+							}
+						}
+					}
+				}
+			}
+		}
 		fmt.Fprintf(w, "%s\n", line)
+		fmt.Printf("%s\n", line)
 		flusher.Flush()
+	}
+
+	// After stream ends, if there were tool calls, process them
+	if isTool && len(toolCallMap) > 0 {
+		var newMessages []models.AiMessage
+		// Copy existing messages
+		for _, msg := range messages {
+			newMessages = append(newMessages, msg)
+		}
+
+		// Build assistant message with tool_calls array
+		var toolCalls []models.AiToolCall
+		for _, v := range toolCallMap {
+			toolCalls = append(toolCalls, models.AiToolCall{
+				Id:       *v.Id,
+				Type:     "function",
+				Function: v.Function,
+			})
+		}
+		newMessages = append(newMessages, models.AiMessage{
+			Role:      "assistant",
+			ToolCalls: toolCalls,
+		})
+
+		// Build tool result messages
+		for _, v := range toolCallMap {
+			result := ""
+			if *v.Function.Name == "plan_tool" {
+				result = *v.Function.Arguments
+			}
+			newMessages = append(newMessages, models.AiMessage{
+				Role:       "tool",
+				ToolCallId: v.Id,
+				Content:    &result,
+			})
+		}
+		return CallMainAgent(w, flusher, newMessages)
 	}
 
 	return scanner.Err()

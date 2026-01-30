@@ -1,5 +1,6 @@
 export type AiMessage = {
 	role: "user" | "assistant" | "developer",
-	type: "message",
-	content: string,
+	type: "message" | "function",
+	content?: string,
+	toolCall?: string,
 }
