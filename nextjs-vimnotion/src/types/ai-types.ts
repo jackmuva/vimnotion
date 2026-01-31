@@ -1,6 +1,12 @@
+export type ToolCall = {
+	id?: string;
+	name: string;
+	arguments: string;
+}
+
 export type AiMessage = {
-	role: "user" | "assistant" | "developer",
+	role: "user" | "assistant" | "developer" | "tool",
 	type: "message" | "function",
 	content?: string,
-	toolCall?: string,
+	toolCalls?: ToolCall[],
 }

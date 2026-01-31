@@ -207,39 +207,6 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 
 }
 
-func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta) []models.AiMessage {
-	var newMessages []models.AiMessage
-	for _, msg := range messages {
-		newMessages = append(newMessages, msg)
-	}
-
-	var toolCalls []models.AiToolCall
-	for _, v := range toolCallMap {
-		toolCalls = append(toolCalls, models.AiToolCall{
-			Id:       *v.Id,
-			Type:     "function",
-			Function: v.Function,
-		})
-	}
-	newMessages = append(newMessages, models.AiMessage{
-		Role:      "assistant",
-		ToolCalls: toolCalls,
-	})
-
-	for _, v := range toolCallMap {
-		result := ""
-		if *v.Function.Name == "plan_tool" {
-			result = *v.Function.Arguments
-		}
-		newMessages = append(newMessages, models.AiMessage{
-			Role:       "tool",
-			ToolCallId: v.Id,
-			Content:    &result,
-		})
-	}
-	return newMessages
-}
-
 func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.ToolCallDelta) {
 	for _, tcRaw := range toolCalls {
 		tcBytes, _ := json.Marshal(tcRaw)
@@ -271,4 +238,37 @@ func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.
 			}
 		}
 	}
+}
+
+func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta) []models.AiMessage {
+	var newMessages []models.AiMessage
+	for _, msg := range messages {
+		newMessages = append(newMessages, msg)
+	}
+
+	var toolCalls []models.AiToolCall
+	for _, v := range toolCallMap {
+		toolCalls = append(toolCalls, models.AiToolCall{
+			Id:       *v.Id,
+			Type:     "function",
+			Function: v.Function,
+		})
+	}
+	newMessages = append(newMessages, models.AiMessage{
+		Role:      "assistant",
+		ToolCalls: toolCalls,
+	})
+
+	for _, v := range toolCallMap {
+		result := ""
+		if *v.Function.Name == "plan_tool" {
+			result = *v.Function.Arguments
+		}
+		newMessages = append(newMessages, models.AiMessage{
+			Role:       "tool",
+			ToolCallId: v.Id,
+			Content:    &result,
+		})
+	}
+	return newMessages
 }
