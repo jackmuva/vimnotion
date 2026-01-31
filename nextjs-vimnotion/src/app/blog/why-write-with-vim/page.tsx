@@ -49,7 +49,7 @@ export default async function WhyVimPage() {
 					to Bram Moolenaar's Vi Improved (Vim), Vim is known for its speed and retro hacker aesthetics.
 				</div>
 				<div>
-					While you may not be a programmer, <strong>that doesn't mean Vim isn't for you!</strong>
+					While you may not be a programmer, <strong>that doesn't mean Vim isn't for you!</strong>&nbsp;
 					Writing code or articles or notes or journals isn't so dissimilar. At the end of the
 					day, it's about writing characters on a screen in a productive and enjoyable way.
 				</div>
@@ -64,7 +64,7 @@ export default async function WhyVimPage() {
 				</div>
 				<img src={"/word-2007.png"} />
 				<div>
-					Vim isn't for everyone. But at the same time, it's genuinely changed my life and I feel obligated to
+					Vim isn't for everyone. But at the same time, it's genuinely changed my life. I feel obligated to
 					share my love for Vim and why I think Vim provides the best writing experience for writers who
 					value speed, flow, and mastery of their tools.
 				</div>
@@ -96,13 +96,16 @@ export default async function WhyVimPage() {
 				</h2>
 				<blockquote> Be Quick But Don't Hurry</blockquote>
 				<div>
-					Speed may make you more productive, but remember: <strong>productive and enjoyable</strong>.
+					Speed may make you more productive, but remember: <strong>your word processor should make writing productive and enjoyable</strong>.
 					Keeping your fingers moving. Getting in a rhythm. It builds a hypnotic clack-clack-clack.
 					You're in a flow. You're fully present and engaged.
 				</div>
 				<div>
 					It's not about going as fast as possible. Vim's speed is just a tool to keep your fingers moving
-					and perform common writing actions as soon as you want. Typing isn't like writing on pen and paper.
+					and perform common writing actions as soon as you want.
+				</div>
+				<div>
+					Typing isn't like writing on pen and paper.
 					It's like playing the piano. You use your fingers. You hear the sounds of the keyboard. You type in a
 					cadence that changes as you write. But the longer you can stay in a consistent cadence, the
 					better your flow will be.
@@ -126,16 +129,17 @@ export default async function WhyVimPage() {
 				</div>
 				<div>
 					That mastery of your paintbrush is what's missing in a lot of our tools. For tools we use everyday, we should
-					feel satisfaction from building our skill-level with that tool. Vim Motions, comboing <code>:vs{"<space"}m</code>
+					feel satisfaction from building our skill-level with that tool. Vim Motions, comboing <code>:vs{"<space>"}m</code>&nbsp;
 					to split my screen vertically and render my article into a nice looking markdown without breaking my
 					stride is muscle memory that I've built over months and years.
 				</div>
+				<img src={"/speed-of-thoughts.gif"} />
 				<div>
 					These Vim Motion skills pay dividends as
 					I waste less time moving my mouse to click on a small button, navigate cluttered menus, and spend
 					more time if flow.
 				</div>
-				<img src={"/speed-of-thoughts.gif"} />
+
 				<div className="my-8 place-self-center w-5/6 border-b" />
 				<div>
 					I know it may come off as "crazy control-freak" behavior to care about mouse clicks and key combos to this level.
