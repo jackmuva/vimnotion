@@ -75,3 +75,19 @@ type ImageReference struct {
 	ImageId    string `json:"imageId"`
 	VnObjectId string `json:"vnObjectId"`
 }
+
+type ChatSession struct {
+	SessionId  string `json:"sessionId"`
+	Messages   string `json:"messages"`
+	Summary    string `json:"summary"`
+	UpdateDate string `json:"updateDate"`
+	Email      string `json:"email"`
+}
+
+type ChatFile struct {
+	FileId       string `json:"fileId"`
+	FileName     string `json:"fileName"`
+	FileContents string `json:"fileContents"`
+	Email        string `json:"email"`
+	SessionId    string `json:"sessionId"`
+}

@@ -37,22 +37,52 @@ func ConnectTurso() (*sql.DB, error) {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
+
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS VnObject(id TEXT PRIMARY KEY, name TEXT, IsFile BOOLEAN, updateDate TEXT, contents TEXT, public BOOLEAN, email TEXT)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
+
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS Image(id TEXT PRIMARY KEY, email TEXT, contentType TEXT, binaryData BLOB)")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
 		return nil, err
 	}
+
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS ImageReference(" +
 		"imageId TEXT NOT NULL, " +
 		"vnObjectId TEXT NOT NULL, " +
 		"PRIMARY KEY(imageId, vnObjectId), " +
 		"FOREIGN KEY(imageId) REFERENCES Image(id) ON DELETE CASCADE, " +
 		"FOREIGN KEY(vnObjectId) REFERENCES VnObject(id) ON DELETE CASCADE" +
+		")")
+	if err != nil {
+		fmt.Printf("error creating table: %s", err)
+		return nil, err
+	}
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS ChatSession(" +
+		"sessionId TEXT PRIMARY KEY, " +
+		"summary TEXT, " +
+		"messages TEXT, " +
+		"updateDate TEXT, " +
+		"email TEXT, " +
+		"FOREIGN KEY(email) REFERENCES User(email) ON DELETE CASCADE" +
+		")")
+	if err != nil {
+		fmt.Printf("error creating table: %s", err)
+		return nil, err
+	}
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS ChatFiles(" +
+		"fileId TEXT PRIMARY KEY, " +
+		"fileName TEXT NOT NULL, " +
+		"fileContents TEXT, " +
+		"email TEXT, " +
+		"sessionId TEXT, " +
+		"FOREIGN KEY(email) REFERENCES User(email) ON DELETE CASCADE, " +
+		"FOREIGN KEY(sessionId) REFERENCES ChatSession(sessionId) ON DELETE CASCADE " +
 		")")
 	if err != nil {
 		fmt.Printf("error creating table: %s", err)
@@ -259,6 +289,7 @@ func InsertImage(db *sql.DB, image models.Image) error {
 	}
 	return nil
 }
+
 func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
 	_, err := db.Exec("UPDATE DirectoryStructure SET structure=? WHERE email=?",
 		dirStruct.Structure, dirStruct.Email)
@@ -382,4 +413,119 @@ func GetImageReferenceCount(db *sql.DB, imageId string) (*struct{ Count int }, e
 		return nil, fmt.Errorf("Error: No count available")
 	}
 	return &countRows[0], nil
+}
+
+func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
+	_, err := db.Exec("INSERT INTO ChatSession(sessionId, messages, summary, updateDate, email) VALUES(?, ?, ?, ?, ?)",
+		chatSession.SessionId, chatSession.Messages, chatSession.Summary, chatSession.UpdateDate, chatSession.Email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateChatSession(db *sql.DB, chatSession models.ChatSession) error {
+	_, err := db.Exec("UPDATE ChatSession SET messages=?, updateDate=?, summary=? WHERE sessionId=? AND email=?",
+		chatSession.Messages, chatSession.UpdateDate, chatSession.Summary, chatSession.SessionId, chatSession.Email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteChatSession(db *sql.DB, chatSession models.ChatSession) error {
+	_, err := db.Exec("DELETE FROM ChatSession WHERE sessionId=? AND email=?",
+		chatSession.SessionId, chatSession.Email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, error) {
+	rows, err := db.Query("SELECT * FROM ChatSession WHERE email=? LIMIT 50", email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sessions []models.ChatSession
+
+	for rows.Next() {
+		var session models.ChatSession
+
+		if err := rows.Scan(&session.SessionId, &session.Summary, &session.Messages, &session.UpdateDate, &session.Email); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		sessions = append(sessions, session)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func InsertChatFile(db *sql.DB, chatFile models.ChatFile) error {
+	_, err := db.Exec("INSERT INTO ChatFiles(fileId, fileName, fileContents, email, sessionId) VALUES(?, ?, ?, ?, ?)",
+		chatFile.FileId, chatFile.FileName, chatFile.FileContents, chatFile.Email, chatFile.SessionId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateChatFile(db *sql.DB, chatFile models.ChatFile) error {
+	_, err := db.Exec("UPDATE ChatFiles SET fileName=?, fileContents=? WHERE fileId=? AND email=? AND sessionId=?",
+		chatFile.FileName, chatFile.FileContents, chatFile.FileId, chatFile.Email, chatFile.SessionId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteChatFilesBySessionId(db *sql.DB, sessionId string) error {
+	_, err := db.Exec("DELETE FROM ChatFiles WHERE sessionId=?", sessionId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func GetChatFilesBySessionId(db *sql.DB, sessionId string, email string) ([]models.ChatFile, error) {
+	rows, err := db.Query("SELECT fileId, fileName, fileContents, email, sessionId FROM ChatFiles WHERE sessionId=? AND email=?", sessionId, email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var chatFiles []models.ChatFile
+
+	for rows.Next() {
+		var chatFile models.ChatFile
+
+		if err := rows.Scan(&chatFile.FileId, &chatFile.FileName, &chatFile.FileContents, &chatFile.Email, &chatFile.SessionId); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		chatFiles = append(chatFiles, chatFile)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return chatFiles, nil
 }
