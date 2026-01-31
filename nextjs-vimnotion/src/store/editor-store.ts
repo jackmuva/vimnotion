@@ -8,6 +8,8 @@ import { createTabSlice } from './slices/tab-store';
 import { createDirectorySlice } from './slices/directory-store';
 import { createSearchSlice } from './slices/search-store';
 import { SearchResults, SearchType } from '@/types/search-types';
+import { AiMessage } from '@/types/ai-types';
+import { createAgentSlice } from './slices/agent-store';
 
 export type EditorState = {
 	openSidebar: boolean;
@@ -119,6 +121,13 @@ export type EditorState = {
 
 	newAiBlock: string;
 	setNewAiBlock: (url: string) => void;
+
+	messageMap: { [paneId: string]: AiMessage[] };
+	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => void;
+	inputMessageMap: { [paneId: string]: string };
+	setInputMessageMap: (messageMap: { [paneId: string]: string }) => void;
+	getMessageMap: () => { [paneId: string]: AiMessage[] };
+	getInputMessageMap: () => { [paneId: string]: string };
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -127,4 +136,5 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	...createTabSlice(set, get),
 	...createDirectorySlice(set, get),
 	...createSearchSlice(set, get),
-}))
+	...createAgentSlice(set, get),
+}));

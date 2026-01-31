@@ -18,6 +18,7 @@ import {
 } from '@codemirror/autocomplete';
 import data from '@emoji-mart/data';
 import type { EmojiMartData } from '@emoji-mart/data';
+import { applyAgentBindings } from './extensions/agent-bindings';
 
 export const VimEditor = ({
 	paneId,
@@ -47,7 +48,8 @@ export const VimEditor = ({
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
-		updateAllBuffers,
+		updateAllBuffers, setMessageMap, setInputMessageMap, getMessageMap, getInputMessageMap,
+		setActivePanel,
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -153,8 +155,9 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
+		if (vimEditor && activeId === paneId) {
 			vimEditor.focus();
+			setActivePanel(PanelType.MAIN);
 			if (newImageUrl) {
 				const mdImage = `![your-image-name](${newImageUrl})`
 				const cursorPosition: number = vimEditor.state.selection.main.head;
@@ -189,6 +192,7 @@ export const VimEditor = ({
 	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl])
 
 	useEffect(() => {
+		setActivePanel(PanelType.MAIN);
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
@@ -256,6 +260,14 @@ export const VimEditor = ({
 			refetchFileInBuffer: (fileId: string) => openFileInBuffer(fileId),
 			getActivePane: () => getActivePane(),
 			getPane: (paneId: string) => getPane(paneId),
+		});
+		applyAgentBindings({
+			setMessageMap: (messageMap): void => setMessageMap(messageMap),
+			setInputMessageMap: (inputMap) => setInputMessageMap(inputMap),
+			getActivePane: () => getActivePane(),
+			getActivePanel: () => getActivePanel(),
+			getMessageMap: () => getMessageMap(),
+			getInputMessageMap: () => getInputMessageMap(),
 		});
 		setVimEditor(view);
 

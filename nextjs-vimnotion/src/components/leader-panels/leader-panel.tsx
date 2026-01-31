@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { EditorType, PaneNode } from "@/types/editor-types";
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { useEffect } from "react";
 
 export const LeaderPanel = () => {
@@ -14,6 +14,7 @@ export const LeaderPanel = () => {
 	const togglePublishModal = useEditorStore((state) => state.togglePublishModal);
 	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
 	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
+	const setActivePanel: (panelType: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 
 	const shiftToMarkdown = (): void => {
 		const paneNode: PaneNode = getPane(activePane);
@@ -28,6 +29,7 @@ export const LeaderPanel = () => {
 	}
 
 	useEffect(() => {
+		setActivePanel(PanelType.LEADER);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				closePanel();
@@ -37,8 +39,10 @@ export const LeaderPanel = () => {
 
 		const handleWKey = (event: KeyboardEvent) => {
 			if (event.key === 'w') {
-				toggleWindowPanel();
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				closePanel();
+				toggleWindowPanel();
 			}
 		};
 		document.addEventListener('keydown', handleWKey);
@@ -47,8 +51,8 @@ export const LeaderPanel = () => {
 			if (event.key === 'm') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				shiftToMarkdown();
 				closePanel();
+				shiftToMarkdown();
 			}
 		};
 		document.addEventListener('keydown', handleMKey);
@@ -67,8 +71,8 @@ export const LeaderPanel = () => {
 			if (event.key === 'i') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				closePanel();
 				toggleImageModal();
+				closePanel();
 			}
 		};
 		document.addEventListener('keydown', handleIKey);
@@ -77,8 +81,8 @@ export const LeaderPanel = () => {
 			if (event.key === 'p') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
-				closePanel();
 				togglePublishModal();
+				closePanel();
 			}
 		};
 		document.addEventListener('keydown', handlePKey);
@@ -102,7 +106,7 @@ export const LeaderPanel = () => {
 			document.removeEventListener('keydown', handlePKey);
 			document.removeEventListener('keydown', handleAKey);
 		};
-	}, [closePanel, toggleWindowPanel]);
+	}, [closePanel, toggleWindowPanel, setActivePanel]);
 
 	return (
 		<div id={`leader-panel`}
@@ -112,58 +116,69 @@ export const LeaderPanel = () => {
 				<button id={`first-leader-option`}
 					className="cursor-pointer"
 					onClick={() => {
-						shiftToMarkdown();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[m]</span>
-				</button>arkdown
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
 						toggleWindowPanel();
 						closePanel();
 					}}>
 					<span className="font-bold text-orange-500">[w]</span>
 				</button>indow
 			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						toggleSearchPanel();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[s]</span>
-				</button>earch
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						toggleImageModal();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[i]</span>
-				</button>nsert [i]mage
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						togglePublishModal();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[p]</span>
-				</button>ublish/unpublish [p]age
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						toggleAiPanel();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[a]</span>
-				</button>i
-			</div>
 
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => {
+							shiftToMarkdown();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[m]</span>
+					</button>arkdown
+				</div>
+			}
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							toggleSearchPanel();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[s]</span>
+					</button>earch
+				</div>
+			}
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							toggleImageModal();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[i]</span>
+					</button>nsert [i]mage
+				</div>
+			}
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							togglePublishModal();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[p]</span>
+					</button>ublish/unpublish [p]age
+				</div>
+			}
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							toggleAiPanel();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[a]</span>
+					</button>i
+				</div>
+			}
 		</div>
 	);
 

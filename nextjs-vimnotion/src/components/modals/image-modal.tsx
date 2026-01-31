@@ -1,5 +1,6 @@
 import { useEditorStore } from "@/store/editor-store";
 import { useEffect, useRef, useState } from "react";
+import { PanelType } from "@/types/editor-types";
 
 const base64ToBinary = (base64: string): Uint8Array => {
 	const binaryString = atob(base64);
@@ -18,6 +19,7 @@ const getContentTypeFromDataUri = (dataUri: string): string => {
 export const ImageModal = () => {
 	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
 	const setNewImageUrl = useEditorStore((state) => state.setNewImageUrl);
+	const setActivePanel = useEditorStore((state) => state.setActivePanel);
 	const [imagePresent, setImagePresent] = useState<boolean>(false);
 	const [imageBuffer, setImageBuffer] = useState<string | ArrayBuffer | null>(null);
 	const imagePresentRef = useRef(imagePresent);
@@ -79,6 +81,7 @@ export const ImageModal = () => {
 	}
 
 	useEffect(() => {
+		setActivePanel(PanelType.MODAL);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				toggleImageModal();
@@ -113,7 +116,7 @@ export const ImageModal = () => {
 			document.removeEventListener('keydown', handleNKeyDown);
 			document.removeEventListener('keydown', handleUKeyDown);
 		}
-	}, [toggleImageModal, handleImageConfirm]);
+	}, [toggleImageModal, handleImageConfirm, setActivePanel]);
 
 	useEffect(() => {
 		const contentTarget = document.getElementById("imageUpload");

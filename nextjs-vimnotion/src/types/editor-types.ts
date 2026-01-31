@@ -3,6 +3,7 @@ export enum PanelType {
 	SIDEBAR = "SIDEBAR",
 	MAIN = "MAIN",
 	MODAL = "MODAL",
+	AGENT = "AGENT",
 }
 
 

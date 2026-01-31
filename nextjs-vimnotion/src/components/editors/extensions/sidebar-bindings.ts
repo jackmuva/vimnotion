@@ -43,7 +43,7 @@ export const applySidebarBindings = ({
 
 	Vim.defineAction("toggleLeaderPanel", () => {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
 			toggleLeaderPanel();
 		}
 	});

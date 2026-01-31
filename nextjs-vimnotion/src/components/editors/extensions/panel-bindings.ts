@@ -41,14 +41,13 @@ export const applyPanelBindings = ({
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN) {
 			const pane: PaneNode = getPane(getActivePane());
-			console.log("pane: ", pane);
 			refetchFileInBuffer(pane[Object.keys(pane)[0]].fileId);
 		}
 	});
 
 	Vim.defineEx('quit', 'q', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
