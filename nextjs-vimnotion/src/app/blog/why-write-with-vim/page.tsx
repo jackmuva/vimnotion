@@ -140,7 +140,7 @@ export default async function WhyVimPage() {
 				<div>
 					I know it may come off as "crazy control-freak" behavior to care about mouse clicks and key combos to this level.
 					Vim isn't for everybody. But like I said, Vim is a tool I enjoy using <strong>everyday</strong>. So yes,
-					like a missionary, this message may fall on many deaf ears.
+					like a missionary, my attempts at evangelism may fall on many deaf ears.
 				</div>
 				<div>
 					But I didn't spend hours and hours and hours of my life building a website dedicated to writing
