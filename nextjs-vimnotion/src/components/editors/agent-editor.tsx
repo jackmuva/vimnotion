@@ -42,8 +42,11 @@ export const AgentEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 
-	const { messageMap, inputMessageMap, setInputMessageMap, setActivePanel } = useEditorStore((state) => state);
-	const activeId: string = useEditorStore((state) => state.activePane);
+	const messageMap = useEditorStore((state) => state.messageMap);
+	const inputMessageMap = useEditorStore((state) => state.inputMessageMap);
+	const setInputMessageMap = useEditorStore((state) => state.setInputMessageMap);
+	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const activeId = useEditorStore((state) => state.activePane);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -147,11 +150,11 @@ export const AgentEditor = ({
 	}, [activeId]);
 
 	useEffect(() => {
-		requestAnimationFrame(() => {
-			const view = document.getElementById("messages-view");
-			view?.scrollTo(0, view?.scrollHeight);
-		});
-	}, [messageMap[paneId]]);
+		const view = document.getElementById("messages-view");
+		if (view) {
+			view.scrollTo({ top: view.scrollHeight, behavior: "smooth" });
+		}
+	}, [messageMap[paneId]?.at(-1)?.content ?? ""]);
 
 	useEffect(() => {
 		if (vimEditor) {

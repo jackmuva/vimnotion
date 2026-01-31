@@ -1,5 +1,5 @@
 import { getAgentStream } from "@/services/api-service";
-import { AiMessage, ToolCall } from "@/types/ai-types"
+import { AiMessage } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
 import { Vim } from "@replit/codemirror-vim"
 
@@ -52,49 +52,45 @@ export const applyAgentBindings = ({
 					const parsed = JSON.parse(line);
 					const delta = parsed.choices?.[0]?.delta;
 
-					const content = delta?.content;
-					if (content) {
-						text += content;
-					}
-
-					const toolCalls = delta?.tool_calls;
-					if (toolCalls && Array.isArray(toolCalls)) {
-						for (const tc of toolCalls) {
-							const index: number = tc.index;
-							if (toolCallMap.has(index)) {
-								const existing = toolCallMap.get(index)!;
-								if (tc.function?.name) existing.name += tc.function.name;
-								if (tc.function?.arguments) existing.arguments += tc.function.arguments;
-							} else {
-								toolCallMap.set(index, {
-									id: tc.id,
-									name: tc.function?.name || "",
-									arguments: tc.function?.arguments || "",
-								});
+					if (delta?.content) {
+						text += delta.content;
+					} else if (delta?.tool_calls) {
+						const toolCalls = delta?.tool_calls;
+						if (toolCalls && Array.isArray(toolCalls)) {
+							for (const tc of toolCalls) {
+								const index: number = tc.index;
+								if (toolCallMap.has(index)) {
+									const existing = toolCallMap.get(index)!;
+									if (tc.function?.name) existing.name += tc.function.name;
+									if (tc.function?.arguments) existing.arguments += tc.function.arguments;
+								} else {
+									toolCallMap.set(index, {
+										id: tc.id,
+										name: tc.function?.name || "",
+										arguments: tc.function?.arguments || "",
+									});
+								}
 							}
 						}
+
+						const toolCallEntries = Array.from(toolCallMap.entries());
+						const sortedToolCalls: { id?: string, name: string, arguments: string }[] = toolCallEntries.sort((entryA, entryB) => {
+							return entryA[0] - entryB[0];
+						}).map((entry) => entry[1]);
+
+						let toolCallDisplay = "";
+						for (const tc of sortedToolCalls) {
+							let argsDisplay = tc.arguments;
+							try {
+								const parsedArgs = JSON.parse(tc.arguments);
+								argsDisplay = JSON.stringify(parsedArgs, null, 2);
+							} catch { }
+							toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay}\n\`\`\`\n`;
+						}
+						text = toolCallDisplay;
+						curAiMessage.toolCalls = sortedToolCalls;
 					}
-
-					const toolCallEntries = Array.from(toolCallMap.entries());
-					toolCallEntries.sort((entryA, entryB) => {
-						const indexA = entryA[0];
-						const indexB = entryB[0];
-						return indexA - indexB;
-					});
-					const sortedToolCalls: ToolCall[] = toolCallEntries.map((entry) => entry[1]);
-
-					let toolCallDisplay = "";
-					for (const tc of sortedToolCalls) {
-						let argsDisplay = tc.arguments;
-						try {
-							const parsedArgs = JSON.parse(tc.arguments);
-							argsDisplay = JSON.stringify(parsedArgs, null, 2);
-						} catch { }
-						toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay}\n\`\`\`\n`;
-					}
-
-					curAiMessage.toolCalls = sortedToolCalls;
-					curAiMessage.content = text + toolCallDisplay;
+					curAiMessage.content = text;
 					setMessageMap({ ...messageMap, [activePane]: newMessages });
 				} catch { }
 			}
