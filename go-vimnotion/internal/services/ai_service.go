@@ -190,7 +190,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 		}
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
-				CreateToolCallMap(toolCalls, toolCallMap)
+				PopulateToolCallMap(toolCalls, toolCallMap)
 			}
 		}
 		fmt.Fprintf(w, "%s\n", line)
