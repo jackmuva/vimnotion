@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { PanelType, PaneNode } from "@/types/editor-types";
+import { PaneNode } from "@/types/editor-types";
 import { useEffect } from "react";
 
 export const PublishModal = () => {
@@ -12,7 +12,6 @@ export const PublishModal = () => {
 	}
 
 	useEffect(() => {
-		setActivePanel(PanelType.MODAL);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				togglePublishModal();

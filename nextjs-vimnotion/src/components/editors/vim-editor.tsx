@@ -155,9 +155,8 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId) {
+		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
-			setActivePanel(PanelType.MAIN);
 			if (newImageUrl) {
 				const mdImage = `![your-image-name](${newImageUrl})`
 				const cursorPosition: number = vimEditor.state.selection.main.head;

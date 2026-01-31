@@ -81,7 +81,6 @@ export const ImageModal = () => {
 	}
 
 	useEffect(() => {
-		setActivePanel(PanelType.MODAL);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				toggleImageModal();
