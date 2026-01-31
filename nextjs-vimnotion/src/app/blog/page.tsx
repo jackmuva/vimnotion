@@ -21,9 +21,30 @@ export default async function BlogPage() {
 		<div className="px-2 pt-4 flex flex-col items-center">
 			<div className="flex flex-col w-full max-w-[1100px] gap-10">
 				<h1 className="text-3xl font-bold">
-					Jack's blog hosted on VimNotion
+					Jack's Blog, Hosted on VimNotion
 				</h1>
 				<div className="flex flex-col gap-8 text-base ">
+					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/why-write-with-vim`}
+						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
+						pb-2 hover:text-foreground/30">
+						<div className="flex w-full justify-between items-center">
+							<h2 className="text-xl">
+								Why Write With Vim
+							</h2>
+							<div>
+								Published: January 31, 2026
+							</div>
+						</div>
+						<div>
+							Written by: Jack
+						</div>
+						<div className="text-sm lineclamp-3">
+							Typing isn't like writing on pen and paper.
+							It's like playing the piano. You use your fingers. You hear the sounds of the keyboard. You type in a
+							cadence that changes as you write. But the longer you can stay in a consistent cadence, the
+							better your flow will be...
+						</div>
+					</Link>
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/orchestrated-vs-free-agents`}
 						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
 						pb-2 hover:text-foreground/30">

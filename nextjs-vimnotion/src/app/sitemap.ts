@@ -42,19 +42,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			url: 'https://www.vimnotion.com/blog/dear-vim',
 			lastModified: new Date('2025-12-12'),
 			changeFrequency: 'monthly',
-			priority: 0.7,
+			priority: 0.5,
 		},
 		{
 			url: 'https://www.vimnotion.com/blog/modern-day-folk-craft',
 			lastModified: new Date('2025-12-10'),
 			changeFrequency: 'monthly',
-			priority: 0.7,
+			priority: 0.5,
 		},
 		{
 			url: 'https://www.vimnotion.com/blog/orchestrated-vs-free-agents',
 			lastModified: new Date('2026-01-10'),
 			changeFrequency: 'monthly',
-			priority: 0.7,
+			priority: 0.5,
 		},
 
 		{
@@ -62,6 +62,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			lastModified: new Date('2025-12-15'),
 			changeFrequency: 'monthly',
 			priority: 0.9,
+		},
+		{
+			url: 'https://www.vimnotion.com/blog/why-write-with-vim',
+			lastModified: new Date('2025-01-31'),
+			changeFrequency: 'monthly',
+			priority: 0.9,
 		}
+
 	]
 }
