@@ -8,6 +8,7 @@ import (
 
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/services"
+	"vimnotion.com/server/internal/utils"
 )
 
 func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
@@ -25,7 +26,7 @@ func RouteVnObjectRequests(db *sql.DB) http.HandlerFunc {
 
 func UpdateVnObject(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		email, err := getEmailFromToken(r)
+		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			writeAuthError(w, err.Error())
 			return
@@ -139,7 +140,7 @@ func GrepVnObjects(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		email, err := getEmailFromToken(r)
+		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			writeAuthError(w, err.Error())
 			return

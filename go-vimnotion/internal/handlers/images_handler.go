@@ -9,6 +9,7 @@ import (
 
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/services"
+	"vimnotion.com/server/internal/utils"
 )
 
 func GetImageById(db *sql.DB) http.HandlerFunc {
@@ -46,7 +47,7 @@ func InsertImage(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		email, err := getEmailFromToken(r)
+		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			writeAuthError(w, err.Error())
 			return

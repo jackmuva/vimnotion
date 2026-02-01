@@ -3,13 +3,16 @@ package services
 import (
 	"bufio"
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
+	"vimnotion.com/server/internal/repository"
 	aitools "vimnotion.com/server/internal/services/ai_tools"
 )
 
@@ -22,10 +25,10 @@ func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage m
 	}
 	messages := []models.AiMessage{systemMessage, userMessage}
 
-	return CallAiGateway(w, flusher, messages)
+	return OneshotAi(w, flusher, messages)
 }
 
-func CallAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
+func OneshotAi(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	requestBody := map[string]any{
@@ -66,7 +69,31 @@ func CallAiGateway(w http.ResponseWriter, flusher http.Flusher, messages []model
 	return scanner.Err()
 }
 
-func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []models.AiMessage) error {
+func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, sessionId string, email string, messages []models.AiMessage, db *sql.DB) error {
+	session, err := repository.GetChatSessionsBySessionIdAndEmail(db, sessionId, email)
+	if err != nil {
+		http.Error(w, string("unable to get session"), http.StatusInternalServerError)
+		return err
+	}
+	if len(session) == 0 && messages[0].Content != nil {
+		summary := "new chat"
+		if len(*messages[0].Content) > 100 {
+			summary = (*messages[0].Content)[:100] + "..."
+		} else {
+			summary = *messages[0].Content
+		}
+		err := repository.InsertChatSession(db, models.ChatSession{
+			SessionId:  sessionId,
+			Messages:   messages,
+			Summary:    summary,
+			UpdateDate: time.Now().UTC().String(),
+			Email:      email,
+		})
+		if err != nil {
+			fmt.Printf("unable to create session: %s\n", sessionId)
+		}
+	}
+
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	var tools []models.AiTool
@@ -102,6 +129,8 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 
 	scanner := bufio.NewScanner(resp.Body)
 	var isTool bool = false
+	var isContent bool = false
+	content := ""
 	var toolCallMap = make(map[string]models.ToolCallDelta)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -134,6 +163,9 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 
 		if _, ok := chatCompletionData.Choices[0].Delta["tool_calls"]; ok {
 			isTool = true
+		} else if _, ok := chatCompletionData.Choices[0].Delta["content"]; ok {
+			isContent = true
+			content += chatCompletionData.Choices[0].Delta["content"].(string)
 		}
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
@@ -146,8 +178,33 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, messages []model
 	}
 
 	if isTool && len(toolCallMap) > 0 {
-		newMessages := AppendToolCallMessages(messages, toolCallMap)
-		return CallMainAgent(w, flusher, newMessages)
+		newMessages := AppendToolCallMessages(messages, toolCallMap, email, sessionId, db)
+		err := repository.UpdateChatSession(db, models.ChatSession{
+			SessionId:  sessionId,
+			Messages:   newMessages,
+			Summary:    *messages[0].Content,
+			UpdateDate: time.Now().UTC().String(),
+			Email:      email,
+		})
+		if err != nil {
+			fmt.Printf("Unable to update session: %s\n", sessionId)
+		}
+		return CallMainAgent(w, flusher, sessionId, email, newMessages, db)
+	} else if isContent {
+		messages = append(messages, models.AiMessage{
+			Role:    "assistant",
+			Content: &content,
+		})
+		err := repository.UpdateChatSession(db, models.ChatSession{
+			SessionId:  sessionId,
+			Messages:   messages,
+			Summary:    *messages[0].Content,
+			UpdateDate: time.Now().UTC().String(),
+			Email:      email,
+		})
+		if err != nil {
+			fmt.Printf("Unable to update session: %s\n", sessionId)
+		}
 	}
 
 	return scanner.Err()
@@ -187,12 +244,8 @@ func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.
 	}
 }
 
-func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta) []models.AiMessage {
-	var newMessages []models.AiMessage
-	for _, msg := range messages {
-		newMessages = append(newMessages, msg)
-	}
-
+func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta,
+	email string, sessionId string, db *sql.DB) []models.AiMessage {
 	var toolCalls []models.AiToolCall
 	for _, v := range toolCallMap {
 		toolCalls = append(toolCalls, models.AiToolCall{
@@ -201,21 +254,30 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			Function: v.Function,
 		})
 	}
-	newMessages = append(newMessages, models.AiMessage{
+	messages = append(messages, models.AiMessage{
 		Role:      "assistant",
 		ToolCalls: toolCalls,
 	})
 
 	for _, v := range toolCallMap {
-		result := ""
+		args := ""
 		if *v.Function.Name == "plan_tool" {
-			result = *v.Function.Arguments
+			args = *v.Function.Arguments
+			var planArgs struct {
+				PlanName string   `json:"planName"`
+				Subtasks []string `json:"subtasks"`
+			}
+			err := json.Unmarshal([]byte(args), &planArgs)
+			if err != nil {
+				break
+			}
+			aitools.ExecutePlanTool(planArgs.PlanName, planArgs.Subtasks, email, sessionId, db)
 		}
-		newMessages = append(newMessages, models.AiMessage{
+		messages = append(messages, models.AiMessage{
 			Role:       "tool",
 			ToolCallId: v.Id,
-			Content:    &result,
+			Content:    &args,
 		})
 	}
-	return newMessages
+	return messages
 }

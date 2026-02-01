@@ -77,11 +77,11 @@ type ImageReference struct {
 }
 
 type ChatSession struct {
-	SessionId  string `json:"sessionId"`
-	Messages   string `json:"messages"`
-	Summary    string `json:"summary"`
-	UpdateDate string `json:"updateDate"`
-	Email      string `json:"email"`
+	SessionId  string      `json:"sessionId"`
+	Messages   []AiMessage `json:"messages"`
+	Summary    string      `json:"summary"`
+	UpdateDate string      `json:"updateDate"`
+	Email      string      `json:"email"`
 }
 
 type ChatFile struct {

@@ -10,6 +10,7 @@ import (
 
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/services"
+	"vimnotion.com/server/internal/utils"
 )
 
 func HandlePersonalDirectory(db *sql.DB) http.HandlerFunc {
@@ -35,7 +36,7 @@ func GetPersonalDirectory(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		email, err := getEmailFromToken(r)
+		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			writeAuthError(w, err.Error())
 			return
@@ -66,7 +67,7 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		email, err := getEmailFromToken(r)
+		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			writeAuthError(w, err.Error())
 			return
@@ -99,19 +100,6 @@ func UpdatePersonalDirectory(db *sql.DB) http.HandlerFunc {
 		}
 		w.Write(jsonMessage)
 	}
-}
-
-func getEmailFromToken(r *http.Request) (string, error) {
-	tokenCookie, err := r.Cookie("token")
-	if err != nil {
-		return "", fmt.Errorf("need to auth")
-	}
-	token, err := services.VerifyJwt(tokenCookie.Value)
-	if err != nil {
-		return "", fmt.Errorf("invalid token")
-	}
-	claims := token.Claims.(jwt.MapClaims)
-	return claims["email"].(string), nil
 }
 
 func writeAuthError(w http.ResponseWriter, message string) {

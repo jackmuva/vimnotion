@@ -1,6 +1,13 @@
 package aitools
 
-import "vimnotion.com/server/internal/models"
+import (
+	"database/sql"
+	"strings"
+
+	"github.com/google/uuid"
+	"vimnotion.com/server/internal/models"
+	"vimnotion.com/server/internal/repository"
+)
 
 var PlanTool models.AiTool = models.AiTool{
 	Type: "function",
@@ -41,6 +48,10 @@ var PlanTool models.AiTool = models.AiTool{
 		Parameters: models.AiFunctionParams{
 			Type: "object",
 			Properties: map[string]models.AiFunctionProperties{
+				"planName": {
+					Type:        "string",
+					Description: "Concise name that describes the overall plan",
+				},
 				"subtasks": {
 					Type:        "array",
 					Description: "List of subtasks in the plan",
@@ -54,4 +65,22 @@ var PlanTool models.AiTool = models.AiTool{
 			Required: []string{"subtasks"},
 		},
 	},
+}
+
+func ExecutePlanTool(planName string, todos []string, email string, sessionId string, db *sql.DB) error {
+	var planContents strings.Builder
+	for _, todo := range todos {
+		planContents.WriteString("- [ ] ")
+		planContents.WriteString(todo)
+		planContents.WriteString("\n")
+	}
+	var planFile = models.ChatFile{
+		FileId:       uuid.New().String(),
+		FileName:     planName,
+		FileContents: planContents.String(),
+		Email:        email,
+		SessionId:    sessionId,
+	}
+	repository.InsertChatFile(db, planFile)
+	return nil
 }

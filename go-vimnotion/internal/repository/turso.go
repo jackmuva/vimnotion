@@ -2,11 +2,13 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
-	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"os"
 	"strings"
 	"time"
+
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 )
@@ -416,8 +418,12 @@ func GetImageReferenceCount(db *sql.DB, imageId string) (*struct{ Count int }, e
 }
 
 func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
-	_, err := db.Exec("INSERT INTO ChatSession(sessionId, messages, summary, updateDate, email) VALUES(?, ?, ?, ?, ?)",
-		chatSession.SessionId, chatSession.Messages, chatSession.Summary, chatSession.UpdateDate, chatSession.Email)
+	jsonString, err := json.Marshal(chatSession.Messages)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("INSERT INTO ChatSession(sessionId, messages, summary, updateDate, email) VALUES(?, ?, ?, ?, ?)",
+		chatSession.SessionId, jsonString, chatSession.Summary, chatSession.UpdateDate, chatSession.Email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 		return err
@@ -426,8 +432,13 @@ func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
 }
 
 func UpdateChatSession(db *sql.DB, chatSession models.ChatSession) error {
-	_, err := db.Exec("UPDATE ChatSession SET messages=?, updateDate=?, summary=? WHERE sessionId=? AND email=?",
-		chatSession.Messages, chatSession.UpdateDate, chatSession.Summary, chatSession.SessionId, chatSession.Email)
+	jsonString, err := json.Marshal(chatSession.Messages)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE ChatSession SET messages=?, updateDate=?, summary=? WHERE sessionId=? AND email=?",
+		jsonString, chatSession.UpdateDate, chatSession.Summary, chatSession.SessionId, chatSession.Email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
 		return err
@@ -447,6 +458,34 @@ func DeleteChatSession(db *sql.DB, chatSession models.ChatSession) error {
 
 func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, error) {
 	rows, err := db.Query("SELECT * FROM ChatSession WHERE email=? LIMIT 50", email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sessions []models.ChatSession
+
+	for rows.Next() {
+		var session models.ChatSession
+
+		if err := rows.Scan(&session.SessionId, &session.Summary, &session.Messages, &session.UpdateDate, &session.Email); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		sessions = append(sessions, session)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func GetChatSessionsBySessionIdAndEmail(db *sql.DB, sessionId string, email string) ([]models.ChatSession, error) {
+	rows, err := db.Query("SELECT * FROM ChatSession WHERE email=? AND sessionId=? LIMIT 1", email, sessionId)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return nil, err
