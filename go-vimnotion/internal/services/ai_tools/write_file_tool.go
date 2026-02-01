@@ -2,18 +2,21 @@ package aitools
 
 import (
 	"database/sql"
+	_ "embed"
 
 	"github.com/google/uuid"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
 )
 
+//go:embed write_file_tool_description.md
+var writeFileToolDescription string
+
 var WriteFileTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
-		Name: "write_file_tool",
-		Description: "Use this tool to write long text contents to a files that can later be accessed by listing files and reading files." +
-			"## When to use this tool:\n",
+		Name:        "write_file_tool",
+		Description: writeFileToolDescription,
 		Parameters: models.AiFunctionParams{
 			Type: "object",
 			Properties: map[string]models.AiFunctionProperties{
