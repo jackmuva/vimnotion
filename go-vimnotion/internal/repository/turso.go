@@ -418,12 +418,15 @@ func GetImageReferenceCount(db *sql.DB, imageId string) (*struct{ Count int }, e
 }
 
 func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
+	fmt.Printf("DEBUG InsertChatSession - Messages: %+v\n", chatSession.Messages)
+	fmt.Printf("DEBUG InsertChatSession - Messages length: %d\n", len(chatSession.Messages))
 	jsonString, err := json.Marshal(chatSession.Messages)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO ChatSession(sessionId, messages, summary, updateDate, email) VALUES(?, ?, ?, ?, ?)",
-		chatSession.SessionId, jsonString, chatSession.Summary, chatSession.UpdateDate, chatSession.Email)
+	fmt.Printf("DEBUG InsertChatSession - JSON: %s\n", string(jsonString))
+	_, err = db.Exec("INSERT INTO ChatSession(sessionId, summary, messages, updateDate, email) VALUES(?, ?, ?, ?, ?)",
+		chatSession.SessionId, chatSession.Summary, jsonString, chatSession.UpdateDate, chatSession.Email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 		return err
@@ -468,9 +471,15 @@ func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, err
 
 	for rows.Next() {
 		var session models.ChatSession
+		var messagesJSON string
 
-		if err := rows.Scan(&session.SessionId, &session.Summary, &session.Messages, &session.UpdateDate, &session.Email); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email); err != nil {
 			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		if err := json.Unmarshal([]byte(messagesJSON), &session.Messages); err != nil {
+			fmt.Printf("Error unmarshaling messages: %v\n", err)
 			return nil, err
 		}
 
@@ -496,9 +505,15 @@ func GetChatSessionsBySessionIdAndEmail(db *sql.DB, sessionId string, email stri
 
 	for rows.Next() {
 		var session models.ChatSession
+		var messagesJSON string
 
-		if err := rows.Scan(&session.SessionId, &session.Summary, &session.Messages, &session.UpdateDate, &session.Email); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email); err != nil {
 			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		if err := json.Unmarshal([]byte(messagesJSON), &session.Messages); err != nil {
+			fmt.Printf("Error unmarshaling messages: %v\n", err)
 			return nil, err
 		}
 

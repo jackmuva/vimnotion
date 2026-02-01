@@ -1,6 +1,7 @@
 import { AiMessage } from "@/types/ai-types";
 import { VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
+import { v4 } from "uuid";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -28,6 +29,7 @@ export const getAgentStream = async (messages: Array<AiMessage>): Promise<Respon
 			method: "POST",
 			body: JSON.stringify({
 				messages: messages,
+				sessionId: v4(),
 			}),
 			credentials: "include"
 		});

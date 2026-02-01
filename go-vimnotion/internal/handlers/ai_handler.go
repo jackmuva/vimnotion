@@ -56,8 +56,8 @@ func AgentResponse(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		var payload struct {
-			Messages  []models.AiMessage
-			SessionId string
+			Messages  []models.AiMessage `json:"messages"`
+			SessionId string             `json:"sessionId"`
 		}
 		err = json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
