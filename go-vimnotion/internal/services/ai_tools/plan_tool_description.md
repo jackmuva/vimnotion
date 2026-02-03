@@ -2,7 +2,7 @@ Use this tool to break down a complex ask into smaller subtasks
 
 ## When to use this tool:
 Use this tool when the user asks a complex task that's better off split into smaller tasks
-that can be done step by step
+that can be done step by step.
 
 <example>
 User: Proofread this article for grammatical errors and overall coherence
