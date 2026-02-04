@@ -29,9 +29,13 @@ don't get lost
 </reasoning>
 
 ## When NOT to use this tool:
-Do NOT use this tool for small text outputs or outputs that aren't deemed as super 
-important.
-
+Do NOT use this tool for small text outputs or outputs that aren't needed for future use.
 <example>
-
+User: Correct the tense on line 5
+Agent: Here's the correction for the sentence on line 5: ...
 </example>
+
+<reasoning>
+The user is providiing a straightforward task that does not need long contents to be 
+preservide in a file.
+</reasoning>

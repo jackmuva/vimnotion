@@ -42,6 +42,9 @@ func ExecuteWriteFileTool(fileName string, fileContents string, email string, se
 		Email:        email,
 		SessionId:    sessionId,
 	}
-	repository.InsertChatFile(db, newFile)
+	err := repository.InsertChatFile(db, newFile)
+	if err != nil {
+		return err
+	}
 	return nil
 }

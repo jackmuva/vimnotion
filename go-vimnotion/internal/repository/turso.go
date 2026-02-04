@@ -583,3 +583,31 @@ func GetChatFilesBySessionId(db *sql.DB, sessionId string, email string) ([]mode
 	}
 	return chatFiles, nil
 }
+
+func GetChatFilesByFileName(db *sql.DB, fileName string, sessionId string, email string) ([]models.ChatFile, error) {
+	rows, err := db.Query("SELECT fileId, fileName, fileContents, email, sessionId FROM ChatFiles WHERE sessionId=? AND email=? AND fileName=?", sessionId, email, fileName)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var chatFiles []models.ChatFile
+
+	for rows.Next() {
+		var chatFile models.ChatFile
+
+		if err := rows.Scan(&chatFile.FileId, &chatFile.FileName, &chatFile.FileContents, &chatFile.Email, &chatFile.SessionId); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		chatFiles = append(chatFiles, chatFile)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return chatFiles, nil
+}
