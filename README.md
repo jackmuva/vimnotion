@@ -22,8 +22,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] ai with context to certain files (maybe with the @ shortcut)
-    - [ ] Write file tool
-    - [ ] Read file tool
+    - [ ] compaction tool
     - [ ] Slash commands?
     - [x] @ files
 
