@@ -418,13 +418,10 @@ func GetImageReferenceCount(db *sql.DB, imageId string) (*struct{ Count int }, e
 }
 
 func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
-	fmt.Printf("DEBUG InsertChatSession - Messages: %+v\n", chatSession.Messages)
-	fmt.Printf("DEBUG InsertChatSession - Messages length: %d\n", len(chatSession.Messages))
 	jsonString, err := json.Marshal(chatSession.Messages)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("DEBUG InsertChatSession - JSON: %s\n", string(jsonString))
 	_, err = db.Exec("INSERT INTO ChatSession(sessionId, summary, messages, updateDate, email) VALUES(?, ?, ?, ?, ?)",
 		chatSession.SessionId, chatSession.Summary, jsonString, chatSession.UpdateDate, chatSession.Email)
 	if err != nil {

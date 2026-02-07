@@ -263,6 +263,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 
 	for _, v := range toolCallMap {
 		args := ""
+		var execRes string
 		if *v.Function.Name == "plan_tool" {
 			args = *v.Function.Arguments
 			var planArgs struct {
@@ -273,12 +274,17 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			if err != nil {
 				break
 			}
-			aitools.ExecutePlanTool(planArgs.PlanName, planArgs.Subtasks, email, sessionId, db)
+			todos, err := aitools.ExecutePlanTool(planArgs.PlanName, planArgs.Subtasks, email, sessionId, db)
+			if err == nil {
+				execRes = "Error executing plan tool"
+			}
+			execRes = *todos
 		}
+		//TODO:Update the rest of the tools
 		messages = append(messages, models.AiMessage{
 			Role:       "tool",
 			ToolCallId: v.Id,
-			Content:    &args,
+			Content:    &execRes,
 		})
 	}
 	return messages
