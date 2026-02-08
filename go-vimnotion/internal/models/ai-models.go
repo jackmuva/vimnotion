@@ -1,5 +1,6 @@
 package models
 
+// NOTE: Internal message types to send to API
 type AiMessage struct {
 	Role       string       `json:"role"`
 	Content    *string      `json:"content,omitempty"`
@@ -13,6 +14,7 @@ type AiToolCall struct {
 	Function ToolFunction `json:"function"`
 }
 
+// NOTE: Chat Completion Data types from OpenAI / Responses
 type ChatCompletionData struct {
 	Id                string        `json:"id"`
 	Object            string        `json:"object"`
@@ -44,6 +46,7 @@ type ToolFunction struct {
 	Arguments *string `json:"arguments"`
 }
 
+// NOTE: Use this internally to define tools
 type AiTool struct {
 	Type     string     `json:"type"`
 	Function AiFunction `json:"function"`

@@ -13,7 +13,7 @@ import (
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
-	aitools "vimnotion.com/server/internal/services/ai_tools"
+	"vimnotion.com/server/internal/services/ai_tools"
 )
 
 var asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
@@ -210,7 +210,6 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, sessionId string
 	}
 
 	return scanner.Err()
-
 }
 
 func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.ToolCallDelta) {
@@ -262,10 +261,9 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 	})
 
 	for _, v := range toolCallMap {
-		args := ""
 		var execRes string
+		args := *v.Function.Arguments
 		if *v.Function.Name == "plan_tool" {
-			args = *v.Function.Arguments
 			var planArgs struct {
 				PlanName string   `json:"planName"`
 				Subtasks []string `json:"subtasks"`
