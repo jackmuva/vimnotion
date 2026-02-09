@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"vimnotion.com/server/internal/models"
+	"vimnotion.com/server/internal/repository"
 	"vimnotion.com/server/internal/services"
 	"vimnotion.com/server/internal/utils"
 )
@@ -52,7 +54,7 @@ func AgentResponse(db *sql.DB) http.HandlerFunc {
 		}
 		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
-			http.Error(w, string("Invalid auth"), http.StatusBadRequest)
+			http.Error(w, "Invalid auth", http.StatusBadRequest)
 			return
 		}
 		var payload struct {
@@ -76,7 +78,35 @@ func AgentResponse(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		err = services.CallMainAgent(w, flusher, payload.SessionId, email, payload.Messages, db)
+		existingSession, err := repository.GetChatSessionsBySessionIdAndEmail(db, payload.SessionId, email)
+		if err != nil {
+			http.Error(w, "unable to get session", http.StatusInternalServerError)
+			return
+		}
+
+		if len(existingSession) == 0 {
+			if len(payload.Messages) == 0 || payload.Messages[0].Content == nil {
+				http.Error(w, "First message content required for new session", http.StatusBadRequest)
+				return
+			}
+			summary := *payload.Messages[0].Content
+			if len(summary) > 100 {
+				summary = summary[:100] + "..."
+			}
+			newSession := models.ChatSession{
+				SessionId:  payload.SessionId,
+				Messages:   payload.Messages,
+				Summary:    summary,
+				UpdateDate: time.Now().UTC().String(),
+				Email:      email,
+			}
+			existingSession = append(existingSession, newSession)
+			err := repository.InsertChatSession(db, newSession)
+			if err != nil {
+				fmt.Printf("unable to create session: %s\n", payload.SessionId)
+			}
+		}
+		err = services.CallMainAgent(w, flusher, existingSession[0], email, payload.Messages, db)
 		if err != nil {
 			fmt.Printf("AI service error: %s\n", err)
 			return

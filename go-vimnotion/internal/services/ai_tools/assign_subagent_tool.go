@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
@@ -41,8 +42,28 @@ var AssignSubagentTool models.AiTool = models.AiTool{
 	},
 }
 
-func ExecuteAssignSubagentTool(task string, subagentPrompt string, email string, sessionId string, db *sql.DB) (*string, error) {
-	var messages []models.AiMessage
+func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, db *sql.DB) (*string, error) {
+	if len(messages) == 0 {
+		messages = append(messages, models.AiMessage{
+			Role:    "user",
+			Content: &subagentPrompt,
+		})
+	}
+
+	if session == nil {
+		newSession := models.ChatSession{
+			SessionId:  uuid.New().String(),
+			Messages:   messages,
+			Summary:    task,
+			UpdateDate: time.Now().UTC().String(),
+			Email:      email,
+		}
+		err := repository.InsertChatSession(db, newSession)
+		if err != nil {
+			return nil, fmt.Errorf("Unable to create chat session")
+		}
+		session = &newSession
+	}
 
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
@@ -129,32 +150,32 @@ func ExecuteAssignSubagentTool(task string, subagentPrompt string, email string,
 	}
 
 	if isTool && len(toolCallMap) > 0 {
-		newMessages := AppendToolCallMessages(messages, toolCallMap, email, sessionId, db)
+		newMessages := AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
 		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  sessionId,
+			SessionId:  session.SessionId,
 			Messages:   newMessages,
-			Summary:    existingSession[0].Summary,
+			Summary:    session.Summary,
 			UpdateDate: time.Now().UTC().String(),
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", sessionId)
+			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
-		return ExecuteAssignSubagentTool(sessionId, email, newMessages, db)
+		return ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, db)
 	} else if isContent {
 		messages = append(messages, models.AiMessage{
 			Role:    "assistant",
 			Content: &content,
 		})
 		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  sessionId,
+			SessionId:  session.SessionId,
 			Messages:   messages,
-			Summary:    existingSession[0].Summary,
+			Summary:    session.Summary,
 			UpdateDate: time.Now().UTC().String(),
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", sessionId)
+			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
 	}
 

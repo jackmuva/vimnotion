@@ -69,33 +69,7 @@ func OneshotAi(w http.ResponseWriter, flusher http.Flusher, messages []models.Ai
 	return scanner.Err()
 }
 
-func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, sessionId string, email string, messages []models.AiMessage, db *sql.DB) error {
-	existingSession, err := repository.GetChatSessionsBySessionIdAndEmail(db, sessionId, email)
-	if err != nil {
-		http.Error(w, string("unable to get session"), http.StatusInternalServerError)
-		return err
-	}
-	if len(existingSession) == 0 && messages[0].Content != nil {
-		summary := "new chat"
-		if len(*messages[0].Content) > 100 {
-			summary = (*messages[0].Content)[:100] + "..."
-		} else {
-			summary = *messages[0].Content
-		}
-		newSession := models.ChatSession{
-			SessionId:  sessionId,
-			Messages:   messages,
-			Summary:    summary,
-			UpdateDate: time.Now().UTC().String(),
-			Email:      email,
-		}
-		existingSession = append(existingSession, newSession)
-		err := repository.InsertChatSession(db, newSession)
-		if err != nil {
-			fmt.Printf("unable to create session: %s\n", sessionId)
-		}
-	}
-
+func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.ChatSession, email string, messages []models.AiMessage, db *sql.DB) error {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	var tools []models.AiTool
@@ -180,32 +154,32 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, sessionId string
 	}
 
 	if isTool && len(toolCallMap) > 0 {
-		newMessages := AppendToolCallMessages(messages, toolCallMap, email, sessionId, db)
+		newMessages := AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
 		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  sessionId,
+			SessionId:  session.SessionId,
 			Messages:   newMessages,
-			Summary:    existingSession[0].Summary,
+			Summary:    session.Summary,
 			UpdateDate: time.Now().UTC().String(),
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", sessionId)
+			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
-		return CallMainAgent(w, flusher, sessionId, email, newMessages, db)
+		return CallMainAgent(w, flusher, session, email, newMessages, db)
 	} else if isContent {
 		messages = append(messages, models.AiMessage{
 			Role:    "assistant",
 			Content: &content,
 		})
 		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  sessionId,
+			SessionId:  session.SessionId,
 			Messages:   messages,
-			Summary:    existingSession[0].Summary,
+			Summary:    session.Summary,
 			UpdateDate: time.Now().UTC().String(),
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", sessionId)
+			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
 	}
 
@@ -245,8 +219,7 @@ func PopulateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.
 	}
 }
 
-func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta,
-	email string, sessionId string, db *sql.DB) []models.AiMessage {
+func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]models.ToolCallDelta, email string, sessionId string, db *sql.DB) []models.AiMessage {
 	var toolCalls []models.AiToolCall
 	for _, v := range toolCallMap {
 		toolCalls = append(toolCalls, models.AiToolCall{
@@ -273,10 +246,11 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				break
 			}
 			todos, err := aitools.ExecutePlanTool(planArgs.PlanName, planArgs.Subtasks, email, sessionId, db)
-			if err == nil {
+			if err != nil {
 				execRes = "Error executing plan tool"
+			} else {
+				execRes = *todos
 			}
-			execRes = *todos
 		}
 		//TODO:Update the rest of the tools
 		messages = append(messages, models.AiMessage{
