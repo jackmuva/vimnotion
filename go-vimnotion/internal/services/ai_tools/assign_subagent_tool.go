@@ -44,6 +44,13 @@ var AssignSubagentTool models.AiTool = models.AiTool{
 
 func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, db *sql.DB) (*string, error) {
 	if len(messages) == 0 {
+		var sysPrompt string = `You are a subagent that completes specialized tasks. 
+
+			When finished with the task, provide a summary of what you did and the final result`
+		messages = append(messages, models.AiMessage{
+			Role:    "system",
+			Content: &sysPrompt,
+		})
 		messages = append(messages, models.AiMessage{
 			Role:    "user",
 			Content: &subagentPrompt,
@@ -114,18 +121,12 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		}
 		data := line[6:]
 		if data == "[DONE]" {
-			if !isTool {
-				// fmt.Fprintf(w, "%s\n", line)
-				fmt.Printf("%s\n", line)
-				// flusher.Flush()
-			}
 			break
 		}
 
 		var chatCompletionData models.ChatCompletionData
 		err := json.Unmarshal([]byte(data), &chatCompletionData)
 		if err != nil {
-			fmt.Println(err)
 			continue
 		}
 
@@ -144,24 +145,38 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 				populateToolCallMap(toolCalls, toolCallMap)
 			}
 		}
-		// fmt.Fprintf(w, "%s\n", line)
-		fmt.Printf("%s\n", line)
-		// flusher.Flush()
 	}
 
 	if isTool && len(toolCallMap) > 0 {
-		newMessages := AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
+		messages = AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
 		err := repository.UpdateChatSession(db, models.ChatSession{
 			SessionId:  session.SessionId,
-			Messages:   newMessages,
+			Messages:   messages,
 			Summary:    session.Summary,
 			UpdateDate: time.Now().UTC().String(),
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", session.SessionId)
+			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
-		return ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, db)
+		messageContent, err := ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, db)
+		if err != nil {
+			return nil, fmt.Errorf("unable to recurse subagent")
+		}
+		messages = append(messages, models.AiMessage{
+			Role:    "assistant",
+			Content: messageContent,
+		})
+		err = repository.UpdateChatSession(db, models.ChatSession{
+			SessionId:  session.SessionId,
+			Messages:   messages,
+			Summary:    session.Summary,
+			UpdateDate: time.Now().UTC().String(),
+			Email:      email,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
+		}
 	} else if isContent {
 		messages = append(messages, models.AiMessage{
 			Role:    "assistant",
@@ -175,11 +190,14 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			Email:      email,
 		})
 		if err != nil {
-			fmt.Printf("Unable to update session: %s\n", session.SessionId)
+			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
 	}
 
-	return nil, scanner.Err()
+	if len(messages) == 0 {
+		return nil, fmt.Errorf("No messages given to subagent")
+	}
+	return messages[len(messages)-1].Content, scanner.Err()
 }
 
 func populateToolCallMap(toolCalls []interface{}, toolCallMap map[string]models.ToolCallDelta) {
@@ -243,10 +261,11 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				break
 			}
 			todos, err := ExecutePlanTool(planArgs.PlanName, planArgs.Subtasks, email, sessionId, db)
-			if err == nil {
+			if err != nil {
 				execRes = "Error executing plan tool"
+			} else {
+				execRes = *todos
 			}
-			execRes = *todos
 		}
 		//TODO:Update the rest of the tools
 		messages = append(messages, models.AiMessage{
