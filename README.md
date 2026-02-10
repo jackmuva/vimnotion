@@ -40,5 +40,3 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] search
     - [ ] image storage
     - [ ] key commands useRef
-- [ ] twitter video on emojis
-- [ ] twitter video on all buffer changes
