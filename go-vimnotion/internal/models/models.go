@@ -91,3 +91,10 @@ type ChatFile struct {
 	Email        string `json:"email"`
 	SessionId    string `json:"sessionId"`
 }
+
+type Suggestion struct {
+	StartLine int    `json:"startLine"`
+	EndLine   int    `json:"endLine"`
+	OldString string `json:"oldString"`
+	NewString string `json:"newString"`
+}

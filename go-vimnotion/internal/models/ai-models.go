@@ -46,6 +46,30 @@ type ToolFunction struct {
 	Arguments *string `json:"arguments"`
 }
 
+type ResponseFormat struct {
+	Type       string     `json:"type"`
+	JsonSchema JsonSchema `json:"json_schema"`
+}
+
+type JsonSchema struct {
+	Name                 string           `json:"name"`
+	Description          string           `json:"description"`
+	Required             []string         `json:"required"`
+	AdditionalProperties bool             `json:"additionalProperties"`
+	Schema               ActualJsonSchema `json:"schema"`
+}
+
+type ActualJsonSchema struct {
+	Type       string                          `json:"type"`
+	Properties map[string]JsonSchemaProperties `json:"properties"`
+}
+
+type JsonSchemaProperties struct {
+	Type        string             `json:"type"`
+	Description string             `json:"description"`
+	Items       *map[string]string `json:"items"`
+}
+
 // NOTE: Use this internally to define tools
 type AiTool struct {
 	Type     string     `json:"type"`
