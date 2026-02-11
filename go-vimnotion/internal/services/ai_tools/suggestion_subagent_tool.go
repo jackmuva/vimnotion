@@ -14,13 +14,13 @@ import (
 	"vimnotion.com/server/internal/repository"
 )
 
-//go:embed launch_suggestion_subagent_tool_description.md
+//go:embed suggestion_subagent_tool_description.md
 var suggestToolDescription string
 
 var SuggestTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
-		Name:        "suggest_tool",
+		Name:        "suggestion_subagent_tool",
 		Description: suggestToolDescription,
 		Parameters: models.AiFunctionParams{
 			Type: "object",
@@ -44,7 +44,7 @@ func ExecuteSuggestTool(suggestions *string, fileName *string, email string, ses
 		return nil, fmt.Errorf("No suggestions provided")
 	}
 
-	var subagentPrompt = "You are an agent tasked with organizing suggestions into an array of objects with the following structure: {startLine: number, endLine: number, oldString: string, newString: string}\nThese objects will be used to allow the user to accept or deny these suggestions. Make sure to include ALL of the suggestions in the user prompt"
+	var subagentPrompt = "You are an agent tasked with organizing suggestions into an array of objects with the following structure: {startLine: number, endLine: number, oldString: string, newString: string, explanation: string}\nThese objects will be used to allow the user to accept or deny these suggestions. Make sure to include ALL of the suggestions in the user prompt"
 
 	var suggestionPrompt = "Extract the right information from the following suggestions:"
 
@@ -75,33 +75,49 @@ func ExecuteSuggestTool(suggestions *string, fileName *string, email string, ses
 
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
-	requestBody := map[string]any{
+	requestBody := map[string]interface{}{
 		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
 		"stream":   false,
-		"response_format": map[string]any{
-			"type": "json_schema",
-			"json_schema": map[string]any{
-				"name":                 "suggestions_response",
-				"strict":               true,
-				"additionalProperties": false,
-				"schema": map[string]any{
-					"type":                 "object",
-					"additionalProperties": false,
-					"required":             []string{"suggestions"},
-					"properties": map[string]any{
-						"suggestions": map[string]any{
-							"type":        "array",
-							"description": "Array of suggestion objects",
-							"items": map[string]any{
+		"response_format": models.ResponseFormat{
+			Type: "json_schema",
+			JsonSchema: models.JsonSchema{
+				Name:                 "suggestions_response",
+				Strict:               true,
+				AdditionalProperties: false,
+				Schema: models.ActualJsonSchema{
+					Type:                 "object",
+					AdditionalProperties: false,
+					Required:             []string{"suggestions"},
+					Properties: map[string]models.JsonSchemaProperties{
+						"suggestions": {
+							Type:        "array",
+							Description: "Array of suggestion objects",
+							Items: &map[string]any{
 								"type":                 "object",
 								"additionalProperties": false,
 								"required":             []string{"startLine", "endLine", "oldString", "newString"},
-								"properties": map[string]any{
-									"startLine": map[string]string{"type": "integer", "description": "Starting line number of the edit"},
-									"endLine":   map[string]string{"type": "integer", "description": "Ending line number of the edit"},
-									"oldString": map[string]string{"type": "string", "description": "Original text to replace"},
-									"newString": map[string]string{"type": "string", "description": "New text to insert"},
+								"properties": map[string]models.JsonSchemaProperties{
+									"startLine": {
+										Type:        "integer",
+										Description: "Starting line number of the edit",
+									},
+									"endLine": {
+										Type:        "integer",
+										Description: "Ending line number of the edit",
+									},
+									"oldString": {
+										Type:        "string",
+										Description: "Original text to replace",
+									},
+									"newString": {
+										Type:        "string",
+										Description: "New text to insert",
+									},
+									"explanation": {
+										Type:        "string",
+										Description: "Explanation for the suggested edit",
+									},
 								},
 							},
 						},

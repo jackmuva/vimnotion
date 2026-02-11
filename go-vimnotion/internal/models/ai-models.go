@@ -57,17 +57,20 @@ type JsonSchema struct {
 	Required             []string         `json:"required"`
 	AdditionalProperties bool             `json:"additionalProperties"`
 	Schema               ActualJsonSchema `json:"schema"`
+	Strict               bool             `json:"strict"`
 }
 
 type ActualJsonSchema struct {
-	Type       string                          `json:"type"`
-	Properties map[string]JsonSchemaProperties `json:"properties"`
+	Type                 string                          `json:"type"`
+	Properties           map[string]JsonSchemaProperties `json:"properties"`
+	Required             []string                        `json:"required"`
+	AdditionalProperties bool                            `json:"additionalProperties"`
 }
 
 type JsonSchemaProperties struct {
-	Type        string             `json:"type"`
-	Description string             `json:"description"`
-	Items       *map[string]string `json:"items"`
+	Type        string          `json:"type"`
+	Description string          `json:"description"`
+	Items       *map[string]any `json:"items"`
 }
 
 // NOTE: Use this internally to define tools
