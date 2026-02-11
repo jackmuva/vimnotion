@@ -266,13 +266,69 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				execRes = *subagentResponse
 			}
 		} else if *v.Function.Name == "write_file_tool" {
-
+			var writeArgs struct {
+				FileName     string `json:"fileName"`
+				FileContents string `json:"fileContents"`
+			}
+			err := json.Unmarshal([]byte(args), &writeArgs)
+			if err != nil {
+				execRes = "Error parsing write file arguments"
+				break
+			}
+			err = aitools.ExecuteWriteFileTool(writeArgs.FileName, writeArgs.FileContents, email, sessionId, db)
+			if err != nil {
+				execRes = "Error writing file"
+			} else {
+				execRes = fmt.Sprintf("File '%s' written successfully", writeArgs.FileName)
+			}
 		} else if *v.Function.Name == "read_file_tool" {
-
+			var readArgs struct {
+				FileName string `json:"fileName"`
+			}
+			err := json.Unmarshal([]byte(args), &readArgs)
+			if err != nil {
+				execRes = "Error parsing read file arguments"
+				break
+			}
+			fileContents, err := aitools.ExecuteReadFileTool(readArgs.FileName, email, sessionId, db)
+			if err != nil {
+				execRes = fmt.Sprintf("Error reading file: %s", err.Error())
+			} else {
+				execRes = *fileContents
+			}
 		} else if *v.Function.Name == "list_files_tool" {
-
+			fileNames, err := aitools.ExecuteListFilesTool(email, sessionId, db)
+			if err != nil {
+				execRes = fmt.Sprintf("Error listing files: %s", err.Error())
+			} else {
+				filesJson, jsonErr := json.Marshal(fileNames)
+				if jsonErr != nil {
+					execRes = "Error serializing file list"
+				} else {
+					execRes = string(filesJson)
+				}
+			}
 		} else if *v.Function.Name == "suggestion_subagent_tool" {
-
+			var suggestionArgs struct {
+				Suggestions *string `json:"suggestions"`
+				FileName    *string `json:"fileName"`
+			}
+			err := json.Unmarshal([]byte(args), &suggestionArgs)
+			if err != nil {
+				execRes = "Error parsing suggestion arguments"
+				break
+			}
+			suggestions, err := aitools.ExecuteSuggestionSubagentTool(suggestionArgs.Suggestions, suggestionArgs.FileName, email, sessionId, db)
+			if err != nil {
+				execRes = fmt.Sprintf("Error generating suggestions: %s", err.Error())
+			} else {
+				suggestionsJson, jsonErr := json.Marshal(suggestions)
+				if jsonErr != nil {
+					execRes = "Error serializing suggestions"
+				} else {
+					execRes = string(suggestionsJson)
+				}
+			}
 		}
 
 		messages = append(messages, models.AiMessage{

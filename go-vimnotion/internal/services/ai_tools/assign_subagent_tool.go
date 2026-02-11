@@ -266,8 +266,50 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			} else {
 				execRes = *todos
 			}
+		} else if *v.Function.Name == "write_file_tool" {
+			var writeArgs struct {
+				FileName     string `json:"fileName"`
+				FileContents string `json:"fileContents"`
+			}
+			err := json.Unmarshal([]byte(args), &writeArgs)
+			if err != nil {
+				execRes = "Error parsing write file arguments"
+				break
+			}
+			err = ExecuteWriteFileTool(writeArgs.FileName, writeArgs.FileContents, email, sessionId, db)
+			if err != nil {
+				execRes = "Error writing file"
+			} else {
+				execRes = fmt.Sprintf("File '%s' written successfully", writeArgs.FileName)
+			}
+		} else if *v.Function.Name == "read_file_tool" {
+			var readArgs struct {
+				FileName string `json:"fileName"`
+			}
+			err := json.Unmarshal([]byte(args), &readArgs)
+			if err != nil {
+				execRes = "Error parsing read file arguments"
+				break
+			}
+			fileContents, err := ExecuteReadFileTool(readArgs.FileName, email, sessionId, db)
+			if err != nil {
+				execRes = fmt.Sprintf("Error reading file: %s", err.Error())
+			} else {
+				execRes = *fileContents
+			}
+		} else if *v.Function.Name == "list_files_tool" {
+			fileNames, err := ExecuteListFilesTool(email, sessionId, db)
+			if err != nil {
+				execRes = fmt.Sprintf("Error listing files: %s", err.Error())
+			} else {
+				filesJson, jsonErr := json.Marshal(fileNames)
+				if jsonErr != nil {
+					execRes = "Error serializing file list"
+				} else {
+					execRes = string(filesJson)
+				}
+			}
 		}
-		//TODO:Update the rest of the tools
 		messages = append(messages, models.AiMessage{
 			Role:       "tool",
 			ToolCallId: v.Id,
