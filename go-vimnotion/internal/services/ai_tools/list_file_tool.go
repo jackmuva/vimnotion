@@ -12,10 +12,10 @@ import (
 //go:embed list_file_tool_description.md
 var listFileToolDescription string
 
-var ListFileTool models.AiTool = models.AiTool{
+var ListFilesTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
-		Name:        "list_file_tool",
+		Name:        "list_files_tool",
 		Description: listFileToolDescription,
 		Parameters: models.AiFunctionParams{
 			Type:       "object",
@@ -25,7 +25,7 @@ var ListFileTool models.AiTool = models.AiTool{
 	},
 }
 
-func ExecuteListFileTool(email string, sessionId string, db *sql.DB) ([]string, error) {
+func ExecuteListFilesTool(email string, sessionId string, db *sql.DB) ([]string, error) {
 	files, err := repository.GetChatFilesBySessionId(db, sessionId, email)
 	if err != nil {
 		return nil, err

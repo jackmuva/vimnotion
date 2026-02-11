@@ -17,7 +17,7 @@ import (
 //go:embed suggestion_subagent_tool_description.md
 var suggestToolDescription string
 
-var SuggestTool models.AiTool = models.AiTool{
+var SuggestionSubagentTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
 		Name:        "suggestion_subagent_tool",
@@ -39,7 +39,7 @@ var SuggestTool models.AiTool = models.AiTool{
 	},
 }
 
-func ExecuteSuggestTool(suggestions *string, fileName *string, email string, sessionId string, db *sql.DB) ([]models.Suggestion, error) {
+func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email string, sessionId string, db *sql.DB) ([]models.Suggestion, error) {
 	if suggestions == nil && fileName == nil {
 		return nil, fmt.Errorf("No suggestions provided")
 	}

@@ -72,8 +72,7 @@ func OneshotAi(w http.ResponseWriter, flusher http.Flusher, messages []models.Ai
 func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.ChatSession, email string, messages []models.AiMessage, db *sql.DB) error {
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
-	var tools []models.AiTool
-	tools = append(tools, aitools.PlanTool)
+	tools := []models.AiTool{aitools.PlanTool, aitools.AssignSubagentTool, aitools.WriteFileTool, aitools.ReadFileTool, aitools.ListFilesTool, aitools.SuggestionSubagentTool}
 	requestBody := map[string]any{
 		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
@@ -251,8 +250,31 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			} else {
 				execRes = *todos
 			}
+		} else if *v.Function.Name == "assign_subagent_tool" {
+			var subagentArgs struct {
+				Task           string `json:"task"`
+				SubagentPrompt string `json:"subagentPrompt"`
+			}
+			err := json.Unmarshal([]byte(args), &subagentArgs)
+			if err != nil {
+				break
+			}
+			subagentResponse, err := aitools.ExecuteAssignSubagentTool(messages, subagentArgs.Task, subagentArgs.SubagentPrompt, email, nil, db)
+			if err != nil {
+				execRes = "Error executing subagent tool"
+			} else {
+				execRes = *subagentResponse
+			}
+		} else if *v.Function.Name == "write_file_tool" {
+
+		} else if *v.Function.Name == "read_file_tool" {
+
+		} else if *v.Function.Name == "list_files_tool" {
+
+		} else if *v.Function.Name == "suggestion_subagent_tool" {
+
 		}
-		//TODO:Update the rest of the tools
+
 		messages = append(messages, models.AiMessage{
 			Role:       "tool",
 			ToolCallId: v.Id,
