@@ -1,7 +1,6 @@
 package aitools
 
 import (
-	"bufio"
 	"bytes"
 	"database/sql"
 	_ "embed"
@@ -80,21 +79,36 @@ func ExecuteSuggestTool(suggestions *string, fileName *string, email string, ses
 		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
 		"stream":   false,
-		// "response_format": models.ResponseFormat{
-		// 	Type: "json_schema",
-		// 	JsonSchema: models.JsonSchema{
-		// 		Name: "Suggestions",
-		// 		Description: "An array of suggestions to offer the user",
-		// 		Schema: models.ActualJsonSchema{
-		// 			Type: "object",
-		// 			Properties: map[string]models.JsonSchemaProperties{
-		// 				"suggestions": models.JsonSchemaProperties{
-		// 					type: "array
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
+		"response_format": map[string]any{
+			"type": "json_schema",
+			"json_schema": map[string]any{
+				"name":                 "suggestions_response",
+				"strict":               true,
+				"additionalProperties": false,
+				"schema": map[string]any{
+					"type":                 "object",
+					"additionalProperties": false,
+					"required":             []string{"suggestions"},
+					"properties": map[string]any{
+						"suggestions": map[string]any{
+							"type":        "array",
+							"description": "Array of suggestion objects",
+							"items": map[string]any{
+								"type":                 "object",
+								"additionalProperties": false,
+								"required":             []string{"startLine", "endLine", "oldString", "newString"},
+								"properties": map[string]any{
+									"startLine": map[string]string{"type": "integer", "description": "Starting line number of the edit"},
+									"endLine":   map[string]string{"type": "integer", "description": "Ending line number of the edit"},
+									"oldString": map[string]string{"type": "string", "description": "Original text to replace"},
+									"newString": map[string]string{"type": "string", "description": "New text to insert"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	bodyBytes, err := json.Marshal(requestBody)
@@ -121,15 +135,29 @@ func ExecuteSuggestTool(suggestions *string, fileName *string, email string, ses
 
 	body, bodyErr := io.ReadAll(resp.Body)
 	if bodyErr != nil {
-		fmt.Printf("[GITHUB EMAIL BODY]: %s\n", bodyErr)
-	}
-	defer resp.Body.Close()
-
-	var suggestionResults []models.Suggestion
-	jsonErr := json.Unmarshal(body, &suggestionResults)
-	if jsonErr != nil {
-		return nil, fmt.Errorf("unable to parse suggestion json")
+		return nil, fmt.Errorf("unable to read response body: %w", bodyErr)
 	}
 
-	return suggestionResults, nil
+	var completion struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	if err := json.Unmarshal(body, &completion); err != nil {
+		return nil, fmt.Errorf("unable to parse chat completion response: %w", err)
+	}
+	if len(completion.Choices) == 0 {
+		return nil, fmt.Errorf("no choices returned from AI Gateway")
+	}
+
+	var suggestionsWrapper struct {
+		Suggestions []models.Suggestion `json:"suggestions"`
+	}
+	if err := json.Unmarshal([]byte(completion.Choices[0].Message.Content), &suggestionsWrapper); err != nil {
+		return nil, fmt.Errorf("unable to parse suggestion json from content: %w", err)
+	}
+
+	return suggestionsWrapper.Suggestions, nil
 }
