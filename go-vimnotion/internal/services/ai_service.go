@@ -258,7 +258,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			if err != nil {
 				break
 			}
-			subagentResponse, err := aitools.ExecuteAssignSubagentTool(messages, subagentArgs.Task, subagentArgs.SubagentPrompt, email, nil, db)
+			subagentResponse, err := aitools.ExecuteAssignSubagentTool([]models.AiMessage{}, subagentArgs.Task, subagentArgs.SubagentPrompt, email, nil, db)
 			if err != nil {
 				execRes = "Error executing subagent tool"
 			} else {

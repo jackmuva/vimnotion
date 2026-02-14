@@ -48,7 +48,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 			When finished with the task, provide a summary of what you did and the final result`
 		messages = append(messages, models.AiMessage{
-			Role:    "system",
+			Role:    "developer",
 			Content: &sysPrompt,
 		})
 		messages = append(messages, models.AiMessage{
@@ -67,6 +67,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		}
 		err := repository.InsertChatSession(db, newSession)
 		if err != nil {
+			fmt.Printf("Unable to create chat session\n")
 			return nil, fmt.Errorf("Unable to create chat session")
 		}
 		session = &newSession
@@ -86,11 +87,13 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 	bodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
+		fmt.Printf("unable to serialize request\n")
 		return nil, fmt.Errorf("unable to serialize request: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, requestUrl, bytes.NewReader(bodyBytes))
 	if err != nil {
+		fmt.Printf("unable to create AI Gateway request\n")
 		return nil, fmt.Errorf("unable to create AI Gateway request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
@@ -98,11 +101,13 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		fmt.Printf("unable to get AI Gateway response\n")
 		return nil, fmt.Errorf("unable to get AI Gateway response: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("AI Gateway returned status: %v \n", resp)
 		return nil, fmt.Errorf("AI Gateway returned status %d", resp.StatusCode)
 	}
 
@@ -157,10 +162,12 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			Email:      email,
 		})
 		if err != nil {
+			fmt.Printf("Unable to update session\n")
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
 		messageContent, err := ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, db)
 		if err != nil {
+			fmt.Printf("unable to recurse\n")
 			return nil, fmt.Errorf("unable to recurse subagent")
 		}
 		messages = append(messages, models.AiMessage{
@@ -293,6 +300,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 			}
 			fileContents, err := ExecuteReadFileTool(readArgs.FileName, email, sessionId, db)
 			if err != nil {
+				fmt.Printf("Error reading file")
 				execRes = fmt.Sprintf("Error reading file: %s", err.Error())
 			} else {
 				execRes = *fileContents
@@ -300,6 +308,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 		} else if *v.Function.Name == "list_files_tool" {
 			fileNames, err := ExecuteListFilesTool(email, sessionId, db)
 			if err != nil {
+				fmt.Printf("Error listing files")
 				execRes = fmt.Sprintf("Error listing files: %s", err.Error())
 			} else {
 				filesJson, jsonErr := json.Marshal(fileNames)

@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import React, { useEffect, useRef, useState, memo, useMemo } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -114,6 +114,13 @@ export const AgentEditor = ({
 				}
 			};
 			mediaQuery.addEventListener('change', handleChange);
+
+			useEditorStore.getState().updateInputMessageMap({
+				[paneId]: {
+					buffer: vimEditor.state.doc.toString(),
+					bufferVersion: 0
+				}
+			});
 
 			return () => {
 				mediaQuery.removeEventListener('change', handleChange);
