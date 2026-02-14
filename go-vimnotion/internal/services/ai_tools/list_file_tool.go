@@ -15,7 +15,7 @@ var listFileToolDescription string
 var ListFilesTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
-		Name:        "list_files_tool",
+		Name:        "list_file_names_tool",
 		Description: listFileToolDescription,
 		Parameters: models.AiFunctionParams{
 			Type:       "object",

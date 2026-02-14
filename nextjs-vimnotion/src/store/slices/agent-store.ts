@@ -1,4 +1,4 @@
-import { AiMessage } from "@/types/ai-types";
+import { AiMessage, MessageInput } from "@/types/ai-types";
 import { EditorState } from "../editor-store";
 
 export const createAgentSlice = (
@@ -14,13 +14,21 @@ export const createAgentSlice = (
 	getMessageMap: (): { [paneId: string]: AiMessage[] } => {
 		return get().messageMap;
 	},
-	getInputMessageMap: (): { [paneId: string]: string } => {
+	getInputMessageMap: (): { [paneId: string]: MessageInput } => {
 		return get().inputMessageMap;
 	},
 	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => {
 		set({ messageMap: messageMap });
 	},
-	setInputMessageMap: (input: { [paneId: string]: string }) => {
+	setInputMessageMap: (input: { [paneId: string]: MessageInput }) => {
 		set({ inputMessageMap: input });
-	}
+	},
+	updateInputMessageMap: (input: { [paneId: string]: MessageInput }): void => {
+		set({
+			inputMessageMap: {
+				...get().inputMessageMap,
+				[Object.keys(input)[0]]: input[Object.keys(input)[0]]
+			}
+		});
+	},
 });

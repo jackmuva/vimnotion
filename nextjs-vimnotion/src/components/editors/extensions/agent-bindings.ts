@@ -1,5 +1,5 @@
 import { getAgentStream } from "@/services/api-service";
-import { AiMessage } from "@/types/ai-types"
+import { AiMessage, MessageInput } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
 import { Vim } from "@replit/codemirror-vim"
 
@@ -12,11 +12,11 @@ export const applyAgentBindings = ({
 	getInputMessageMap,
 }: {
 	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => void,
-	setInputMessageMap: (inputMap: { [paneId: string]: string }) => void,
+	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
 	getActivePane: () => string,
 	getActivePanel: () => PanelType,
 	getMessageMap: () => { [paneId: string]: AiMessage[] },
-	getInputMessageMap: () => { [paneId: string]: string },
+	getInputMessageMap: () => { [paneId: string]: MessageInput },
 }) => {
 	const renderStream = async (response: Response) => {
 		const activePane: string = getActivePane();
@@ -102,16 +102,20 @@ export const applyAgentBindings = ({
 		if (activePanel === PanelType.AGENT) {
 			const activePane: string = getActivePane();
 			const newMessages = activePane in getMessageMap() ? [...getMessageMap()[activePane]] : [];
-			newMessages.push({ type: "message", role: "user", content: getInputMessageMap()[activePane] });
+			newMessages.push({ type: "message", role: "user", content: getInputMessageMap()[activePane].buffer });
 			setMessageMap({ ...getMessageMap(), [activePane]: newMessages });
 			const res: Response = await getAgentStream(newMessages);
-			setInputMessageMap({ ...getInputMessageMap(), [activePane]: "\n" });
+			setInputMessageMap({
+				...getInputMessageMap(), [activePane]: {
+					buffer: "\n",
+					bufferVersion: getInputMessageMap()[activePane].bufferVersion + 1,
+				}
+			});
 			await renderStream(res);
 		}
 	});
 	Vim.unmap('<CR>', "false");
 	Vim.mapCommand('<CR>', 'action', 'submitMessage', {}, { context: 'normal' });
-
 }
 
 

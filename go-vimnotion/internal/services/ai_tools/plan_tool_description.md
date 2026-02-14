@@ -1,4 +1,4 @@
-Use this tool to break down a complex ask into smaller subtasks
+Use this tool to break down a complex ask into smaller subtasks. In general, break larger tasks into 2-5 subtasks.
 
 ## When to use this tool:
 Use this tool when the user asks a complex task that's better off split into smaller tasks

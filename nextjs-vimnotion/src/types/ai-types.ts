@@ -10,3 +10,8 @@ export type AiMessage = {
 	content?: string,
 	toolCalls?: ToolCall[],
 }
+
+export type MessageInput = {
+	buffer: string,
+	bufferVersion: number,
+}

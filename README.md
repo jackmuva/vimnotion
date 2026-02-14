@@ -22,8 +22,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] ai with context to certain files (maybe with the @ shortcut)
-    - [ ] Slash commands?
+    - [ ] Slash commands for new, session, prompt file
     - [x] @ files
+    - [ ] compaction hook
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)

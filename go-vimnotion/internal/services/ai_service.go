@@ -119,7 +119,6 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		if data == "[DONE]" {
 			if !isTool {
 				fmt.Fprintf(w, "%s\n", line)
-				fmt.Printf("%s\n", line)
 				flusher.Flush()
 			}
 			break
@@ -128,7 +127,6 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		var chatCompletionData models.ChatCompletionData
 		err := json.Unmarshal([]byte(data), &chatCompletionData)
 		if err != nil {
-			fmt.Println(err)
 			continue
 		}
 
@@ -148,7 +146,6 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			}
 		}
 		fmt.Fprintf(w, "%s\n", line)
-		fmt.Printf("%s\n", line)
 		flusher.Flush()
 	}
 
@@ -241,6 +238,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				Subtasks []string `json:"subtasks"`
 			}
 			err := json.Unmarshal([]byte(args), &planArgs)
+			fmt.Printf("calling plan tool with args: %+v\n\n", planArgs)
 			if err != nil {
 				break
 			}
@@ -256,6 +254,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				SubagentPrompt string `json:"subagentPrompt"`
 			}
 			err := json.Unmarshal([]byte(args), &subagentArgs)
+			fmt.Printf("calling subagent tool with args: %+v\n\n", subagentArgs)
 			if err != nil {
 				break
 			}
@@ -271,6 +270,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				FileContents string `json:"fileContents"`
 			}
 			err := json.Unmarshal([]byte(args), &writeArgs)
+			fmt.Printf("calling write tool with args: %+v\n\n", writeArgs)
 			if err != nil {
 				execRes = "Error parsing write file arguments"
 				break
@@ -290,13 +290,15 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				execRes = "Error parsing read file arguments"
 				break
 			}
+			fmt.Printf("calling read tool with args: %+v\n\n", readArgs)
 			fileContents, err := aitools.ExecuteReadFileTool(readArgs.FileName, email, sessionId, db)
 			if err != nil {
 				execRes = fmt.Sprintf("Error reading file: %s", err.Error())
 			} else {
 				execRes = *fileContents
 			}
-		} else if *v.Function.Name == "list_files_tool" {
+		} else if *v.Function.Name == "list_file_names_tool" {
+			fmt.Printf("calling list tool \n\n")
 			fileNames, err := aitools.ExecuteListFilesTool(email, sessionId, db)
 			if err != nil {
 				execRes = fmt.Sprintf("Error listing files: %s", err.Error())
@@ -314,6 +316,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				FileName    *string `json:"fileName"`
 			}
 			err := json.Unmarshal([]byte(args), &suggestionArgs)
+			fmt.Printf("Calling suggestion tool with args: %+v\n\n", suggestionArgs)
 			if err != nil {
 				execRes = "Error parsing suggestion arguments"
 				break
