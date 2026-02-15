@@ -122,11 +122,26 @@ export type EditorState = {
 	newAiBlock: string;
 	setNewAiBlock: (url: string) => void;
 
-	messageMap: { [paneId: string]: AiMessage[] };
-	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => void;
+	messageMap: {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	};
+	setMessageMap: (messageMap: {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	}) => void;
+	getMessageMap: () => {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	};
 	inputMessageMap: { [paneId: string]: MessageInput };
 	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
-	getMessageMap: () => { [paneId: string]: AiMessage[] };
 	getInputMessageMap: () => { [paneId: string]: MessageInput };
 	updateInputMessageMap: (input: { [paneId: string]: MessageInput }) => void;
 }

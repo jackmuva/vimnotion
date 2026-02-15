@@ -72,7 +72,10 @@ export const AgentEditor = ({
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
 
-	const messages: AiMessage[] = useEditorStore((state) => state.messageMap[paneId]);
+	const messages: {
+		messages: AiMessage[],
+		streaming: boolean,
+	} = useEditorStore((state) => state.messageMap[paneId]);
 	const inputBufferVersion: number = useEditorStore((state) => state.inputMessageMap[paneId]?.bufferVersion);
 	const getInputMessageMap = useEditorStore((state) => state.getInputMessageMap);
 	const setActivePanel = useEditorStore((state) => state.setActivePanel);
@@ -150,6 +153,7 @@ export const AgentEditor = ({
 				drawSelection(),
 				dropCursor(),
 				EditorState.allowMultipleSelections.of(true),
+				EditorView.lineWrapping,
 				indentOnInput(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 				bracketMatching(),
@@ -193,7 +197,7 @@ export const AgentEditor = ({
 		if (view) {
 			view.scrollTo({ top: view.scrollHeight, behavior: "smooth" });
 		}
-	}, [messages?.at(-1)?.content ?? ""]);
+	}, [messages?.messages.at(-1)?.content ?? ""]);
 
 
 	useEffect(() => {
@@ -212,17 +216,17 @@ export const AgentEditor = ({
 		console.log("messages: ", messages);
 		return (messages &&
 			<div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
-				{messages.map((message, i) => (
+				{messages.messages.map((message, i) => (
 					<Message key={`${i}-${message.content?.length ?? 0}`} message={message} />
 				))}
-				{messages.at(-1)?.toolCalls &&
-					messages.at(-1)!.toolCalls?.map((tool) => tool.name).includes("assign_subagent_tool") &&
-					messages.at(-1)!.streaming &&
+				{messages.messages.at(-1)?.toolCalls &&
+					messages.messages.at(-1)!.toolCalls?.map((tool) => tool.name).includes("assign_subagent_tool") &&
+					messages.streaming &&
 					<div className="w-full dark:text-indigo-300 text-blue-500 animate-pulse italic">
 						Subagent working...
 					</div>}
 			</div>)
-	}, [messages, messages?.at(-1)?.content, messages?.at(-1)?.streaming, messages.at(-1)?.toolCalls]);
+	}, [messages, messages?.messages.at(-1)?.content, messages?.messages.at(-1)?.toolCalls, messages?.streaming]);
 
 	return (
 

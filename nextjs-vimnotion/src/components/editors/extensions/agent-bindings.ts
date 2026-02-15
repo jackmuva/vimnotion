@@ -11,27 +11,40 @@ export const applyAgentBindings = ({
 	getMessageMap,
 	getInputMessageMap,
 }: {
-	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => void,
+	setMessageMap: (messageMap: {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	}) => void,
 	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
 	getActivePane: () => string,
 	getActivePanel: () => PanelType,
-	getMessageMap: () => { [paneId: string]: AiMessage[] },
+	getMessageMap: () => {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	},
 	getInputMessageMap: () => { [paneId: string]: MessageInput },
 }) => {
 	const renderStream = async (response: Response) => {
 		const activePane: string = getActivePane();
-		const messageMap: { [paneId: string]: AiMessage[] } = getMessageMap();
 		const reader = response.body?.getReader();
 		if (!reader) return;
 		const decoder = new TextDecoder("utf-8");
-		const newMessages = [...messageMap[activePane]];
+		const newMessages = [...getMessageMap()[activePane].messages];
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
-			streaming: true,
 		}
 		newMessages.push(curAiMessage);
-		setMessageMap({ ...messageMap, [activePane]: newMessages });
+		setMessageMap({
+			...getMessageMap(), [activePane]: {
+				messages: newMessages,
+				streaming: true
+			}
+		});
 		let buffer = "";
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
@@ -39,7 +52,12 @@ export const applyAgentBindings = ({
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
-				curAiMessage.streaming = false;
+				setMessageMap({
+					...getMessageMap(), [activePane]: {
+						...getMessageMap()[activePane],
+						streaming: false
+					}
+				});
 				break;
 			}
 
@@ -95,7 +113,12 @@ export const applyAgentBindings = ({
 						curAiMessage.toolCalls = sortedToolCalls;
 					}
 					curAiMessage.content = text;
-					setMessageMap({ ...messageMap, [activePane]: newMessages });
+					setMessageMap({
+						...getMessageMap(), [activePane]: {
+							...getMessageMap()[activePane],
+							messages: newMessages
+						}
+					});
 				} catch { }
 			}
 		}
@@ -105,9 +128,9 @@ export const applyAgentBindings = ({
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.AGENT) {
 			const activePane: string = getActivePane();
-			const newMessages = activePane in getMessageMap() ? [...getMessageMap()[activePane]] : [];
+			const newMessages = activePane in getMessageMap() ? [...getMessageMap()[activePane].messages] : [];
 			newMessages.push({ type: "message", role: "user", content: getInputMessageMap()[activePane].buffer });
-			setMessageMap({ ...getMessageMap(), [activePane]: newMessages });
+			setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], messages: newMessages } });
 			const res: Response = await getAgentStream(newMessages);
 			setInputMessageMap({
 				...getInputMessageMap(), [activePane]: {

@@ -10,14 +10,23 @@ export const createAgentSlice = (
 ) => ({
 	messageMap: {},
 	inputMessageMap: {},
-
-	getMessageMap: (): { [paneId: string]: AiMessage[] } => {
+	getMessageMap: (): {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	} => {
 		return get().messageMap;
 	},
 	getInputMessageMap: (): { [paneId: string]: MessageInput } => {
 		return get().inputMessageMap;
 	},
-	setMessageMap: (messageMap: { [paneId: string]: AiMessage[] }) => {
+	setMessageMap: (messageMap: {
+		[paneId: string]: {
+			messages: AiMessage[],
+			streaming: boolean,
+		}
+	}) => {
 		set({ messageMap: messageMap });
 	},
 	setInputMessageMap: (input: { [paneId: string]: MessageInput }) => {
