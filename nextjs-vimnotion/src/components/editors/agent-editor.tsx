@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { useEffect, useRef, useState, memo, useMemo } from "react";
+import { useEffect, useRef, useState, memo, useMemo, useCallback } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -27,11 +27,11 @@ import { vim } from "@replit/codemirror-vim";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { foldGutter, indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldKeymap } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
-import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from "@codemirror/autocomplete";
+import { Completion, CompletionContext, closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, CompletionResult } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
 import { PanelType } from "@/types/editor-types";
-import { AiMessage, MessageInput } from "@/types/ai-types";
+import { AiMessage } from "@/types/ai-types";
 
 const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
@@ -78,8 +78,68 @@ export const AgentEditor = ({
 	} = useEditorStore((state) => state.messageMap[paneId]);
 	const inputBufferVersion: number = useEditorStore((state) => state.inputMessageMap[paneId]?.bufferVersion);
 	const getInputMessageMap = useEditorStore((state) => state.getInputMessageMap);
+	const setMessageMap = useEditorStore((state) => state.setMessageMap);
+	const getMessageMap = useEditorStore((state) => state.getMessageMap);
 	const setActivePanel = useEditorStore((state) => state.setActivePanel);
 	const activePane = useEditorStore((state) => state.activePane);
+	const slashCommands: { [command: string]: string } = {
+		"/new": "/new [new session]",
+		"/sessions": "/sessions [list past sessions]",
+		"/prompt": "/prompt [custom prompt file]",
+	};
+
+	const slashCompletionOptions: Completion[] = useMemo(() => {
+		return Object.keys(slashCommands).map((key: string) => {
+			return {
+				label: key,
+				displayLabel: slashCommands[key],
+				apply: key === "/new" ?
+					(view: EditorView, completion: Completion, from: number, to: number) => {
+						setMessageMap({
+							...getMessageMap(),
+							[paneId]: {
+								messages: [],
+								streaming: false,
+							}
+						});
+
+						view.dispatch({
+							changes: { from, to, insert: "" }
+						});
+					}
+					: key === "/prompt" ?
+						(view: EditorView, completion: Completion, from: number, to: number) => {
+							view.dispatch({
+								changes: { from, to, insert: "/prompt @" }
+							});
+						}
+						: key,
+			};
+		});
+	}, [vimEditor, slashCommands]);
+
+	const slashCompletions = useCallback(
+		(context: CompletionContext): CompletionResult | null => {
+			const regex = /(?<=^|\s)\/[0-9a-zA-Z_\-]*$/;
+			const word = context.matchBefore(regex);
+			if (!word) return null;
+			return {
+				from: word.from,
+				options: slashCompletionOptions,
+				// Reuse candidates as long as the word matches this regular expression
+				validFor: /^\/[0-9a-zA-Z_\-]*$/,
+
+			};
+		}, [slashCompletionOptions]);
+
+	const commandAutocomplete: Extension = useMemo((): Extension => {
+		return autocompletion({
+			activateOnTyping: true,
+			icons: false,
+			override: [slashCompletions],
+		})
+	}, [slashCompletions]);
+
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -174,6 +234,7 @@ export const AgentEditor = ({
 				]),
 				theme.of(lightTheme),
 				bufferChangeListener,
+				commandAutocomplete,
 			],
 			parent: editorElement,
 		});
@@ -213,8 +274,7 @@ export const AgentEditor = ({
 	}, [inputBufferVersion]);
 
 	const memoizedMessages = useMemo(() => {
-		console.log("messages: ", messages);
-		return (messages &&
+		return ((messages && messages.messages.length > 0) &&
 			<div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
 				{messages.messages.map((message, i) => (
 					<Message key={`${i}-${message.content?.length ?? 0}`} message={message} />
@@ -232,10 +292,10 @@ export const AgentEditor = ({
 
 		<div className={`relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
-			${!messages ? "justify-center" : "justify-start"} font-robo-mono`}>
+			${(!messages || messages.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
 			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 
-					${messages ? "h-full" : ""}`}>
-				{!messages && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
+					${(messages && messages.messages.length > 0) ? "h-full" : ""}`}>
+				{(!messages || messages.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
 					<span className="text-orange-500">[E]</span>ditor
 				</div>}
 				{memoizedMessages}
