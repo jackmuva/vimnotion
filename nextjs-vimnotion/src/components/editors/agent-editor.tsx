@@ -32,6 +32,7 @@ import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
 import { PanelType } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
+import { DirectoryTree } from "@/types/sidebar-types";
 
 const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
@@ -82,11 +83,54 @@ export const AgentEditor = ({
 	const getMessageMap = useEditorStore((state) => state.getMessageMap);
 	const setActivePanel = useEditorStore((state) => state.setActivePanel);
 	const activePane = useEditorStore((state) => state.activePane);
+	const directoryState: DirectoryTree = useEditorStore((state) => state.directoryState);
+	const getLocationMap: (tree: DirectoryTree) => {
+		[uuid: string]: {
+			location: string,
+			name: string,
+			isFile: boolean,
+		},
+	} = useEditorStore((state) => state.constructLocationMapHelper);
 	const slashCommands: { [command: string]: string } = {
 		"/new": "/new [new session]",
 		"/sessions": "/sessions [list past sessions]",
 		"/prompt": "/prompt [custom prompt file]",
 	};
+	const atCommands: { location: string, uuid: string }[] = useMemo(() => {
+		const locationMap = getLocationMap(directoryState);
+		return Object.keys(locationMap).filter((uuid: string) => {
+			return locationMap[uuid].isFile
+		}).map((uuid: string) => {
+			return {
+				location: "@" + locationMap[uuid].location.split("||").map((str) => str.split("|")[1]).join(""),
+				uuid: uuid,
+			}
+		})
+	}, [directoryState, getLocationMap]);
+
+	const atCompletionOptions: Completion[] = useMemo(() => {
+		return atCommands.map((atObj: { location: string, uuid: string }) => {
+			return {
+				label: atObj.location,
+				displayLabel: atObj.location,
+				apply: atObj.location,
+			};
+		});
+	}, [vimEditor, atCommands]);
+
+	const atCompletions = useCallback(
+		(context: CompletionContext): CompletionResult | null => {
+			const regex = /(?<=^|\s)@[0-9a-zA-Z_\-]*$/;
+			const word = context.matchBefore(regex);
+			if (!word) return null;
+			return {
+				from: word.from,
+				options: atCompletionOptions,
+				// Reuse candidates as long as the word matches this regular expression
+				validFor: /^\/[0-9a-zA-Z_\-]*$/,
+
+			};
+		}, [atCompletionOptions]);
 
 	const slashCompletionOptions: Completion[] = useMemo(() => {
 		return Object.keys(slashCommands).map((key: string) => {
@@ -132,13 +176,13 @@ export const AgentEditor = ({
 			};
 		}, [slashCompletionOptions]);
 
-	const commandAutocomplete: Extension = useMemo((): Extension => {
+	const agentEditorAutocomplete: Extension = useMemo((): Extension => {
 		return autocompletion({
 			activateOnTyping: true,
 			icons: false,
-			override: [slashCompletions],
+			override: [slashCompletions, atCompletions],
 		})
-	}, [slashCompletions]);
+	}, [slashCompletions, atCompletions]);
 
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
@@ -234,7 +278,7 @@ export const AgentEditor = ({
 				]),
 				theme.of(lightTheme),
 				bufferChangeListener,
-				commandAutocomplete,
+				agentEditorAutocomplete,
 			],
 			parent: editorElement,
 		});
