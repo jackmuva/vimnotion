@@ -28,6 +28,7 @@ export const applyAgentBindings = ({
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
+			streaming: true,
 		}
 		newMessages.push(curAiMessage);
 		setMessageMap({ ...messageMap, [activePane]: newMessages });
@@ -37,7 +38,10 @@ export const applyAgentBindings = ({
 
 		while (true) {
 			const { done, value } = await reader.read();
-			if (done) break;
+			if (done) {
+				curAiMessage.streaming = false;
+				break;
+			}
 
 			buffer += decoder.decode(value, { stream: true });
 			const lines = buffer.split("\n");

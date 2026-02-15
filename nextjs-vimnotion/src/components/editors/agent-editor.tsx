@@ -54,8 +54,7 @@ const Message = memo(({ message }: { message: AiMessage }) => {
 							</code>
 						);
 					},
-				}}
-			>
+				}} >
 				{message.content}
 			</Markdown>
 		</div>
@@ -210,13 +209,20 @@ export const AgentEditor = ({
 	}, [inputBufferVersion]);
 
 	const memoizedMessages = useMemo(() => {
+		console.log("messages: ", messages);
 		return (messages &&
 			<div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
 				{messages.map((message, i) => (
 					<Message key={`${i}-${message.content?.length ?? 0}`} message={message} />
 				))}
+				{messages.at(-1)?.toolCalls &&
+					messages.at(-1)!.toolCalls?.map((tool) => tool.name).includes("assign_subagent_tool") &&
+					messages.at(-1)!.streaming &&
+					<div className="w-full dark:text-indigo-300 text-blue-500 animate-pulse italic">
+						Subagent working...
+					</div>}
 			</div>)
-	}, [messages, messages?.at(-1)?.content]);
+	}, [messages, messages?.at(-1)?.content, messages?.at(-1)?.streaming, messages.at(-1)?.toolCalls]);
 
 	return (
 

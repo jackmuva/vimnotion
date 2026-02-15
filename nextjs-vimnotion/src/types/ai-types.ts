@@ -7,6 +7,7 @@ export type ToolCall = {
 export type AiMessage = {
 	role: "user" | "assistant" | "developer" | "tool",
 	type: "message" | "function",
+	streaming?: boolean,
 	content?: string,
 	toolCalls?: ToolCall[],
 }
