@@ -30,7 +30,7 @@ import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { Completion, CompletionContext, closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, CompletionResult } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
-import { PanelType } from "@/types/editor-types";
+import { PanelType, PaneNode } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
@@ -92,6 +92,10 @@ export const AgentEditor = ({
 			isFile: boolean,
 		},
 	} = useEditorStore((state) => state.constructLocationMapHelper);
+	const { updateActivePane, getPaneById, getLocationById, setLocation } = useEditorStore(state => state);
+	const pane: PaneNode = getPaneById(paneId);
+
+
 	const slashCommands: { [command: string]: string } = {
 		"/new": "/new [new session]",
 		"/sessions": "/sessions [list past sessions]",
@@ -186,6 +190,14 @@ export const AgentEditor = ({
 		})
 	}, [slashCompletions, atCompletions]);
 
+	const focusListener = EditorView.updateListener.of((v) => {
+		if (v.view.hasFocus) {
+			updateActivePane(paneId);
+			const currentPane: PaneNode = getPaneById(paneId);
+			const loc: string | null = getLocationById(currentPane[Object.keys(pane)[0]].fileId);
+			if (loc) setLocation(loc);
+		}
+	});
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -280,6 +292,7 @@ export const AgentEditor = ({
 				]),
 				theme.of(lightTheme),
 				bufferChangeListener,
+				focusListener,
 				agentEditorAutocomplete,
 			],
 			parent: editorElement,
