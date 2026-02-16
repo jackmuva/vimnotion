@@ -1,7 +1,8 @@
 import { getAgentStream } from "@/services/api-service";
-import { AiMessage, MessageInput } from "@/types/ai-types"
+import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
 import { Vim } from "@replit/codemirror-vim"
+import { v4 } from "uuid";
 
 export const applyAgentBindings = ({
 	setMessageMap,
@@ -11,21 +12,11 @@ export const applyAgentBindings = ({
 	getMessageMap,
 	getInputMessageMap,
 }: {
-	setMessageMap: (messageMap: {
-		[paneId: string]: {
-			messages: AiMessage[],
-			streaming: boolean,
-		}
-	}) => void,
+	setMessageMap: (messageMap: MessageStates) => void,
 	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
 	getActivePane: () => string,
 	getActivePanel: () => PanelType,
-	getMessageMap: () => {
-		[paneId: string]: {
-			messages: AiMessage[],
-			streaming: boolean,
-		}
-	},
+	getMessageMap: () => MessageStates,
 	getInputMessageMap: () => { [paneId: string]: MessageInput },
 }) => {
 	const renderStream = async (response: Response) => {
@@ -42,7 +33,8 @@ export const applyAgentBindings = ({
 		setMessageMap({
 			...getMessageMap(), [activePane]: {
 				messages: newMessages,
-				streaming: true
+				streaming: true,
+				sessionId: getMessageMap()[activePane].sessionId,
 			}
 		});
 		let buffer = "";
@@ -128,10 +120,13 @@ export const applyAgentBindings = ({
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.AGENT) {
 			const activePane: string = getActivePane();
-			const newMessages = activePane in getMessageMap() ? [...getMessageMap()[activePane].messages] : [];
+			const newMessages: AiMessage[] = activePane in getMessageMap() ? [...getMessageMap()[activePane].messages] : [];
+			if (newMessages.length === 0) {
+				setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], sessionId: v4() } });
+			}
 			newMessages.push({ type: "message", role: "user", content: getInputMessageMap()[activePane].buffer });
 			setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], messages: newMessages } });
-			const res: Response = await getAgentStream(newMessages);
+			const res: Response = await getAgentStream(newMessages, getMessageMap()[activePane].sessionId);
 			setInputMessageMap({
 				...getInputMessageMap(), [activePane]: {
 					buffer: "\n",

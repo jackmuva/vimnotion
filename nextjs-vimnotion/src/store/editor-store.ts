@@ -8,7 +8,7 @@ import { createTabSlice } from './slices/tab-store';
 import { createDirectorySlice } from './slices/directory-store';
 import { createSearchSlice } from './slices/search-store';
 import { SearchResults, SearchType } from '@/types/search-types';
-import { AiMessage, MessageInput } from '@/types/ai-types';
+import { AiMessage, MessageInput, MessageStates } from '@/types/ai-types';
 import { createAgentSlice } from './slices/agent-store';
 
 export type EditorState = {
@@ -122,24 +122,9 @@ export type EditorState = {
 	newAiBlock: string;
 	setNewAiBlock: (url: string) => void;
 
-	messageMap: {
-		[paneId: string]: {
-			messages: AiMessage[],
-			streaming: boolean,
-		}
-	};
-	setMessageMap: (messageMap: {
-		[paneId: string]: {
-			messages: AiMessage[],
-			streaming: boolean,
-		}
-	}) => void;
-	getMessageMap: () => {
-		[paneId: string]: {
-			messages: AiMessage[],
-			streaming: boolean,
-		}
-	};
+	messageMap: MessageStates
+	setMessageMap: (messageMap: MessageStates) => void;
+	getMessageMap: () => MessageStates;
 	inputMessageMap: { [paneId: string]: MessageInput };
 	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
 	getInputMessageMap: () => { [paneId: string]: MessageInput };

@@ -33,6 +33,7 @@ import { EditorState, Extension } from "@codemirror/state";
 import { PanelType } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
+import { v4 } from "uuid";
 
 const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
@@ -144,6 +145,7 @@ export const AgentEditor = ({
 							[paneId]: {
 								messages: [],
 								streaming: false,
+								sessionId: v4(),
 							}
 						});
 

@@ -23,13 +23,13 @@ export const getAsciiStream = async (content: string): Promise<Response> => {
 	return res;
 }
 
-export const getAgentStream = async (messages: Array<AiMessage>): Promise<Response> => {
+export const getAgentStream = async (messages: Array<AiMessage>, sessionId: string): Promise<Response> => {
 	const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/ai/agent`,
 		{
 			method: "POST",
 			body: JSON.stringify({
 				messages: messages,
-				sessionId: v4(),
+				sessionId: sessionId,
 			}),
 			credentials: "include"
 		});

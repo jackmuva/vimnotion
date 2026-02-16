@@ -15,3 +15,11 @@ export type MessageInput = {
 	buffer: string,
 	bufferVersion: number,
 }
+
+export type MessageStates = {
+	[paneId: string]: {
+		messages: AiMessage[],
+		streaming: boolean,
+		sessionId: string,
+	}
+}
