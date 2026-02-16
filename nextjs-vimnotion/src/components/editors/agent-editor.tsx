@@ -242,7 +242,7 @@ export const AgentEditor = ({
 			return;
 		}
 
-		const editorElement = document.querySelector(`#agent-editor`);
+		const editorElement = document.querySelector(`#agent-editor-${paneId}`);
 		if (!editorElement) {
 			return;
 		}
@@ -346,7 +346,7 @@ export const AgentEditor = ({
 				</div>}
 				{memoizedMessages}
 				<div className="w-full outline outline-offset-2 outline-foreground-muted/50"
-					id="agent-editor"
+					id={`agent-editor-${paneId}`}
 				/>
 			</div>
 
