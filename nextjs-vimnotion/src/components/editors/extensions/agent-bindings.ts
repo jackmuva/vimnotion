@@ -2,6 +2,7 @@ import { getAgentStream, getVnObjectById } from "@/services/api-service";
 import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
 import { VnObject } from "@/types/primitive-types";
+import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
 
@@ -12,7 +13,15 @@ export const applyAgentBindings = ({
 	getActivePanel,
 	getMessageMap,
 	getInputMessageMap,
+	getDirectoryState,
 	getLocationMap,
+	getOilLine,
+	openFileInBuffer,
+	detectAllDirectoryChanges,
+	setDirectoryConfirmation,
+	toggleSidebar,
+	setLocation,
+	getLocation,
 }: {
 	setMessageMap: (messageMap: MessageStates) => void,
 	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
@@ -20,13 +29,21 @@ export const applyAgentBindings = ({
 	getActivePanel: () => PanelType,
 	getMessageMap: () => MessageStates,
 	getInputMessageMap: () => { [paneId: string]: MessageInput },
-	getLocationMap: () => {
+	getDirectoryState: () => DirectoryTree,
+	getLocationMap: (diretoryState: DirectoryTree) => {
 		[uuid: string]: {
 			location: string,
 			name: string,
 			isFile: boolean,
 		},
-	}
+	},
+	getOilLine: () => string,
+	openFileInBuffer: () => void,
+	detectAllDirectoryChanges: () => DirectoryChanges,
+	setDirectoryConfirmation: () => void,
+	toggleSidebar: () => void,
+	setLocation: (loc: string) => void,
+	getLocation: () => string,
 }) => {
 	const renderStream = async (response: Response) => {
 		const activePane: string = getActivePane();
@@ -133,27 +150,29 @@ export const applyAgentBindings = ({
 				name: string,
 				isFile: boolean,
 			},
-		} = getLocationMap()
+		} = getLocationMap(getDirectoryState())
 		const locationMap: { [location: string]: string } = {}
 		for (const uuid of Object.keys(uuidMap)) {
-			locationMap[uuidMap[uuid].location.split("||").map((str) => str.split("|")[1]).join("")] = uuid
+			locationMap["@" + uuidMap[uuid].location.split("||").map((str) => str.split("|")[1]).join("")] = uuid
 		}
 
 		let isPrompt: boolean = false;
-		for (const word of message.split(" ")) {
-			if (word in locationMap && !isPrompt) {
-				const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-				parsed += " " + `[User's provided file content: ${vnObject?.contents}]`
-			} else if (word in locationMap && isPrompt) {
-				const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-				parsed += " " + `[User's provided prompt template: ${vnObject?.contents}`
-			} else if (word === "/prompt") {
-				parsed += "\nUse the following file contents to supplement the prompt:";
-				isPrompt = true;
-			}
-			else {
-				isPrompt = false;
-				parsed += " " + word;
+		for (const line of message.split("\n")) {
+			for (const word of line.split(" ")) {
+				if (word in locationMap && !isPrompt) {
+					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
+					parsed += " " + `[User's provided file content: ${vnObject?.contents}]`
+				} else if (word in locationMap && isPrompt) {
+					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
+					parsed += " " + `[Prompt file contents: ${vnObject?.contents}]`
+				} else if (word === "/prompt") {
+					parsed += "\nUse the following prompt file(s):";
+					isPrompt = true;
+				}
+				else {
+					isPrompt = false;
+					parsed += " " + word;
+				}
 			}
 		}
 		return parsed;
@@ -177,6 +196,16 @@ export const applyAgentBindings = ({
 				}
 			});
 			await renderStream(res);
+		} else if (activePanel === PanelType.SIDEBAR) {
+			const newChanges: DirectoryChanges = detectAllDirectoryChanges();
+			if (getOilLine().at(-1) === "/") {
+				setLocation(getLocation() + getOilLine());
+			} else if (newChanges.created.length !== 0 || newChanges.deleted.length !== 0 || newChanges.moved.length !== 0) {
+				setDirectoryConfirmation();
+			} else {
+				openFileInBuffer();
+				toggleSidebar();
+			}
 		}
 	});
 	Vim.unmap('<CR>', "false");

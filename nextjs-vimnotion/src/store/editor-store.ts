@@ -83,6 +83,7 @@ export type EditorState = {
 	directoryConfirmation: boolean;
 
 	setDirectoryState: (tree: DirectoryTree) => void;
+	getDirectoryState: () => DirectoryTree;
 	setProposedDirectoryState: (tree: DirectoryTree) => void;
 	setEditingDirectory: (isEdit: boolean) => void;
 	getEditingDirectory: () => boolean;

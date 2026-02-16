@@ -304,7 +304,7 @@ export const AgentEditor = ({
 		if (view) {
 			view.scrollTo({ top: view.scrollHeight, behavior: "smooth" });
 		}
-	}, [messages?.messages.at(-1)?.content ?? ""]);
+	}, [messages?.messages?.at(-1)?.content ?? ""]);
 
 
 	useEffect(() => {
@@ -320,7 +320,7 @@ export const AgentEditor = ({
 	}, [inputBufferVersion]);
 
 	const memoizedMessages = useMemo(() => {
-		return ((messages && messages.messages.length > 0) &&
+		return ((messages && messages.messages && messages.messages.length > 0) &&
 			<div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
 				{messages.messages.map((message, i) => (
 					<Message key={`${i}-${message.content?.length ?? 0}`} message={message} />
@@ -332,16 +332,16 @@ export const AgentEditor = ({
 						Subagent working...
 					</div>}
 			</div>)
-	}, [messages, messages?.messages.at(-1)?.content, messages?.messages.at(-1)?.toolCalls, messages?.streaming]);
+	}, [messages, messages?.messages?.at(-1)?.content, messages?.messages?.at(-1)?.toolCalls, messages?.streaming]);
 
 	return (
 
 		<div className={`relative h-full w-full rounded-sm z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
-			${(!messages || messages.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
+			${(!messages || !messages.messages || messages.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
 			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 
-					${(messages && messages.messages.length > 0) ? "h-full" : ""}`}>
-				{(!messages || messages.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
+					${(messages && messages.messages && messages.messages.length > 0) ? "h-full" : ""}`}>
+				{(!messages || !messages.messages || messages.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
 					<span className="text-orange-500">[E]</span>ditor
 				</div>}
 				{memoizedMessages}

@@ -67,21 +67,21 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('split', 'split', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
 			splitHorizontal();
 		}
 	});
 
 	Vim.defineEx('vsplit shorthand', 'vs', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
 			splitVertical();
 		}
 	});
 
 	Vim.defineEx('vsplit', 'vsplit', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
 			splitVertical();
 		}
 	});
