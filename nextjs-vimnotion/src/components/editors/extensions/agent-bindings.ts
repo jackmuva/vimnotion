@@ -1,6 +1,7 @@
-import { getAgentStream } from "@/services/api-service";
+import { getAgentStream, getVnObjectById } from "@/services/api-service";
 import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
+import { VnObject } from "@/types/primitive-types";
 import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
 
@@ -11,6 +12,7 @@ export const applyAgentBindings = ({
 	getActivePanel,
 	getMessageMap,
 	getInputMessageMap,
+	getLocationMap,
 }: {
 	setMessageMap: (messageMap: MessageStates) => void,
 	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
@@ -18,6 +20,13 @@ export const applyAgentBindings = ({
 	getActivePanel: () => PanelType,
 	getMessageMap: () => MessageStates,
 	getInputMessageMap: () => { [paneId: string]: MessageInput },
+	getLocationMap: () => {
+		[uuid: string]: {
+			location: string,
+			name: string,
+			isFile: boolean,
+		},
+	}
 }) => {
 	const renderStream = async (response: Response) => {
 		const activePane: string = getActivePane();
@@ -116,6 +125,40 @@ export const applyAgentBindings = ({
 		}
 	}
 
+	const parseUserMessage = async (message: string): Promise<string> => {
+		let parsed = "";
+		const uuidMap: {
+			[uuid: string]: {
+				location: string,
+				name: string,
+				isFile: boolean,
+			},
+		} = getLocationMap()
+		const locationMap: { [location: string]: string } = {}
+		for (const uuid of Object.keys(uuidMap)) {
+			locationMap[uuidMap[uuid].location.split("||").map((str) => str.split("|")[1]).join("")] = uuid
+		}
+
+		let isPrompt: boolean = false;
+		for (const word of message.split(" ")) {
+			if (word in locationMap && !isPrompt) {
+				const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
+				parsed += " " + `[User's provided file content: ${vnObject?.contents}]`
+			} else if (word in locationMap && isPrompt) {
+				const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
+				parsed += " " + `[User's provided prompt template: ${vnObject?.contents}`
+			} else if (word === "/prompt") {
+				parsed += "\nUse the following file contents to supplement the prompt:";
+				isPrompt = true;
+			}
+			else {
+				isPrompt = false;
+				parsed += " " + word;
+			}
+		}
+		return parsed;
+	}
+
 	Vim.defineAction("submitMessage", async () => {
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.AGENT) {
@@ -124,7 +167,7 @@ export const applyAgentBindings = ({
 			if (newMessages.length === 0) {
 				setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], sessionId: v4() } });
 			}
-			newMessages.push({ type: "message", role: "user", content: getInputMessageMap()[activePane].buffer });
+			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(getInputMessageMap()[activePane].buffer)) });
 			setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], messages: newMessages } });
 			const res: Response = await getAgentStream(newMessages, getMessageMap()[activePane].sessionId);
 			setInputMessageMap({
@@ -139,5 +182,3 @@ export const applyAgentBindings = ({
 	Vim.unmap('<CR>', "false");
 	Vim.mapCommand('<CR>', 'action', 'submitMessage', {}, { context: 'normal' });
 }
-
-

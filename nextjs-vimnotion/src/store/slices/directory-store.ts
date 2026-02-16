@@ -3,6 +3,7 @@ import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
+import { VnObject } from "@/types/primitive-types";
 
 export const createDirectorySlice = (
 	set: {
@@ -316,7 +317,7 @@ export const createDirectorySlice = (
 		const fileId: string = fromSearch ? id!.split("|")[0] : get().getOilLine().split("|")[0];
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
-		const vnObject = await getVnObjectById(fileId);
+		const vnObject: VnObject | null = await getVnObjectById(fileId);
 		if (vnObject) {
 			activePane[Object.keys(activePane)[0]].fileId = fromSearch ? vnObject.id + "|" + vnObject.name : get().getOilLine();
 			activePane[Object.keys(activePane)[0]].buffer = vnObject.contents;
@@ -325,7 +326,6 @@ export const createDirectorySlice = (
 			get().updatePane(activePane);
 		}
 	},
-
 
 	getLocationById: (id: string): string | null => {
 		let resLoc: string | null = null;

@@ -49,7 +49,7 @@ export const VimEditor = ({
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
 		updateAllBuffers, setMessageMap, setInputMessageMap, getMessageMap, getInputMessageMap,
-		setActivePanel,
+		setActivePanel, directoryState, constructLocationMapHelper
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -267,6 +267,7 @@ export const VimEditor = ({
 			getActivePanel: () => getActivePanel(),
 			getMessageMap: () => getMessageMap(),
 			getInputMessageMap: () => getInputMessageMap(),
+			getLocationMap: () => constructLocationMapHelper(directoryState),
 		});
 		setVimEditor(view);
 
