@@ -76,7 +76,6 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
 	var tools []models.AiTool
-	//TODO:Add relevant tools
 	tools = append(tools, PlanTool)
 	requestBody := map[string]any{
 		"model":    "anthropic/claude-haiku-4.5",

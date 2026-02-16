@@ -79,12 +79,9 @@ func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email 
 		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
 		"stream":   false,
-		"response_format": models.ResponseFormat{
-			Type: "json_schema",
-			JsonSchema: models.JsonSchema{
-				Name:                 "suggestions_response",
-				Strict:               true,
-				AdditionalProperties: false,
+		"output_config": models.OutputConfig{
+			Format: models.OutputFormat{
+				Type: "json_schema",
 				Schema: models.ActualJsonSchema{
 					Type:                 "object",
 					AdditionalProperties: false,
@@ -129,11 +126,13 @@ func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email 
 
 	bodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
+		fmt.Printf("unable to serialize request")
 		return nil, fmt.Errorf("unable to serialize request: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, requestUrl, bytes.NewReader(bodyBytes))
 	if err != nil {
+		fmt.Printf("unable to create AI Gateway request")
 		return nil, fmt.Errorf("unable to create AI Gateway request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
@@ -141,16 +140,20 @@ func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email 
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		fmt.Printf("unable to get AI Gateway response")
 		return nil, fmt.Errorf("unable to get AI Gateway response: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("AI Gateway returned status %d", resp.StatusCode)
+		errBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Non OK status code from AI Gateway: %d\nResponse: %s\n", resp.StatusCode, string(errBody))
+		return nil, fmt.Errorf("AI Gateway returned status %d: %s", resp.StatusCode, string(errBody))
 	}
 
 	body, bodyErr := io.ReadAll(resp.Body)
 	if bodyErr != nil {
+		fmt.Printf("Unable to read response body")
 		return nil, fmt.Errorf("unable to read response body: %w", bodyErr)
 	}
 
@@ -162,18 +165,21 @@ func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email 
 		} `json:"choices"`
 	}
 	if err := json.Unmarshal(body, &completion); err != nil {
+		fmt.Printf("Unable to parse chat completion response")
 		return nil, fmt.Errorf("unable to parse chat completion response: %w", err)
 	}
 	if len(completion.Choices) == 0 {
+		fmt.Printf("No choices returned")
 		return nil, fmt.Errorf("no choices returned from AI Gateway")
 	}
 
-	var suggestionsWrapper struct {
-		Suggestions []models.Suggestion `json:"suggestions"`
-	}
-	if err := json.Unmarshal([]byte(completion.Choices[0].Message.Content), &suggestionsWrapper); err != nil {
+	var suggestionsWrapper []models.Suggestion
+
+	if err := json.Unmarshal([]byte(completion.Choices[0].Message.Content[8:len(completion.Choices[0].Message.Content)-3]), &suggestionsWrapper); err != nil {
+		fmt.Printf("Raw content from AI: %s\n", completion.Choices[0].Message.Content[8:len(completion.Choices[0].Message.Content)-3])
+		fmt.Printf("unable to parse suggestion json")
 		return nil, fmt.Errorf("unable to parse suggestion json from content: %w", err)
 	}
 
-	return suggestionsWrapper.Suggestions, nil
+	return suggestionsWrapper, nil
 }

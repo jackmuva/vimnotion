@@ -93,8 +93,9 @@ type ChatFile struct {
 }
 
 type Suggestion struct {
-	StartLine int    `json:"startLine"`
-	EndLine   int    `json:"endLine"`
-	OldString string `json:"oldString"`
-	NewString string `json:"newString"`
+	StartLine   int    `json:"startLine"`
+	EndLine     int    `json:"endLine"`
+	OldString   string `json:"oldString"`
+	NewString   string `json:"newString"`
+	Explanation string `json:"explanation"`
 }

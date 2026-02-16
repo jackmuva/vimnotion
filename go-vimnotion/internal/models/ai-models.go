@@ -46,18 +46,14 @@ type ToolFunction struct {
 	Arguments *string `json:"arguments"`
 }
 
-type ResponseFormat struct {
-	Type       string     `json:"type"`
-	JsonSchema JsonSchema `json:"json_schema"`
+// OutputConfig is the Anthropic format for structured output
+type OutputConfig struct {
+	Format OutputFormat `json:"format"`
 }
 
-type JsonSchema struct {
-	Name                 string           `json:"name"`
-	Description          string           `json:"description"`
-	Required             []string         `json:"required"`
-	AdditionalProperties bool             `json:"additionalProperties"`
-	Schema               ActualJsonSchema `json:"schema"`
-	Strict               bool             `json:"strict"`
+type OutputFormat struct {
+	Type   string           `json:"type"`
+	Schema ActualJsonSchema `json:"schema"`
 }
 
 type ActualJsonSchema struct {
