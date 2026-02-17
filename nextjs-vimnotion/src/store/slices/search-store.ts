@@ -1,7 +1,7 @@
 import { DirectoryTree } from "@/types/sidebar-types";
 import { SearchResults } from "@/types/search-types";
 import { grepVnObjects } from "@/services/api-service";
-import { StoreSetter, StoreGetter } from "../store-types";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createSearchSlice = (
 	set: StoreSetter,

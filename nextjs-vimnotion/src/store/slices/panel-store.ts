@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
-import { StoreSetter, StoreGetter, DrillDownResult } from "../store-types";
+import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
 
 export const createPanelSlice = (
 	set: StoreSetter,

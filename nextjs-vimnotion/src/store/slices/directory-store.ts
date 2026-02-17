@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
 import { VnObject } from "@/types/primitive-types";
-import { StoreSetter, StoreGetter } from "../store-types";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createDirectorySlice = (
 	set: StoreSetter,

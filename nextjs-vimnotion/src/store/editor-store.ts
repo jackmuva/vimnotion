@@ -5,10 +5,10 @@ import { createTabSlice } from './slices/tab-store';
 import { createDirectorySlice } from './slices/directory-store';
 import { createSearchSlice } from './slices/search-store';
 import { createAgentSlice } from './slices/agent-store';
-import { EditorState } from './store-types';
+import { EditorState } from '../types/store-types';
 
 // Re-export types for external consumers
-export type { EditorState, DrillDownResult } from './store-types';
+export type { EditorState, DrillDownResult } from '../types/store-types';
 
 export const useEditorStore = create<EditorState>((set, get) => ({
 	...createToggleSlice(set, get),

@@ -1,5 +1,5 @@
 import { MessageInput, MessageStates } from "@/types/ai-types";
-import { StoreSetter, StoreGetter } from "../store-types";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createAgentSlice = (
 	set: StoreSetter,

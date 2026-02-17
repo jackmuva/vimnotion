@@ -1,6 +1,6 @@
 import { TabMap } from "@/types/editor-types";
 import { v4 } from "uuid";
-import { StoreSetter, StoreGetter } from "../store-types";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createTabSlice = (
 	set: StoreSetter,
