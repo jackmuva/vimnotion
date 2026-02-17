@@ -1,14 +1,11 @@
 import { DirectoryTree } from "@/types/sidebar-types";
-import { EditorState } from "../editor-store";
 import { SearchResults } from "@/types/search-types";
 import { grepVnObjects } from "@/services/api-service";
+import { StoreSetter, StoreGetter } from "../store-types";
 
 export const createSearchSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	filePaths: {},
 

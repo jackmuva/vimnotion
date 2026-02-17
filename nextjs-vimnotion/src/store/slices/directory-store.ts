@@ -1,16 +1,13 @@
 import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
 import { VnObject } from "@/types/primitive-types";
+import { StoreSetter, StoreGetter } from "../store-types";
 
 export const createDirectorySlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	directoryState: {},
 	proposedDirectoryState: {},

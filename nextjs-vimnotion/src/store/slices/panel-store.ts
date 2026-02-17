@@ -1,21 +1,13 @@
 import { Direction, ChildType, EditorType, PaneNode, SplitState, TabMap, PanelType } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
-
-export interface DrillDownResult {
-	nearestId: string;
-	stepsAway: number;
-}
+import { StoreSetter, StoreGetter, DrillDownResult } from "../store-types";
 
 export const createPanelSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	activePanel: PanelType.MAIN,
 	activePane: "",

@@ -1,12 +1,9 @@
 import { MessageInput, MessageStates } from "@/types/ai-types";
-import { EditorState } from "../editor-store";
+import { StoreSetter, StoreGetter } from "../store-types";
 
 export const createAgentSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	messageMap: {},
 	inputMessageMap: {},

@@ -1,13 +1,10 @@
 import { TabMap } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
+import { StoreSetter, StoreGetter } from "../store-types";
 
 export const createTabSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	activeTab: "",
 	tabArray: [],
