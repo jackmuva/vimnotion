@@ -1,5 +1,6 @@
 import { PanelType } from "@/types/editor-types";
 import { StoreSetter, StoreGetter } from "../../types/store-types";
+import { SearchType } from "@/types/search-types";
 
 export const createToggleSlice = (
 	set: StoreSetter,
