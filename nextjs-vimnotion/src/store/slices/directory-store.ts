@@ -1,17 +1,61 @@
 import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
 import { VnObject } from "@/types/primitive-types";
+import { StoreSetter, StoreGetter } from "../store-types";
 
-export const createDirectorySlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type DirectorySlice = {
+	directoryState: DirectoryTree;
+	proposedDirectoryState: DirectoryTree;
+	editingDirectory: boolean;
+	location: string;
+	lastValidLocation: string;
+	oilLine: string;
+	sidebarBufferHistory: string[];
+	sidebarBufferMap: { [id: string]: string };
+	lastDeleted: DirectoryTree[] | null;
+	directoryConfirmation: boolean;
+
+	setDirectoryState: (tree: DirectoryTree) => void;
+	getDirectoryState: () => DirectoryTree;
+	setProposedDirectoryState: (tree: DirectoryTree) => void;
+	setEditingDirectory: (isEdit: boolean) => void;
+	getEditingDirectory: () => boolean;
+
+	getLocation: () => string;
+	setLocation: (location: string) => void;
+	getLastValidLocation: () => string;
+	setLastValidLocation: (location: string) => void;
+	getOilLine: () => string;
+	setOilLine: (line: string) => void;
+	pushSidebarBufferHistory: (buffer: string) => void;
+	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => void;
+	setLastDeleted: (delTree: DirectoryTree[]) => void;
+	evaluateOilBufferChanges: () => void;
+	setDirectoryConfirmation: (open: boolean) => void;
+	detectAllDirectoryChanges: () => DirectoryChanges;
+	constructLocationMapHelper: (treeRoot: DirectoryTree) => {
+		[uuid: string]: {
+			location: string,
+			name: string,
+			isFile: boolean,
+		},
+	};
+	dedupeProposedDirectory: () => void;
+	getLocationById: (id: string) => string | null;
+
+	openFileInBuffer: (id?: string) => void;
+};
+
+export const createDirectorySlice = <T extends DirectorySlice & {
+	getPaneById: (paneId: string) => PaneNode;
+	activePane: string;
+	updatePane: (pane: PaneNode) => void;
+}>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): DirectorySlice => ({
 	directoryState: {},
 	proposedDirectoryState: {},
 	editingDirectory: false,
@@ -23,10 +67,10 @@ export const createDirectorySlice = (
 	lastDeleted: null,
 	directoryConfirmation: false,
 
-	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
+	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree } as Partial<T>),
 	getDirectoryState: (): DirectoryTree => get().directoryState,
-	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
-	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
+	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree } as Partial<T>),
+	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit } as Partial<T>),
 	getEditingDirectory: () => get().editingDirectory,
 
 	getLocation: () => get().location,
@@ -49,25 +93,25 @@ export const createDirectorySlice = (
 		set({
 			location: location,
 			lastValidLocation: lastValidIndex === 0 ? locArr[0] + "/" : locArr.slice(0, lastValidIndex + 1).join("/") + "/"
-		})
+		} as Partial<T>)
 	},
 	getLastValidLocation: () => get().location,
-	setLastValidLocation: (location: string) => set({ location: location }),
+	setLastValidLocation: (location: string) => set({ location: location } as Partial<T>),
 
 	getOilLine: (): string => get().oilLine,
 	setOilLine: (line: string): void => {
-		set({ oilLine: get().sidebarBufferMap[line] })
+		set({ oilLine: get().sidebarBufferMap[line] } as Partial<T>)
 	},
 	pushSidebarBufferHistory: (buffer: string) => {
 		let bufferHistory: string[] = get().sidebarBufferHistory;
 		bufferHistory.push(buffer);
 		if (bufferHistory.length > 2) bufferHistory = bufferHistory.slice(-2);
-		set({ sidebarBufferHistory: bufferHistory })
+		set({ sidebarBufferHistory: bufferHistory } as Partial<T>)
 	},
-	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap }),
+	setSidebarBufferMap: (bufferMap: { [id: string]: string }) => set({ sidebarBufferMap: bufferMap } as Partial<T>),
 
 	setLastDeleted: (delTrees: DirectoryTree[]) => {
-		set({ lastDeleted: delTrees })
+		set({ lastDeleted: delTrees } as Partial<T>)
 	},
 
 	//TODO:when a user has folder/folder/file, parse
@@ -269,7 +313,7 @@ export const createDirectorySlice = (
 	},
 
 	setDirectoryConfirmation: (open: boolean) => {
-		set({ directoryConfirmation: open })
+		set({ directoryConfirmation: open } as Partial<T>)
 	},
 
 	//OPTIM:This is a workaround, i think this could be simpler

@@ -1,15 +1,27 @@
 import { DirectoryTree } from "@/types/sidebar-types";
-import { EditorState } from "../editor-store";
 import { SearchResults } from "@/types/search-types";
 import { grepVnObjects } from "@/services/api-service";
+import { StoreSetter, StoreGetter } from "../store-types";
 
-export const createSearchSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type SearchSlice = {
+	filePaths: { [path: string]: string };
+	refreshFilePaths: () => void;
+	searchByFilename: (term: string) => SearchResults;
+	searchByGrep: (pat: string) => Promise<SearchResults>;
+
+	newImageUrl: string;
+	setNewImageUrl: (url: string) => void;
+
+	newAiBlock: string;
+	setNewAiBlock: (url: string) => void;
+};
+
+export const createSearchSlice = <T extends SearchSlice & {
+	directoryState: DirectoryTree;
+}>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): SearchSlice => ({
 	filePaths: {},
 
 	refreshFilePaths: () => {
@@ -36,7 +48,7 @@ export const createSearchSlice = (
 				prefixPaths.push(prefix + childKey.split("|")[1]);
 			}
 		}
-		set({ filePaths: pathRes });
+		set({ filePaths: pathRes } as Partial<T>);
 	},
 
 	searchByFilename: (term: string): SearchResults => {
@@ -74,11 +86,11 @@ export const createSearchSlice = (
 
 	newImageUrl: "",
 	setNewImageUrl: (url: string) => {
-		set({ newImageUrl: url });
+		set({ newImageUrl: url } as Partial<T>);
 	},
 
 	newAiBlock: "",
 	setNewAiBlock: (aiRes: string) => {
-		set({ newAiBlock: aiRes });
+		set({ newAiBlock: aiRes } as Partial<T>);
 	},
 });

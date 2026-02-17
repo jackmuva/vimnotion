@@ -1,14 +1,30 @@
 import { TabMap } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
+import { StoreSetter, StoreGetter } from "../store-types";
 
-export const createTabSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type TabSlice = {
+	activeTab: string;
+	tabArray: string[];
+	tabMap: TabMap;
+	setActiveTab: (tab: string) => void;
+	setTabArray: (tabArray: string[]) => void;
+	setTabMap: (map: TabMap) => void;
+	initTabMap: () => void;
+	createNewTab: () => void;
+	selectTab: (tabIndex: number) => void;
+	nextTab: () => void;
+	prevTab: () => void;
+	deleteTab: () => void;
+};
+
+export const createTabSlice = <T extends TabSlice & {
+	newRoot: () => string;
+	updateActivePane: (newPane: string) => void;
+	activePane: string;
+}>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): TabSlice => ({
 	activeTab: "",
 	tabArray: [],
 	tabMap: {},
@@ -16,25 +32,26 @@ export const createTabSlice = (
 	initTabMap: (): void => {
 		const newRootId: string = get().newRoot();
 		const tabId: string = v4();
+		const newTabMap: TabMap = {
+			[tabId]: {
+				lastPane: newRootId,
+				root: newRootId,
+				numPanes: 1,
+				panes: [],
+			}
+		};
 		set({
 			activeTab: tabId,
 			tabArray: [tabId],
-			tabMap: {
-				[tabId]: {
-					lastPane: newRootId,
-					root: newRootId,
-					numPanes: 1,
-					panes: [],
-				}
-			}
-		});
+			tabMap: newTabMap,
+		} as Partial<T>);
 	},
 
-	setActiveTab: (tab: string): void => set({ activeTab: tab }),
+	setActiveTab: (tab: string): void => set({ activeTab: tab } as Partial<T>),
 
-	setTabArray: (tabArray: Array<string>): void => set({ tabArray: tabArray }),
+	setTabArray: (tabArray: Array<string>): void => set({ tabArray: tabArray } as Partial<T>),
 
-	setTabMap: (map: TabMap): void => set({ tabMap: map }),
+	setTabMap: (map: TabMap): void => set({ tabMap: map } as Partial<T>),
 
 	createNewTab: (): void => {
 		const { tabMap, tabArray, setTabArray, setActiveTab, setTabMap, newRoot, updateActivePane } = get();

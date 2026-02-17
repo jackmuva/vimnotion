@@ -1,14 +1,34 @@
 import { PanelType } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
 import { SearchType } from "@/types/search-types";
+import { StoreSetter, StoreGetter } from "../store-types";
 
-export const createToggleSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type ToggleSlice = {
+	openSidebar: boolean;
+	openLeaderPanel: boolean;
+	openWindowPanel: boolean;
+	openSearchPanel: boolean;
+	openAiPanel: boolean;
+	openAsciiModal: boolean;
+	searchModal: SearchType | null;
+	openImageModal: boolean;
+	openPublishModal: boolean;
+
+	toggleSidebar: () => void;
+	toggleLeaderPanel: () => void;
+	toggleWindowPanel: () => void;
+	toggleSearchPanel: () => void;
+	toggleAiPanel: () => void;
+	setSearchModal: (searchType: SearchType | null) => void;
+	toggleImageModal: () => void;
+	togglePublishModal: () => void;
+	toggleAsciiModal: () => void;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createToggleSlice = <T extends ToggleSlice & { setActivePanel: (panel: PanelType) => void; setProposedDirectoryState: (tree: any) => void; directoryState: any; setEditingDirectory: (isEdit: boolean) => void }>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): ToggleSlice => ({
 	openSidebar: false,
 	openLeaderPanel: false,
 	openWindowPanel: false,
@@ -29,7 +49,7 @@ export const createToggleSlice = (
 			get().setActivePanel(PanelType.SIDEBAR);
 		}
 
-		set({ openSidebar: !openSidebar });
+		set({ openSidebar: !openSidebar } as Partial<T>);
 
 	},
 
@@ -40,7 +60,7 @@ export const createToggleSlice = (
 		} else {
 			get().setActivePanel(PanelType.LEADER);
 		}
-		set({ openWindowPanel: !windowPanel });
+		set({ openWindowPanel: !windowPanel } as Partial<T>);
 	},
 
 	toggleLeaderPanel: () => {
@@ -51,7 +71,7 @@ export const createToggleSlice = (
 			get().setActivePanel(PanelType.LEADER);
 		}
 
-		set({ openLeaderPanel: !leaderPanel });
+		set({ openLeaderPanel: !leaderPanel } as Partial<T>);
 	},
 
 	toggleSearchPanel: () => {
@@ -62,7 +82,7 @@ export const createToggleSlice = (
 			get().setActivePanel(PanelType.LEADER);
 		}
 
-		set({ openSearchPanel: !searchPanel });
+		set({ openSearchPanel: !searchPanel } as Partial<T>);
 	},
 
 	toggleAiPanel: () => {
@@ -73,17 +93,17 @@ export const createToggleSlice = (
 			get().setActivePanel(PanelType.LEADER);
 		}
 
-		set({ openAiPanel: !aiPanel });
+		set({ openAiPanel: !aiPanel } as Partial<T>);
 	},
 
 	setSearchModal: (searchType: SearchType | null) => {
 		const searchModal = get().searchModal;
 		if (searchModal) {
 			get().setActivePanel(PanelType.MAIN);
-			set({ searchModal: null });
+			set({ searchModal: null } as Partial<T>);
 		} else {
 			get().setActivePanel(PanelType.MODAL);
-			set({ searchModal: searchType });
+			set({ searchModal: searchType } as Partial<T>);
 		}
 	},
 
@@ -94,7 +114,7 @@ export const createToggleSlice = (
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-		set({ openImageModal: !imageModal });
+		set({ openImageModal: !imageModal } as Partial<T>);
 	},
 
 	togglePublishModal: () => {
@@ -104,7 +124,7 @@ export const createToggleSlice = (
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-		set({ openPublishModal: !publishModal });
+		set({ openPublishModal: !publishModal } as Partial<T>);
 	},
 
 	toggleAsciiModal: () => {
@@ -114,7 +134,7 @@ export const createToggleSlice = (
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-		set({ openAsciiModal: !aiModal });
+		set({ openAsciiModal: !aiModal } as Partial<T>);
 	},
 
 });

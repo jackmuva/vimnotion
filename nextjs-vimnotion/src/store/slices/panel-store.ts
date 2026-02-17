@@ -1,22 +1,53 @@
 import { Direction, ChildType, EditorType, PaneNode, SplitState, TabMap, PanelType } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
+import { StoreSetter, StoreGetter } from "../store-types";
 
 export interface DrillDownResult {
 	nearestId: string;
 	stepsAway: number;
 }
 
-export const createPanelSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type PanelSlice = {
+	activePane: string;
+	paneTree: PaneNode;
+	activePanel: PanelType;
+
+	getActivePane: () => string;
+	getActivePanel: () => PanelType;
+	updateActivePane: (newPane: string) => void;
+	setPaneTree: (tree: PaneNode) => void;
+	setActivePanel: (panel: PanelType) => void;
+	newRoot: () => string;
+	splitPane: (direction: SplitState) => void;
+	closePane: () => void;
+	bubbleUp: (paneId: string) => string | null;
+	drillDown: (paneId: string, curStepsAway: number) => DrillDownResult;
+	getSiblingId: (paneId: string) => string | null;
+	goToNeighbor: (paneId: string, direction: Direction) => string;
+	drillDownDirectionally: (paneId: string, direction: Direction, childType: ChildType) => string;
+	cycleNeighbor: () => string;
+	renderMdTutor: () => void;
+	renderVimTutor: () => void;
+	getPaneById: (paneId: string) => PaneNode;
+	updatePane: (pane: PaneNode) => void;
+	saveVnObjectBuffer: () => Promise<boolean>;
+	publishVnObject: (publish: boolean) => Promise<boolean>;
+	updateAllBuffers: (fileId: string, buffer: string) => void;
+};
+
+export const createPanelSlice = <T extends PanelSlice & {
+	activeTab: string;
+	tabMap: TabMap;
+	setTabMap: (map: TabMap) => void;
+	deleteTab: () => void;
+	createNewTab: () => void;
+}>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): PanelSlice => ({
 	activePanel: PanelType.MAIN,
 	activePane: "",
 	paneTree: {} as PaneNode,
@@ -36,14 +67,14 @@ export const createPanelSlice = (
 		if (!paneId) return;
 		const newTree = { ...paneTree };
 		newTree[paneId[0]] = paneNode[paneId[0]];
-		set({ paneTree: newTree });
+		set({ paneTree: newTree } as Partial<T>);
 	},
 
 	getActivePanel: () => { return get().activePanel },
-	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
+	setActivePanel: (panel: PanelType) => set({ activePanel: panel } as Partial<T>),
 
-	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
-	updateActivePane: (newPane: string) => set({ activePane: newPane }),
+	setPaneTree: (tree: PaneNode) => set({ paneTree: tree } as Partial<T>),
+	updateActivePane: (newPane: string) => set({ activePane: newPane } as Partial<T>),
 
 	newRoot: () => {
 		const rootId = v4();
@@ -387,4 +418,3 @@ export const createPanelSlice = (
 		get().updatePane(activePane);
 	},
 });
-

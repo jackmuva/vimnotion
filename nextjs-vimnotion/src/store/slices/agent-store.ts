@@ -1,13 +1,20 @@
 import { MessageInput, MessageStates } from "@/types/ai-types";
-import { EditorState } from "../editor-store";
+import { StoreSetter, StoreGetter } from "../store-types";
 
-export const createAgentSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
-) => ({
+export type AgentSlice = {
+	messageMap: MessageStates;
+	setMessageMap: (messageMap: MessageStates) => void;
+	getMessageMap: () => MessageStates;
+	inputMessageMap: { [paneId: string]: MessageInput };
+	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
+	getInputMessageMap: () => { [paneId: string]: MessageInput };
+	updateInputMessageMap: (input: { [paneId: string]: MessageInput }) => void;
+};
+
+export const createAgentSlice = <T extends AgentSlice>(
+	set: StoreSetter<T>,
+	get: StoreGetter<T>
+): AgentSlice => ({
 	messageMap: {},
 	inputMessageMap: {},
 	getMessageMap: (): MessageStates => {
@@ -17,10 +24,10 @@ export const createAgentSlice = (
 		return get().inputMessageMap;
 	},
 	setMessageMap: (messageMap: MessageStates) => {
-		set({ messageMap: messageMap });
+		set({ messageMap: messageMap } as Partial<T>);
 	},
 	setInputMessageMap: (input: { [paneId: string]: MessageInput }) => {
-		set({ inputMessageMap: input });
+		set({ inputMessageMap: input } as Partial<T>);
 	},
 	updateInputMessageMap: (input: { [paneId: string]: MessageInput }): void => {
 		set({
@@ -28,6 +35,6 @@ export const createAgentSlice = (
 				...get().inputMessageMap,
 				[Object.keys(input)[0]]: input[Object.keys(input)[0]]
 			}
-		});
+		} as Partial<T>);
 	},
 });
