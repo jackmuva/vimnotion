@@ -66,6 +66,7 @@ export const applyAgentBindings = ({
 		let buffer = "";
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
+		let toolIndex: number = 0;
 
 		while (true) {
 			const { done, value } = await reader.read();
@@ -98,17 +99,17 @@ export const applyAgentBindings = ({
 						const toolCalls = delta?.tool_calls;
 						if (toolCalls && Array.isArray(toolCalls)) {
 							for (const tc of toolCalls) {
-								const index: number = tc.index;
-								if (toolCallMap.has(index)) {
-									const existing = toolCallMap.get(index)!;
-									if (tc.function?.name) existing.name += tc.function.name;
-									if (tc.function?.arguments) existing.arguments += tc.function.arguments;
-								} else {
-									toolCallMap.set(index, {
+								if (tc.id) {
+									toolIndex += 1;
+									toolCallMap.set(toolIndex, {
 										id: tc.id,
 										name: tc.function?.name || "",
 										arguments: tc.function?.arguments || "",
 									});
+								} else {
+									const existing = toolCallMap.get(toolIndex)!;
+									if (tc.function?.name) existing.name += tc.function.name;
+									if (tc.function?.arguments) existing.arguments += tc.function.arguments;
 								}
 							}
 						}
