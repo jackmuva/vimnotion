@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto_Mono, Roboto_Slab } from "next/font/google";
+import { IBM_Plex_Mono, Geist, Geist_Mono, Roboto_Mono, Roboto_Slab } from "next/font/google";
 import "./globals.css";
 
+const ibmPlexMono = IBM_Plex_Mono({
+	variable: "--font-ibm-mono",
+	subsets: ["latin"],
+	weight: "400",
+})
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
@@ -38,7 +43,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className="no-scrollbar">
-			<body className={`${robo_slab.variable} ${robo_mono.variable} ${geistSans.variable} ${geistMono.variable} antialiased no-scrollbar`}>
+			<body className={`${robo_slab.variable} ${robo_mono.variable} ${geistSans.variable} ${geistMono.variable} ${ibmPlexMono.variable} antialiased no-scrollbar`}>
 				{children}
 			</body>
 		</html>

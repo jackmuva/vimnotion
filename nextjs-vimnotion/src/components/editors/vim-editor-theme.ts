@@ -35,6 +35,10 @@ export const customTheme = Prec.highest(
 		"& .cm-scroller::-webkit-scrollbar": {
 			display: "none",
 		},
+		"& .cm-content": {
+			fontSize: "16px",
+			fontFamily: "var(--font-ibm-mono), monospace !important",
+		},
 	})
 )
 
