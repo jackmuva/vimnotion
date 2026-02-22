@@ -208,7 +208,7 @@ export const createPanelSlice = (
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
 
-		if (curPanel.deleted || curPanel.editorType === EditorType.MARKDOWN || curPanel.editorType === EditorType.AGENT) {
+		if (curPanel.deleted) {
 			return curPanel.neighbors[direction] ? get().drillDownDirectionally(curPanel.neighbors[direction], direction, childType) : paneId;
 		}
 

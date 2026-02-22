@@ -15,10 +15,7 @@ export const applySidebarBindings = ({
 	getActivePanel: () => PanelType,
 }) => {
 	Vim.defineAction("toggleLeaderPanel", () => {
-		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
-			toggleLeaderPanel();
-		}
+		toggleLeaderPanel();
 	});
 	Vim.unmap('<Space>', "false");
 	Vim.mapCommand('<Space>', 'action', 'toggleLeaderPanel', {}, { context: 'normal' });

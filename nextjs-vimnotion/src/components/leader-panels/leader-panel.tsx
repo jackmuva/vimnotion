@@ -12,20 +12,17 @@ export const LeaderPanel = () => {
 	const toggleAiPanel = useEditorStore((state) => state.toggleAiPanel);
 	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
 	const togglePublishModal = useEditorStore((state) => state.togglePublishModal);
-	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
-	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
 	const setActivePanel: (panelType: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 
-	const shiftToMarkdown = (): void => {
+	const toggleMarkdown = (): void => {
 		const paneNode: PaneNode = getPane(activePane);
 		const updateNode: PaneNode = {
 			[activePane]: {
 				...paneNode[activePane],
-				editorType: EditorType.MARKDOWN,
+				editorType: paneNode[activePane].editorType === EditorType.MARKDOWN ? EditorType.VIM : EditorType.MARKDOWN,
 			},
 		}
 		updatePane(updateNode);
-		setActivePane(cycleNeighbor())
 	}
 
 	useEffect(() => {
@@ -47,15 +44,15 @@ export const LeaderPanel = () => {
 		};
 		document.addEventListener('keydown', handleWKey);
 
-		const handleMKey = (event: KeyboardEvent) => {
-			if (event.key === 'm') {
+		const handleTKey = (event: KeyboardEvent) => {
+			if (event.key === 't') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				closePanel();
-				shiftToMarkdown();
+				toggleMarkdown();
 			}
 		};
-		document.addEventListener('keydown', handleMKey);
+		document.addEventListener('keydown', handleTKey);
 
 		const handleSKey = (event: KeyboardEvent) => {
 			if (event.key === 's') {
@@ -100,7 +97,7 @@ export const LeaderPanel = () => {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
-			document.removeEventListener('keydown', handleMKey);
+			document.removeEventListener('keydown', handleTKey);
 			document.removeEventListener('keydown', handleSKey);
 			document.removeEventListener('keydown', handleIKey);
 			document.removeEventListener('keydown', handlePKey);
@@ -123,29 +120,29 @@ export const LeaderPanel = () => {
 				</button>indow
 			</div>
 
-			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
 				<div>
 					<button
 						className="cursor-pointer"
 						onClick={() => {
-							shiftToMarkdown();
+							toggleMarkdown();
 							closePanel();
 						}}>
-						<span className="font-bold text-orange-500">[m]</span>
-					</button>arkdown
+						<span className="font-bold text-orange-500">[t]</span>
+					</button>{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ?
+						"oggle Markdown" : "oggle Vim"}
 				</div>
 			}
-			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
-				<div>
-					<button className="cursor-pointer"
-						onClick={() => {
-							toggleSearchPanel();
-							closePanel();
-						}}>
-						<span className="font-bold text-orange-500">[s]</span>
-					</button>earch
-				</div>
-			}
+			<div>
+				<button className="cursor-pointer"
+					onClick={() => {
+						toggleSearchPanel();
+						closePanel();
+					}}>
+					<span className="font-bold text-orange-500">[s]</span>
+				</button>earch
+			</div>
 			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
 				<div>
 					<button className="cursor-pointer"
@@ -157,7 +154,8 @@ export const LeaderPanel = () => {
 					</button>nsert [i]mage
 				</div>
 			}
-			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
 				<div>
 					<button className="cursor-pointer"
 						onClick={() => {
@@ -168,7 +166,8 @@ export const LeaderPanel = () => {
 					</button>ublish/unpublish [p]age
 				</div>
 			}
-			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
 				<div>
 					<button className="cursor-pointer"
 						onClick={() => {

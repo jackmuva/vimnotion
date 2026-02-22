@@ -71,17 +71,18 @@ export const AiPanel = () => {
 				</button>
 				ditor agent
 			</div>
-			<div>
-				<button id="first-ai-option"
-					className="cursor-pointer"
-					onClick={() => {
-						toggleAsciiModal();
-						closePanel();
-					}} >
-					<span className="font-bold text-orange-500">[d]</span>
-				</button>
-				iagram in ascii
-			</div>
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button id="first-ai-option"
+						className="cursor-pointer"
+						onClick={() => {
+							toggleAsciiModal();
+							closePanel();
+						}} >
+						<span className="font-bold text-orange-500">[d]</span>
+					</button>
+					iagram in ascii
+				</div>}
 		</div>
 	);
 
