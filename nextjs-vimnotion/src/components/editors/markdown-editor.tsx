@@ -81,7 +81,7 @@ export const MarkdownEditor = ({
 	}, [toggleLeaderPanel]);
 
 	return (
-		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 dark:outline-indigo-900 outline-indigo-300/70" : ""} relative h-full w-full 
+		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} relative h-full w-full 
 				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}>
 			<h1 className="flex justify-end w-full italic  
 				border-b border-b-background-muted/50">
