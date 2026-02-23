@@ -26,7 +26,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] endpoint timeout?
     - [ ] evaluation hook
 - [ ] RSS feed
-- [ ] Make default view markdown, active view with border, and toggle to vim mode
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)

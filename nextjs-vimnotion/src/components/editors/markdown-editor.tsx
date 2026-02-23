@@ -55,30 +55,35 @@ export const MarkdownEditor = ({
 			(closestElement as Element).scrollIntoView({ block: 'center', behavior: 'instant' });
 		}
 
-		const handleSpaceKey = (event: KeyboardEvent) => {
-			if (event.key === ' ') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				toggleLeaderPanel();
-			}
-		};
-		document.addEventListener('keydown', handleSpaceKey);
-
-		const handleDashKey = (event: KeyboardEvent) => {
-			if (event.key === '-') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				toggleSidebar()
-			}
-		};
-		document.addEventListener('keydown', handleDashKey);
-
-
-		return () => {
-			document.removeEventListener('keydown', handleSpaceKey);
-			document.removeEventListener('keydown', handleDashKey);
-		}
 	}, [toggleLeaderPanel]);
+
+	useEffect(() => {
+		if (activePane === paneId) {
+			const handleSpaceKey = (event: KeyboardEvent) => {
+				if (event.key === ' ') {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					toggleLeaderPanel();
+				}
+			};
+			document.addEventListener('keydown', handleSpaceKey);
+
+			const handleDashKey = (event: KeyboardEvent) => {
+				if (event.key === '-') {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					toggleSidebar()
+				}
+			};
+			document.addEventListener('keydown', handleDashKey);
+
+
+			return () => {
+				document.removeEventListener('keydown', handleSpaceKey);
+				document.removeEventListener('keydown', handleDashKey);
+			}
+		}
+	}, [activePane]);
 
 	return (
 		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} relative h-full w-full 
