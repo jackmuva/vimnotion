@@ -46,10 +46,13 @@ export const LeaderPanel = () => {
 
 		const handleTKey = (event: KeyboardEvent) => {
 			if (event.key === 't') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				toggleMarkdown();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleMarkdown();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleTKey);
@@ -66,30 +69,39 @@ export const LeaderPanel = () => {
 
 		const handleIKey = (event: KeyboardEvent) => {
 			if (event.key === 'i') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				toggleImageModal();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleImageModal();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleIKey);
 
 		const handlePKey = (event: KeyboardEvent) => {
 			if (event.key === 'p') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				togglePublishModal();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					togglePublishModal();
+				}
 			}
 		};
 		document.addEventListener('keydown', handlePKey);
 
 		const handleAKey = (event: KeyboardEvent) => {
 			if (event.key === 'a') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				toggleAiPanel();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleAiPanel();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleAKey);
