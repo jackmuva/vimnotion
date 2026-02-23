@@ -1,5 +1,7 @@
+import { AiMessage } from "@/types/ai-types";
 import { VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
+import { v4 } from "uuid";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -7,19 +9,32 @@ export type VnObjectResponse = {
 	Data: VnObject[];
 };
 
-export const getAiStream = async (content: string): Promise<Response> => {
+export const getAsciiStream = async (content: string): Promise<Response> => {
 	const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/ai/ascii`,
 		{
 			method: "POST",
 			body: JSON.stringify({
 				role: "user",
-				content: content
+				content: content,
+				type: "message",
 			}),
 			credentials: "include"
 		});
 	return res;
 }
 
+export const getAgentStream = async (messages: Array<AiMessage>, sessionId: string): Promise<Response> => {
+	const res: Response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/ai/agent`,
+		{
+			method: "POST",
+			body: JSON.stringify({
+				messages: messages,
+				sessionId: sessionId,
+			}),
+			credentials: "include"
+		});
+	return res;
+}
 export const updateDirectoryStructure = async (changes: DirectoryChanges, structure: DirectoryTree): Promise<boolean> => {
 	const res: Response = await fetch(`${BACKEND_BASE_URL}/api/directory`, {
 		method: "PUT",

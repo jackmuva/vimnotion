@@ -6,10 +6,10 @@ A Notion-like editor with Vim keybindings. Two main parts: Next.js frontend and 
 ```
 vimnotion/
 ├── nextjs-vimnotion/          # Frontend (Next.js 16, React 19, TypeScript 5)
-│   └── src/                   # app/, components/, store/, types/, lib/
+│   └── src/                   # app/, components/, store/, types/, lib/, services/
 ├── go-vimnotion/              # Backend (Go 1.24)
 │   ├── cmd/server/            # Entry point (main.go)
-│   └── internal/              # handlers/, middleware/, models/, repository/, services/
+│   └── internal/              # handlers/, middleware/, models/, repository/, services/, utils/, config/
 ```
 
 ## Build/Lint/Test Commands
@@ -19,7 +19,6 @@ vimnotion/
 npm run dev          # Dev server with Turbopack (port 3000)
 npm run build        # Production build
 npm run lint         # ESLint (next/core-web-vitals + next/typescript)
-npm run start        # Start production server
 ```
 
 ### Backend (go-vimnotion/)
@@ -28,7 +27,6 @@ go run ./cmd/server                          # Run dev server (port 3333)
 go build -o server ./cmd/server              # Build binary
 go test ./...                                # Run all tests
 go test -run TestName ./path/to/package      # Run single test by name
-go test -v ./internal/handlers/...           # Tests in package with verbose
 go fmt ./...                                 # Format code (run before committing)
 ```
 
@@ -62,23 +60,17 @@ import { PanelType, PaneNode } from "@/types/editor-types";
 export enum PanelType { LEADER = "LEADER", SIDEBAR = "SIDEBAR", MAIN = "MAIN" }
 
 export type PaneNode = {
-  [id: string]: {
-    children: Array<string>;
-    parent: string | null;
-  }
+  [id: string]: { children: Array<string>; parent: string | null; }
 }
 ```
 
 **State (Zustand):** Subscribe to specific state slices, not entire store
 ```typescript
-// Good - only re-renders when activePane changes
-const activePane = useEditorStore((state) => state.activePane);
-
-// Bad - re-renders on any state change
-const store = useEditorStore();
+const activePane = useEditorStore((state) => state.activePane);  // Good
+const store = useEditorStore();  // Bad - re-renders on any state change
 ```
 
-**CSS:** Tailwind utilities only, avoid custom CSS. Use `className` strings directly.
+**CSS:** Tailwind utilities only, avoid custom CSS.
 
 ### Go
 
@@ -91,13 +83,11 @@ const store = useEditorStore();
 ```go
 import (
     "database/sql"
-    "encoding/json"
     "net/http"
 
     "github.com/golang-jwt/jwt/v5"
 
     "vimnotion.com/server/internal/models"
-    "vimnotion.com/server/internal/repository"
 )
 ```
 
@@ -114,11 +104,9 @@ if err != nil {
 **Structs:** Use JSON tags for API models
 ```go
 type VnObject struct {
-    Id       string `json:"id"`
-    Name     string `json:"name"`
-    Email    string `json:"email"`
-    IsFile   bool   `json:"isFile"`
-    Contents string `json:"contents"`
+    Id     string `json:"id"`
+    Name   string `json:"name"`
+    IsFile bool   `json:"isFile"`
 }
 ```
 
@@ -150,7 +138,7 @@ func GetSomething(db *sql.DB) http.HandlerFunc {
 
 ## Common Patterns
 
-**Data Fetching (Frontend):**
+**Data Fetching (Frontend):** Use SWR with credentials
 ```typescript
 const { data, isLoading } = useSWR<ResponseType>('/api/endpoint', async () => {
     const req = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/endpoint`, {
@@ -173,12 +161,8 @@ w.Header().Set("Content-Type", "application/json")
 w.Write(jsonMessage)
 ```
 
-**Path Parameters (Backend):**
+**Path/Query Parameters (Backend):**
 ```go
-fileId := r.PathValue("id")  // for routes like /api/vnobject/{id}
-```
-
-**Query Parameters (Backend):**
-```go
+fileId := r.PathValue("id")       // for routes like /api/vnobject/{id}
 searchTerm := r.URL.Query().Get("q")
 ```

@@ -18,6 +18,8 @@ import {
 } from '@codemirror/autocomplete';
 import data from '@emoji-mart/data';
 import type { EmojiMartData } from '@emoji-mart/data';
+import { applyAgentBindings } from './extensions/agent-bindings';
+import { DirectoryTree } from '@/types/sidebar-types';
 
 export const VimEditor = ({
 	paneId,
@@ -47,7 +49,8 @@ export const VimEditor = ({
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
-		updateAllBuffers,
+		updateAllBuffers, setMessageMap, setInputMessageMap, getMessageMap, getInputMessageMap,
+		setActivePanel, constructLocationMapHelper, getDirectoryState,
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -189,6 +192,7 @@ export const VimEditor = ({
 	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl])
 
 	useEffect(() => {
+		setActivePanel(PanelType.MAIN);
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
@@ -237,11 +241,7 @@ export const VimEditor = ({
 			toggleSidebar: toggleSidebar,
 			getActivePanel: () => getActivePanel(),
 			getLocation: () => getLocation(),
-			getOilLine: () => getOilLine(),
 			setLocation: (loc: string) => setLocation(loc),
-			openFileInBuffer: () => openFileInBuffer(),
-			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
-			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 		});
 		applyPanelBindings({
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
@@ -256,6 +256,29 @@ export const VimEditor = ({
 			refetchFileInBuffer: (fileId: string) => openFileInBuffer(fileId),
 			getActivePane: () => getActivePane(),
 			getPane: (paneId: string) => getPane(paneId),
+		});
+		applyAgentBindings({
+			setMessageMap: (messageMap): void => setMessageMap(messageMap),
+			setInputMessageMap: (inputMap) => setInputMessageMap(inputMap),
+			getActivePane: () => getActivePane(),
+			getActivePanel: () => getActivePanel(),
+			getMessageMap: () => getMessageMap(),
+			getInputMessageMap: () => getInputMessageMap(),
+			getDirectoryState: () => getDirectoryState(),
+			getLocationMap: (directoryState: DirectoryTree): {
+				[uuid: string]: {
+					location: string;
+					name: string;
+					isFile: boolean;
+				};
+			} => constructLocationMapHelper(directoryState),
+			getOilLine: () => getOilLine(),
+			openFileInBuffer: () => openFileInBuffer(),
+			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
+			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
+			toggleSidebar: toggleSidebar,
+			getLocation: () => getLocation(),
+			setLocation: (loc: string) => setLocation(loc),
 		});
 		setVimEditor(view);
 
@@ -327,7 +350,7 @@ export const VimEditor = ({
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background'>
+		<div className={`${activeId === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} rounded-sm relative h-full w-full z-20 bg-background`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>

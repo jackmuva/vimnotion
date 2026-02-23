@@ -1,13 +1,10 @@
 import { PanelType } from "@/types/editor-types";
-import { EditorState } from "../editor-store";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 import { SearchType } from "@/types/search-types";
 
 export const createToggleSlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	openSidebar: false,
 	openLeaderPanel: false,

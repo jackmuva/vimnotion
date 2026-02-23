@@ -71,8 +71,8 @@ export default async function EditorDocsPage() {
 					Use Space (the leader key) to bring up the leader menu
 				</div>
 				<div>
-					to render [m]arkdown
-					<pre>{`<Space>m`}</pre>
+					to [t]oggle markdown and vim
+					<pre>{`<Space>t`}</pre>
 				</div>
 				<div>
 					to [s]earch all files

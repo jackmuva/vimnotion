@@ -13,7 +13,7 @@ import (
 	"vimnotion.com/server/internal/repository"
 )
 
-const maxDbWorkers = 5
+const MaxDbWorkers = 5
 
 func GetDirectoryStructure(db *sql.DB, email string) (string, error) {
 	directory, err := repository.GetDirectoryStructure(db, email)
@@ -102,7 +102,7 @@ func InitializeUserDirectory(db *sql.DB, email string, name string) error {
 }
 
 func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects, email string) error {
-	workerSem := make(chan struct{}, maxDbWorkers)
+	workerSem := make(chan struct{}, MaxDbWorkers)
 	var workerWg sync.WaitGroup
 	var errMutex sync.Mutex
 	var errors []error
@@ -139,7 +139,7 @@ func CreateAllVnObjects(db *sql.DB, createdObjects []models.CreatedObjects, emai
 }
 
 func UpdateAllVnObjects(db *sql.DB, movedObjects []models.MovedObjects) error {
-	workerSem := make(chan struct{}, maxDbWorkers)
+	workerSem := make(chan struct{}, MaxDbWorkers)
 	var workerWg sync.WaitGroup
 	var errMutex sync.Mutex
 	var errors []error
@@ -168,7 +168,7 @@ func UpdateAllVnObjects(db *sql.DB, movedObjects []models.MovedObjects) error {
 }
 
 func DeleteAllVnObjects(db *sql.DB, delObjects []models.DeletedObjects) error {
-	workerSem := make(chan struct{}, maxDbWorkers)
+	workerSem := make(chan struct{}, MaxDbWorkers)
 	var workerWg sync.WaitGroup
 	var errMutex sync.Mutex
 	var errors []error

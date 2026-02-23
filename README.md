@@ -22,6 +22,11 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] ai with context to certain files (maybe with the @ shortcut)
+    - [x] compaction hook
+    - [ ] endpoint timeout?
+    - [ ] evaluation hook
+- [ ] RSS feed
+- [ ] Make default view markdown, active view with border, and toggle to vim mode
 
 ## High-level Todos
 - [ ] normie view (not vimnotion)
@@ -36,7 +41,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 # Marketing Todos
 - [ ] Video on "why markdown"
 - [ ] Video on "why vim"
-- [x] blog posts that help other developers building "x"
+- [ ] blog posts that help other developers building "x"
     - [ ] search
     - [ ] image storage
     - [ ] key commands useRef
+    - [ ] agents from scratch
+    - [ ] AI and purpose
+    - [ ] AI engineering is just software engineering

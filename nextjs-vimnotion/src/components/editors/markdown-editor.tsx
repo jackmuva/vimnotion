@@ -16,6 +16,9 @@ export const MarkdownEditor = ({
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const pane: PaneNode = getPane(paneId);
+	const activePane: string = useEditorStore((state) => state.activePane);
+	const { toggleLeaderPanel } = useEditorStore((state) => state);
+	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
 
 	const shiftToVim = (): void => {
 		const updateNode: PaneNode = {
@@ -51,11 +54,35 @@ export const MarkdownEditor = ({
 		if (closestElement !== null) {
 			(closestElement as Element).scrollIntoView({ block: 'center', behavior: 'instant' });
 		}
-	}, []);
+
+		const handleSpaceKey = (event: KeyboardEvent) => {
+			if (event.key === ' ') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleLeaderPanel();
+			}
+		};
+		document.addEventListener('keydown', handleSpaceKey);
+
+		const handleDashKey = (event: KeyboardEvent) => {
+			if (event.key === '-') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleSidebar()
+			}
+		};
+		document.addEventListener('keydown', handleDashKey);
+
+
+		return () => {
+			document.removeEventListener('keydown', handleSpaceKey);
+			document.removeEventListener('keydown', handleDashKey);
+		}
+	}, [toggleLeaderPanel]);
 
 	return (
-		<div className='relative h-full w-full rounded-sm z-20 bg-background 
-			flex flex-col justify-start items-center space-y-2 p-2'>
+		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} relative h-full w-full 
+				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}>
 			<h1 className="flex justify-end w-full italic  
 				border-b border-b-background-muted/50">
 				<button className="flex items-center space-x-1 

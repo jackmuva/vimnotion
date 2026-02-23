@@ -1,15 +1,13 @@
 import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
-import { EditorState } from "../editor-store";
 import { v4 } from "uuid";
 import { PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
+import { VnObject } from "@/types/primitive-types";
+import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createDirectorySlice = (
-	set: {
-		(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;
-		(state: EditorState | ((state: EditorState) => EditorState), replace: true): void;
-	},
-	get: () => EditorState
+	set: StoreSetter,
+	get: StoreGetter
 ) => ({
 	directoryState: {},
 	proposedDirectoryState: {},
@@ -23,6 +21,7 @@ export const createDirectorySlice = (
 	directoryConfirmation: false,
 
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
+	getDirectoryState: (): DirectoryTree => get().directoryState,
 	setProposedDirectoryState: (tree: DirectoryTree): void => set({ proposedDirectoryState: tree }),
 	setEditingDirectory: (isEdit: boolean) => set({ editingDirectory: isEdit }),
 	getEditingDirectory: () => get().editingDirectory,
@@ -316,7 +315,7 @@ export const createDirectorySlice = (
 		const fileId: string = fromSearch ? id!.split("|")[0] : get().getOilLine().split("|")[0];
 		const activePane: PaneNode = get().getPaneById(get().activePane);
 
-		const vnObject = await getVnObjectById(fileId);
+		const vnObject: VnObject | null = await getVnObjectById(fileId);
 		if (vnObject) {
 			activePane[Object.keys(activePane)[0]].fileId = fromSearch ? vnObject.id + "|" + vnObject.name : get().getOilLine();
 			activePane[Object.keys(activePane)[0]].buffer = vnObject.contents;
@@ -325,7 +324,6 @@ export const createDirectorySlice = (
 			get().updatePane(activePane);
 		}
 	},
-
 
 	getLocationById: (id: string): string | null => {
 		let resLoc: string | null = null;

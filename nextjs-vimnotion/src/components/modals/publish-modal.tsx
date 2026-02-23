@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export const PublishModal = () => {
 	const { activePane, getPaneById, publishVnObject,
-		togglePublishModal } = useEditorStore((state) => state);
+		togglePublishModal, setActivePanel } = useEditorStore((state) => state);
 	const activeTree: PaneNode = getPaneById(activePane);
 
 	const togglePub = async () => {
@@ -40,7 +40,7 @@ export const PublishModal = () => {
 			document.removeEventListener('keydown', handleYKeyDown);
 			document.removeEventListener('keydown', handleNKeyDown);
 		}
-	}, [togglePublishModal, activeTree]);
+	}, [togglePublishModal, setActivePanel, activeTree]);
 
 
 	return (

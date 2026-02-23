@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { EditorType, PaneNode } from "@/types/editor-types";
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { useEffect } from "react";
 
 export const LeaderPanel = () => {
@@ -12,22 +12,21 @@ export const LeaderPanel = () => {
 	const toggleAiPanel = useEditorStore((state) => state.toggleAiPanel);
 	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
 	const togglePublishModal = useEditorStore((state) => state.togglePublishModal);
-	const setActivePane: (id: string) => void = useEditorStore((state) => state.updateActivePane);
-	const cycleNeighbor: () => string = useEditorStore((state) => state.cycleNeighbor);
+	const setActivePanel: (panelType: PanelType) => void = useEditorStore((state) => state.setActivePanel);
 
-	const shiftToMarkdown = (): void => {
+	const toggleMarkdown = (): void => {
 		const paneNode: PaneNode = getPane(activePane);
 		const updateNode: PaneNode = {
 			[activePane]: {
 				...paneNode[activePane],
-				editorType: EditorType.MARKDOWN,
+				editorType: paneNode[activePane].editorType === EditorType.MARKDOWN ? EditorType.VIM : EditorType.MARKDOWN,
 			},
 		}
 		updatePane(updateNode);
-		setActivePane(cycleNeighbor())
 	}
 
 	useEffect(() => {
+		setActivePanel(PanelType.LEADER);
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
 				closePanel();
@@ -37,21 +36,26 @@ export const LeaderPanel = () => {
 
 		const handleWKey = (event: KeyboardEvent) => {
 			if (event.key === 'w') {
-				toggleWindowPanel();
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				closePanel();
+				toggleWindowPanel();
 			}
 		};
 		document.addEventListener('keydown', handleWKey);
 
-		const handleMKey = (event: KeyboardEvent) => {
-			if (event.key === 'm') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				shiftToMarkdown();
-				closePanel();
+		const handleTKey = (event: KeyboardEvent) => {
+			if (event.key === 't') {
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleMarkdown();
+				}
 			}
 		};
-		document.addEventListener('keydown', handleMKey);
+		document.addEventListener('keydown', handleTKey);
 
 		const handleSKey = (event: KeyboardEvent) => {
 			if (event.key === 's') {
@@ -65,30 +69,39 @@ export const LeaderPanel = () => {
 
 		const handleIKey = (event: KeyboardEvent) => {
 			if (event.key === 'i') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				toggleImageModal();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleImageModal();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleIKey);
 
 		const handlePKey = (event: KeyboardEvent) => {
 			if (event.key === 'p') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				togglePublishModal();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					togglePublishModal();
+				}
 			}
 		};
 		document.addEventListener('keydown', handlePKey);
 
 		const handleAKey = (event: KeyboardEvent) => {
 			if (event.key === 'a') {
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				closePanel();
-				toggleAiPanel();
+				if (getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+					getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) {
+
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					closePanel();
+					toggleAiPanel();
+				}
 			}
 		};
 		document.addEventListener('keydown', handleAKey);
@@ -96,13 +109,13 @@ export const LeaderPanel = () => {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleWKey);
-			document.removeEventListener('keydown', handleMKey);
+			document.removeEventListener('keydown', handleTKey);
 			document.removeEventListener('keydown', handleSKey);
 			document.removeEventListener('keydown', handleIKey);
 			document.removeEventListener('keydown', handlePKey);
 			document.removeEventListener('keydown', handleAKey);
 		};
-	}, [closePanel, toggleWindowPanel]);
+	}, [closePanel, toggleWindowPanel, setActivePanel]);
 
 	return (
 		<div id={`leader-panel`}
@@ -112,21 +125,27 @@ export const LeaderPanel = () => {
 				<button id={`first-leader-option`}
 					className="cursor-pointer"
 					onClick={() => {
-						shiftToMarkdown();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[m]</span>
-				</button>arkdown
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
 						toggleWindowPanel();
 						closePanel();
 					}}>
 					<span className="font-bold text-orange-500">[w]</span>
 				</button>indow
 			</div>
+
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => {
+							toggleMarkdown();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[t]</span>
+					</button>{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ?
+						"oggle Markdown" : "oggle Vim"}
+				</div>
+			}
 			<div>
 				<button className="cursor-pointer"
 					onClick={() => {
@@ -136,34 +155,41 @@ export const LeaderPanel = () => {
 					<span className="font-bold text-orange-500">[s]</span>
 				</button>earch
 			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						toggleImageModal();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[i]</span>
-				</button>nsert [i]mage
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						togglePublishModal();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[p]</span>
-				</button>ublish/unpublish [p]age
-			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						toggleAiPanel();
-						closePanel();
-					}}>
-					<span className="font-bold text-orange-500">[a]</span>
-				</button>i
-			</div>
-
+			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							toggleImageModal();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[i]</span>
+					</button>nsert [i]mage
+				</div>
+			}
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							togglePublishModal();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[p]</span>
+					</button>ublish/unpublish [p]age
+				</div>
+			}
+			{(getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM ||
+				getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.MARKDOWN) &&
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							toggleAiPanel();
+							closePanel();
+						}}>
+						<span className="font-bold text-orange-500">[a]</span>
+					</button>i
+				</div>
+			}
 		</div>
 	);
 
