@@ -24,7 +24,7 @@ export const TabContainer = () => {
 		return <div className="h-full w-full text-center font-robo-mono">Loading...</div>;
 	}
 	return (
-		<div className="h-full w-full flex flex-col space-y-0">
+		<div className="h-full w-full flex flex-col space-y-0 pb-4">
 			{tabs.length > 1 &&
 				<div className="flex space-x-4 shrink-0">
 					{tabs.map((tab, i) => {
