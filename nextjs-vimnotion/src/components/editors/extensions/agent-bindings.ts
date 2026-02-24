@@ -1,7 +1,7 @@
 import { getAgentStream, getVnObjectById } from "@/services/api-service";
 import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
 import { PanelType } from "@/types/editor-types";
-import { VnObject } from "@/types/primitive-types";
+import { Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
@@ -161,7 +161,8 @@ export const applyAgentBindings = ({
 		for (const line of message.split("\n")) {
 			for (const word of line.split(" ")) {
 				if (word in locationMap && !isPrompt) {
-					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
+					const vnObjectData: { file: VnObject | null, suggestions: Suggestion[] } | null = await getVnObjectById(locationMap[word]);
+					const vnObject = vnObjectData?.file;
 					const contentWithLines = vnObject?.contents.split("\n").map((line: string, i: number) => {
 						if (line.length > 0) {
 							return `${i + 1} ${line}`;
@@ -169,10 +170,10 @@ export const applyAgentBindings = ({
 							return "";
 						}
 					}).filter((line) => line.length > 0).join("\n");
-					parsed += " " + `[User's provided file: {vnObjectId: ${vnObject?.id}, content: ${contentWithLines}}]`
+					parsed += " " + `[User's provided file: \nvnObjectId: ${vnObject?.id} \ncontent: ${contentWithLines}]\n`
 				} else if (word in locationMap && isPrompt) {
-					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-					parsed += " " + `[Prompt file contents: ${vnObject?.contents}]`
+					const vnObjectData: { file: VnObject | null, suggestions: Suggestion[] } | null = await getVnObjectById(locationMap[word]);
+					parsed += " " + `[Prompt file contents: ${vnObjectData?.file?.contents}]`
 				} else if (word === "/prompt") {
 					parsed += "\nUse the following prompt file(s):";
 					isPrompt = true;

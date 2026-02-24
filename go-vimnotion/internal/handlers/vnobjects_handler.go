@@ -74,13 +74,23 @@ func GetVnObjectById(db *sql.DB) http.HandlerFunc {
 			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
 			return
 		}
+		suggs, err := services.GetSuggestionsByFileId(db, fileId)
+		if err != nil {
+			fmt.Printf("Unable to Get data from db: %s\n", err)
+			response := models.DataResponse{StatusCode: 500}
+			jsonMessage, _ := json.Marshal(response)
+			http.Error(w, string(jsonMessage), http.StatusInternalServerError)
+			return
+		}
 
 		response := struct {
-			StatusCode int
-			Data       []models.VnObject
+			StatusCode  int
+			Data        []models.VnObject
+			Suggestions []models.Suggestion
 		}{
-			StatusCode: 200,
-			Data:       objs,
+			StatusCode:  200,
+			Data:        objs,
+			Suggestions: suggs,
 		}
 		jsonMessage, err := json.Marshal(response)
 		if err != nil {
