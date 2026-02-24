@@ -137,8 +137,8 @@ export const VimEditor = ({
 			});
 			vimEditor.dispatch({
 				selection: {
-					anchor: pane[paneId].cursorPosition,
-					head: pane[paneId].cursorPosition,
+					anchor: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
+					head: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
 				},
 			});
 			vimEditor.scrollDOM.scrollTop = pane[paneId].scrollPosition;
