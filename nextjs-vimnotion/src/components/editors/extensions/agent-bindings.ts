@@ -162,7 +162,14 @@ export const applyAgentBindings = ({
 			for (const word of line.split(" ")) {
 				if (word in locationMap && !isPrompt) {
 					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-					parsed += " " + `[User's provided file content: ${vnObject?.contents}]`
+					const contentWithLines = vnObject?.contents.split("\n").map((line: string, i: number) => {
+						if (line.length > 0) {
+							return `${i + 1} ${line}`;
+						} else {
+							return "";
+						}
+					}).filter((line) => line.length > 0).join("\n");
+					parsed += " " + `[User's provided file content: ${contentWithLines}]`
 				} else if (word in locationMap && isPrompt) {
 					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
 					parsed += " " + `[Prompt file contents: ${vnObject?.contents}]`

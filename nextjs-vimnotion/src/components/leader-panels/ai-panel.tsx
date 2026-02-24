@@ -30,15 +30,15 @@ export const AiPanel = () => {
 		};
 		document.addEventListener('keydown', handleKeyDown);
 
-		// const handleEKey = (event: KeyboardEvent) => {
-		// 	if (event.key === 'e') {
-		// 		event.preventDefault();
-		// 		event.stopImmediatePropagation();
-		// 		shiftToAgent();
-		// 		closePanel();
-		// 	}
-		// };
-		// document.addEventListener('keydown', handleEKey);
+		const handleEKey = (event: KeyboardEvent) => {
+			if (event.key === 'e') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				shiftToAgent();
+				closePanel();
+			}
+		};
+		document.addEventListener('keydown', handleEKey);
 
 		const handleDKey = (event: KeyboardEvent) => {
 			if (event.key === 'd') {
@@ -53,7 +53,7 @@ export const AiPanel = () => {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keydown', handleDKey);
-			// document.removeEventListener('keydown', handleEKey);
+			document.removeEventListener('keydown', handleEKey);
 		};
 	}, [closePanel, setActivePanel]);
 
@@ -61,16 +61,16 @@ export const AiPanel = () => {
 		<div id={`ai-panel`}
 			className='font-robo-mono text-xl z-30 w-full bg-background-muted h-1/4 absolute bottom-0 left-0
 					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
-			{/* <div> */}
-			{/* 	<button id="first-ai-option" */}
-			{/* 		className="cursor-pointer" */}
-			{/* 		onClick={() => { */}
-			{/* 			closePanel(); */}
-			{/* 		}} > */}
-			{/* 		<span className="font-bold text-orange-500">[e]</span> */}
-			{/* 	</button> */}
-			{/* 	ditor agent */}
-			{/* </div> */}
+			<div>
+				<button id="first-ai-option"
+					className="cursor-pointer"
+					onClick={() => {
+						closePanel();
+					}} >
+					<span className="font-bold text-orange-500">[e]</span>
+				</button>
+				ditor agent
+			</div>
 			{getPane(activePane)[Object.keys(getPane(activePane))[0]].editorType === EditorType.VIM &&
 				<div>
 					<button id="first-ai-option"

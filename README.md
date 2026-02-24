@@ -21,15 +21,15 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [x] ai with context to certain files (maybe with the @ shortcut)
-    - [x] compaction hook
+- [ ] Editor
+    - [ ] compaction hook
     - [ ] endpoint timeout?
     - [ ] evaluation hook
+    - [ ] suggestion rendering
 - [ ] RSS feed
+- [ ] tiptap editor
 
 ## High-level Todos
-- [ ] normie view (not vimnotion)
-  - [ ] vim-like commands like <ESC> for command and ":" for executions and actions
 - [ ] create teams
 - [ ] extensability with hotkeys for apis
 - [ ] version history
@@ -38,8 +38,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] account modal
 
 # Marketing Todos
-- [ ] Video on "why markdown"
-- [ ] Video on "why vim"
+- [ ] blog on "why markdown"
 - [ ] blog posts that help other developers building "x"
     - [ ] search
     - [ ] image storage

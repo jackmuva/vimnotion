@@ -328,16 +328,17 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				fmt.Printf("Calling suggestion tool with args: %+v\n\n", suggestionArgs)
 				if err != nil {
 					execRes = "Error parsing suggestion arguments"
-				}
-				suggestions, err := aitools.ExecuteSuggestionSubagentTool(suggestionArgs.Suggestions, suggestionArgs.FileName, email, sessionId, db)
-				if err != nil {
-					execRes = fmt.Sprintf("Error generating suggestions: %s", err.Error())
 				} else {
-					suggestionsJson, jsonErr := json.Marshal(suggestions)
-					if jsonErr != nil {
-						execRes = "Error serializing suggestions"
+					suggestions, err := aitools.ExecuteSuggestionSubagentTool(suggestionArgs.Suggestions, suggestionArgs.FileName, email, sessionId, db)
+					if err != nil {
+						execRes = fmt.Sprintf("Error generating suggestions: %s", err.Error())
 					} else {
-						execRes = string(suggestionsJson)
+						suggestionsJson, jsonErr := json.Marshal(suggestions)
+						if jsonErr != nil {
+							execRes = "Error serializing suggestions"
+						} else {
+							execRes = string(suggestionsJson)
+						}
 					}
 				}
 			}
