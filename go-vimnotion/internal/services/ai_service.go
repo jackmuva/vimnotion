@@ -321,6 +321,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				}
 			} else if *v.Function.Name == "suggestion_subagent_tool" {
 				var suggestionArgs struct {
+					VnObjectId  string  `json:"vnObjectId"`
 					Suggestions *string `json:"suggestions"`
 					FileName    *string `json:"fileName"`
 				}
@@ -329,7 +330,7 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				if err != nil {
 					execRes = "Error parsing suggestion arguments"
 				} else {
-					suggestions, err := aitools.ExecuteSuggestionSubagentTool(suggestionArgs.Suggestions, suggestionArgs.FileName, email, sessionId, db)
+					suggestions, err := aitools.ExecuteSuggestionSubagentTool(suggestionArgs.VnObjectId, suggestionArgs.Suggestions, suggestionArgs.FileName, email, sessionId, db)
 					if err != nil {
 						execRes = fmt.Sprintf("Error generating suggestions: %s", err.Error())
 					} else {

@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/google/uuid"
 	"vimnotion.com/server/internal/config"
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
@@ -25,6 +26,10 @@ var SuggestionSubagentTool models.AiTool = models.AiTool{
 		Parameters: models.AiFunctionParams{
 			Type: "object",
 			Properties: map[string]models.AiFunctionProperties{
+				"vnObjectId": {
+					Type:        "string",
+					Description: "The user message will have a vnObjectId represent the id of the file they provided",
+				},
 				"suggestions": {
 					Type:        "string",
 					Description: "All edits suggested to a user's file",
@@ -34,12 +39,12 @@ var SuggestionSubagentTool models.AiTool = models.AiTool{
 					Description: "If suggestions are in a file, include the filename",
 				},
 			},
-			Required: []string{},
+			Required: []string{"vnObjectId"},
 		},
 	},
 }
 
-func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email string, sessionId string, db *sql.DB) ([]models.Suggestion, error) {
+func ExecuteSuggestionSubagentTool(vnObjectId string, suggestions *string, fileName *string, email string, sessionId string, db *sql.DB) ([]models.Suggestion, error) {
 	if suggestions == nil && fileName == nil {
 		return nil, fmt.Errorf("No suggestions provided")
 	}
@@ -179,6 +184,16 @@ func ExecuteSuggestionSubagentTool(suggestions *string, fileName *string, email 
 		fmt.Printf("Raw content from AI: %s\n", completion.Choices[0].Message.Content[8:len(completion.Choices[0].Message.Content)-3])
 		fmt.Printf("unable to parse suggestion json")
 		return nil, fmt.Errorf("unable to parse suggestion json from content: %w", err)
+	}
+	for i := range suggestionsWrapper {
+		suggestionsWrapper[i].Id = uuid.New().String()
+		suggestionsWrapper[i].Email = email
+		suggestionsWrapper[i].VnObjectId = vnObjectId
+	}
+
+	err = repository.BatchInsertSuggestions(db, suggestionsWrapper)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to insert suggestions to vnobject: %s", vnObjectId)
 	}
 
 	return suggestionsWrapper, nil

@@ -169,7 +169,7 @@ export const applyAgentBindings = ({
 							return "";
 						}
 					}).filter((line) => line.length > 0).join("\n");
-					parsed += " " + `[User's provided file content: ${contentWithLines}]`
+					parsed += " " + `[User's provided file: {vnObjectId: ${vnObject?.id}, content: ${contentWithLines}}]`
 				} else if (word in locationMap && isPrompt) {
 					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
 					parsed += " " + `[Prompt file contents: ${vnObject?.contents}]`
