@@ -321,6 +321,7 @@ export const createDirectorySlice = (
 			activePane[Object.keys(activePane)[0]].buffer = vnObjectData.file.contents;
 			activePane[Object.keys(activePane)[0]].public = vnObjectData.file.public;
 			activePane[Object.keys(activePane)[0]].bufferVersion++;
+			activePane[Object.keys(activePane)[0]].suggestions = vnObjectData.suggestions;
 			get().updatePane(activePane);
 		}
 	},

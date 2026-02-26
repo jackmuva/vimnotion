@@ -1,3 +1,5 @@
+import { Suggestion } from "./primitive-types"
+
 export enum PanelType {
 	LEADER = "LEADER",
 	SIDEBAR = "SIDEBAR",
@@ -52,6 +54,7 @@ export type PaneNode = {
 		editorType: EditorType,
 		buffer: string,
 		bufferVersion: number,
+		suggestions: Suggestion[],
 		fileId: string,
 		public: boolean,
 		scrollPosition: number,

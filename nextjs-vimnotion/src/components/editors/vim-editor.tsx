@@ -356,7 +356,7 @@ export const VimEditor = ({
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
-			<SuggestionSidebar paneId={paneId} suggestions={getPane(paneId)[paneId].suggestions}
+			<SuggestionSidebar paneId={paneId} suggestions={pane[paneId].suggestions} totalLines={pane[paneId].buffer.split("\n").length} />
 		</div>
 	);
 }
