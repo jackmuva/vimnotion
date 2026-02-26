@@ -20,6 +20,7 @@ import data from '@emoji-mart/data';
 import type { EmojiMartData } from '@emoji-mart/data';
 import { applyAgentBindings } from './extensions/agent-bindings';
 import { DirectoryTree } from '@/types/sidebar-types';
+import { SuggestionSidebar } from './suggestion-sidebar';
 
 export const VimEditor = ({
 	paneId,
@@ -350,10 +351,12 @@ export const VimEditor = ({
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
-		<div className={`${activeId === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} rounded-sm relative h-full w-full z-20 bg-background`}>
+		<div className={`${activeId === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} rounded-sm relative h-full w-full z-20 bg-background
+		flex gap-1 justify-between`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
+			<SuggestionSidebar paneId={paneId} suggestions={getPane(paneId)[paneId].suggestions}
 		</div>
 	);
 }

@@ -41,28 +41,29 @@ export const SearchPanel = () => {
 	}, [])
 	return (
 		<div id={`search-panel`}
-			className='font-robo-mono text-xl z-20 w-full bg-background-muted h-1/4 absolute bottom-0 left-0 
-					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
-			<div>
-				<button id={`first-search-option`}
-					className="cursor-pointer"
-					onClick={() => {
-						setSearchModal(SearchType.FILENAME);
-						toggleSearchPanel();
-					}}>
-					<span className="font-bold text-orange-500">[f]</span>
-				</button>ilename
+			className='px-2 pb-2 font-robo-mono text-xl z-20 w-full h-1/4 absolute bottom-0 left-0'>
+			<div className="bg-background-muted rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4
+				h-full">
+				<div>
+					<button id={`first-search-option`}
+						className="cursor-pointer"
+						onClick={() => {
+							setSearchModal(SearchType.FILENAME);
+							toggleSearchPanel();
+						}}>
+						<span className="font-bold text-orange-500">[f]</span>
+					</button>ilename
+				</div>
+				<div>
+					<button className="cursor-pointer"
+						onClick={() => {
+							setSearchModal(SearchType.GREP);
+							toggleSearchPanel();
+						}}>
+						<span className="font-bold text-orange-500">[g]</span>
+					</button>rep
+				</div>
 			</div>
-			<div>
-				<button className="cursor-pointer"
-					onClick={() => {
-						setSearchModal(SearchType.GREP);
-						toggleSearchPanel();
-					}}>
-					<span className="font-bold text-orange-500">[g]</span>
-				</button>rep
-			</div>
-
 		</div>
 	);
 }
