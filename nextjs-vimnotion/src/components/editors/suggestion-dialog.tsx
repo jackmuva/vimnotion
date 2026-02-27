@@ -23,6 +23,19 @@ export const SuggestionDialog = ({
 			<div className="text-sm">
 				{suggestion.explanation}
 			</div>
+			<div className="flex gap-4 w-full justify-center">
+				<div className="text-sm">
+					<button className="cursor-pointer">
+						<span className="font-bold text-orange-500">[y]</span>
+					</button>es, accept
+				</div>
+				<div className="text-sm">
+					<button className="cursor-pointer">
+						<span className="font-bold text-orange-500">[n]</span>
+					</button>o, decline
+				</div>
+
+			</div>
 		</div>
 	);
 }
