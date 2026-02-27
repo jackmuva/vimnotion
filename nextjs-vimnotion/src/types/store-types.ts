@@ -34,6 +34,7 @@ export type PanelState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
+	activeSuggestionIndex: number;
 
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
@@ -56,6 +57,7 @@ export type PanelState = {
 	saveVnObjectBuffer: () => Promise<boolean>;
 	publishVnObject: (publish: boolean) => Promise<boolean>;
 	updateAllBuffers: (fileId: string, buffer: string) => void;
+	setActiveSuggestionIndex: (i: number) => void;
 };
 
 export type TabState = {

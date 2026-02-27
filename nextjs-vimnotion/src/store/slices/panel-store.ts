@@ -57,6 +57,8 @@ export const createPanelSlice = (
 			buffer: START_BUFFER,
 			bufferVersion: 1,
 			suggestions: [],
+			suggestionOpen: true,
+			suggestionActive: false,
 			fileId: "START_PAGE",
 			public: false,
 			scrollPosition: 0,
@@ -100,6 +102,8 @@ export const createPanelSlice = (
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
 				suggestions: paneTree[parentId].suggestions,
+				suggestionOpen: paneTree[parentId].suggestionOpen,
+				suggestionActive: paneTree[parentId].suggestionActive,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -121,6 +125,8 @@ export const createPanelSlice = (
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
 				suggestions: paneTree[parentId].suggestions,
+				suggestionOpen: paneTree[parentId].suggestionOpen,
+				suggestionActive: paneTree[parentId].suggestionActive,
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -211,6 +217,8 @@ export const createPanelSlice = (
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
 
+		console.log("split state: ", curPanel.state);
+		console.log("direction: ", direction);
 		if (curPanel.deleted) {
 			return curPanel.neighbors[direction] ? get().drillDownDirectionally(curPanel.neighbors[direction], direction, childType) : paneId;
 		}
@@ -236,7 +244,6 @@ export const createPanelSlice = (
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
-
 		} else if (curPanel.state === SplitState.HORIZONTAL
 			&& (direction === Direction.EAST || direction === Direction.WEST)) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
@@ -279,6 +286,21 @@ export const createPanelSlice = (
 
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
+		if (paneTree[paneId].suggestionOpen && !paneTree[paneId].suggestionActive && direction === Direction.EAST) {
+			console.log("setting suggestion");
+			set({
+				activePanel: PanelType.SUGGESTION,
+				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: true } },
+				activeSuggestionIndex: 0,
+			});
+			return paneId;
+		} else if (paneTree[paneId].suggestionOpen && paneTree[paneId].suggestionActive && direction === Direction.WEST) {
+			set({
+				activePanel: PanelType.MAIN,
+				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: false } }
+			});
+			return paneId;
+		}
 
 		let currentId: string = paneId;
 		const childType: ChildType = paneTree[paneId].childType;
@@ -291,11 +313,13 @@ export const createPanelSlice = (
 				resId = drillDownDirectionally(neighborId, direction, childType);
 			}
 			if (resId !== paneId) {
+				set({ activePanel: PanelType.MAIN });
 				return resId
 			}
 			//@ts-expect-error can be null or string
 			currentId = currentPane.parent;
 		}
+		set({ activePanel: PanelType.MAIN });
 		return resId;
 	},
 
@@ -380,6 +404,10 @@ export const createPanelSlice = (
 		activePane[Object.keys(activePane)[0]].fileId = "VIM_TUTOR";
 		activePane[Object.keys(activePane)[0]].buffer = VIM_TUTOR_BUFFER;
 		get().updatePane(activePane);
+	},
+
+	setActiveSuggestionIndex: (i: number) => {
+		set({ activeSuggestionIndex: i });
 	},
 });
 

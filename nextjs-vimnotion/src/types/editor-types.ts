@@ -6,6 +6,7 @@ export enum PanelType {
 	MAIN = "MAIN",
 	MODAL = "MODAL",
 	AGENT = "AGENT",
+	SUGGESTION = "SUGGESTION",
 }
 
 
@@ -55,6 +56,8 @@ export type PaneNode = {
 		buffer: string,
 		bufferVersion: number,
 		suggestions: Suggestion[],
+		suggestionOpen: boolean,
+		suggestionActive: boolean,
 		fileId: string,
 		public: boolean,
 		scrollPosition: number,

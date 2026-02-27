@@ -14,8 +14,10 @@ export const SuggestionSidebar = ({
 		<div id={`suggestion-sidebar-${paneId}`}
 			className={`max-w-96 w-fit flex flex-col gap-4 relative h-full bg-secondary-background
 			p-2 rounded-sm`}>
-			{suggestions.map((sugg: Suggestion) => {
-				return <SuggestionDialog suggestion={sugg} totalLines={totalLines} key={sugg.id} />
+			{suggestions.map((sugg: Suggestion, i: number) => {
+				return <SuggestionDialog key={sugg.id}
+					suggestion={sugg} totalLines={totalLines}
+					paneId={paneId} index={i} />
 			})}
 		</div>
 	);

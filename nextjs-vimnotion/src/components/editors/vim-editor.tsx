@@ -157,46 +157,54 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
-			vimEditor.focus();
-			if (newImageUrl) {
-				const mdImage = `![your-image-name](${newImageUrl})`
-				const cursorPosition: number = vimEditor.state.selection.main.head;
-				const transaction = vimEditor.state.update({
-					changes: {
-						from: cursorPosition,
-						insert: mdImage,
-					},
-					selection: { anchor: cursorPosition + 1 },
-					scrollIntoView: true,
-				});
-				if (transaction) {
-					vimEditor.dispatch(transaction);
+		if (vimEditor && activeId === paneId) {
+			console.log("activePanel: ", activePanel);
+			if (pane[paneId].suggestionOpen && pane[paneId].suggestionActive && activePanel === PanelType.SUGGESTION) {
+				console.log("focusing on suggestion");
+				const button = document.getElementById(`accept-suggestion-${pane[paneId].suggestions[0].id}`);
+				if (button) button.focus();
+			} else if (activePanel === PanelType.MAIN) {
+				vimEditor.focus();
+				if (newImageUrl) {
+					const mdImage = `![your-image-name](${newImageUrl})`
+					const cursorPosition: number = vimEditor.state.selection.main.head;
+					const transaction = vimEditor.state.update({
+						changes: {
+							from: cursorPosition,
+							insert: mdImage,
+						},
+						selection: { anchor: cursorPosition + 1 },
+						scrollIntoView: true,
+					});
+					if (transaction) {
+						vimEditor.dispatch(transaction);
+					}
+					setNewImageUrl("");
+				} else if (newAiBlock) {
+					const cursorPosition: number = vimEditor.state.selection.main.head;
+					const transaction = vimEditor.state.update({
+						changes: {
+							from: cursorPosition,
+							insert: newAiBlock,
+						},
+						selection: { anchor: cursorPosition + 1 },
+						scrollIntoView: true,
+					});
+					if (transaction) {
+						vimEditor.dispatch(transaction);
+					}
+					setNewAiBlock("");
 				}
-				setNewImageUrl("");
-			} else if (newAiBlock) {
-				const cursorPosition: number = vimEditor.state.selection.main.head;
-				const transaction = vimEditor.state.update({
-					changes: {
-						from: cursorPosition,
-						insert: newAiBlock,
-					},
-					selection: { anchor: cursorPosition + 1 },
-					scrollIntoView: true,
-				});
-				if (transaction) {
-					vimEditor.dispatch(transaction);
-				}
-				setNewAiBlock("");
 			}
 		}
-	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl])
+	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl,
+		pane[paneId].suggestionOpen, pane[paneId].suggestionActive])
 
 	useEffect(() => {
-		setActivePanel(PanelType.MAIN);
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
+		setActivePanel(PanelType.MAIN);
 
 		const editorElement = document.querySelector(`#vim-editor-${paneId}`);
 		if (!editorElement) {
@@ -356,7 +364,11 @@ export const VimEditor = ({
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
-			<SuggestionSidebar paneId={paneId} suggestions={pane[paneId].suggestions} totalLines={pane[paneId].buffer.split("\n").length} />
+			{pane[paneId].suggestions.length > 0 && pane[paneId].suggestionOpen &&
+				<SuggestionSidebar paneId={paneId}
+					suggestions={pane[paneId].suggestions}
+					totalLines={pane[paneId].buffer.split("\n").length} />
+			}
 		</div>
 	);
 }

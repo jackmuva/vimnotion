@@ -16,6 +16,7 @@ export const createToggleSlice = (
 	openAiPanel: false,
 	openAsciiModal: false,
 
+	//TODO: similar to toggle window, I should refactor and move away from MAIN being the default panel type
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
 		if (openSidebar) {
@@ -32,9 +33,7 @@ export const createToggleSlice = (
 
 	toggleWindowPanel: () => {
 		const windowPanel = get().openWindowPanel;
-		if (windowPanel) {
-			get().setActivePanel(PanelType.MAIN);
-		} else {
+		if (!windowPanel) {
 			get().setActivePanel(PanelType.LEADER);
 		}
 		set({ openWindowPanel: !windowPanel });

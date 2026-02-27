@@ -12,7 +12,6 @@ export const WindowPanel = () => {
 
 	const handleNavigation = (paneId: string) => {
 		closePanel();
-		setActivePanel(PanelType.MAIN);
 		setActivePane(paneId);
 	};
 
@@ -27,7 +26,6 @@ export const WindowPanel = () => {
 
 		const handleHKey = (event: KeyboardEvent) => {
 			if (event.key === 'h') {
-				console.log("h");
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(activePane, Direction.WEST));
