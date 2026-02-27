@@ -51,7 +51,7 @@ export const VimEditor = ({
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
 		updateAllBuffers, setMessageMap, setInputMessageMap, getMessageMap, getInputMessageMap,
-		setActivePanel, constructLocationMapHelper, getDirectoryState,
+		setActivePanel, constructLocationMapHelper, getDirectoryState
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -95,7 +95,17 @@ export const VimEditor = ({
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
+			setActivePanel(PanelType.MAIN);
+
 			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					suggestionActive: false,
+				}
+			};
+			updatePane(updatedPane);
+
 			const loc: string | null = getLocationById(currentPane[Object.keys(pane)[0]].fileId);
 			if (loc) setLocation(loc);
 		}
@@ -158,9 +168,7 @@ export const VimEditor = ({
 
 	useEffect(() => {
 		if (vimEditor && activeId === paneId) {
-			console.log("activePanel: ", activePanel);
-			if (pane[paneId].suggestionOpen && pane[paneId].suggestionActive && activePanel === PanelType.SUGGESTION) {
-				console.log("focusing on suggestion");
+			if (pane[paneId].suggestionOpen && pane[paneId].suggestionActive) {
 				const button = document.getElementById(`accept-suggestion-${pane[paneId].suggestions[0].id}`);
 				if (button) button.focus();
 			} else if (activePanel === PanelType.MAIN) {

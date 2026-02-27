@@ -3,7 +3,7 @@ import { IBM_Plex_Mono, Geist, Geist_Mono, Roboto_Mono, Roboto_Slab } from "next
 import "./globals.css";
 
 const ibmPlexMono = IBM_Plex_Mono({
-	variable: "--font-ibm-mono",
+	variable: "--font-ibm-plex-mono",
 	subsets: ["latin"],
 	weight: "400",
 })

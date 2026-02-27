@@ -16,6 +16,7 @@ export const SuggestionDialog = ({
 	const activeSuggestionIndex = useEditorStore((state) => state.activeSuggestionIndex);
 	const setActiveIndex = useEditorStore((state) => state.setActiveSuggestionIndex);
 	const activePane = useEditorStore((state) => state.activePane);
+	const getPane = useEditorStore((state) => state.getPaneById);
 
 	useEffect(() => {
 		if (paneId === activePane && activeSuggestionIndex === index) {
@@ -62,20 +63,20 @@ export const SuggestionDialog = ({
 
 	return (
 		<div id={`suggestion-${suggestion.id}`}
-			className={`${(paneId === activePane && activeSuggestionIndex === index) ? "bg-foreground/15" : ""} 
-			flex flex-col gap-1 border-b border-foreground/50 pb-1`}>
+			className={`${(paneId === activePane && activeSuggestionIndex === index && getPane(paneId)[paneId].suggestionActive) ? "bg-foreground/15" : ""} 
+			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}>
 			<div className="flex text-sm font-bold">
 				{suggestion.startLine !== suggestion.endLine ? ` Lines: ${suggestion.startLine} - ${suggestion.endLine}` :
 					`Line: ${suggestion.startLine}`}
 			</div>
-			<div className="text-sm text-black">
+			<div className="text-sm text-black flex flex-col">
 				{suggestion.oldString.split('\n').map((line, i) => (
 					<div key={i}>
 						<span className="bg-red-200/70 px-1 rounded-xs">{line}</span>
 					</div>
 				))}
 			</div>
-			<div className="text-sm text-black">
+			<div className="text-sm text-black flex flex-col">
 				{suggestion.newString.split('\n').map((line, i) => (
 					<div key={i}>
 						<span className="bg-green-200/70 px-1 rounded-xs">{line}</span>
