@@ -114,3 +114,17 @@ export async function grepVnObjects(pattern: string): Promise<VnObject[]> {
 		return [];
 	}
 }
+
+export async function deleteSuggestionById(suggestionId: string): Promise<void> {
+	try {
+		const res = await fetch(`${BACKEND_BASE_URL}/api/suggestion/${suggestionId}`, {
+			credentials: "include",
+		});
+		if (!res.ok) {
+			console.error("Failed to delete suggestion: ", res.status);
+		}
+	} catch (err) {
+		console.error("Unable to delete suggestion: ", err);
+		return;
+	}
+}

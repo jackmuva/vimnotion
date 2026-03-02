@@ -1,29 +1,100 @@
+import { deleteSuggestionById } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
 import { Suggestion } from "@/types/primitive-types";
+import { EditorView } from "codemirror";
 import { useEffect } from "react";
 
 export const SuggestionDialog = ({
 	suggestion,
-	totalLines,
 	paneId,
 	index,
+	view,
 }: {
 	suggestion: Suggestion,
-	totalLines: number,
 	paneId: string,
 	index: number,
+	view: EditorView,
 }) => {
 	const activeSuggestionIndex = useEditorStore((state) => state.activeSuggestionIndex);
 	const setActiveIndex = useEditorStore((state) => state.setActiveSuggestionIndex);
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
+	const setPaneTree = useEditorStore((state) => state.setPaneTree);
+	const paneTree = useEditorStore((state) => state.paneTree);
+
+	const incrememntSuggestionIndex = () => {
+		let curIndex = activeSuggestionIndex + 1;
+		while (curIndex < getPane(activePane)[activePane].suggestions.length) {
+			if (getPane(activePane)[activePane].suggestions[curIndex].deleted) {
+				curIndex += 1;
+			} else {
+				setActiveIndex(curIndex);
+			}
+		}
+	}
+
+	const decrememntSuggestionIndex = () => {
+		let curIndex = activeSuggestionIndex - 1;
+		while (curIndex >= 0) {
+			if (getPane(activePane)[activePane].suggestions[curIndex].deleted) {
+				curIndex -= 1;
+			} else {
+				setActiveIndex(curIndex);
+			}
+		}
+	}
+
+	const deleteSuggestion = async () => {
+		await deleteSuggestionById(suggestion.id);
+		setPaneTree({
+			...paneTree, [paneId]: {
+				...paneTree[paneId],
+				suggestions: paneTree[paneId].suggestions.map((sugg: Suggestion, i: number) => {
+					if (i === index) {
+						return { ...sugg, deleted: true };
+					} else {
+						return sugg;
+					}
+				})
+			}
+		});
+	}
+
+	const applySuggestion = () => {
+		const content: string = view.state.doc.toString();
+
+		const prefix: string[] = content.split("\n").slice(0, suggestion.startLine);
+		const suffix: string[] = content.split("\n").slice(suggestion.endLine + 1);
+		let toChange: string = content.split("\n").slice(suggestion.startLine, suggestion.endLine + 1).join("\n");
+		toChange = toChange.replace(suggestion.oldString, suggestion.newString);
+
+		view.dispatch({
+			changes: {
+				from: 0,
+				to: content.length,
+				insert: prefix.join("\n") + "\n" + toChange + "\n" + suffix.join("\n"),
+			}
+		});
+	}
 
 	useEffect(() => {
 		if (paneId === activePane && activeSuggestionIndex === index) {
-			const handleYKey = (event: KeyboardEvent) => {
+			view.dispatch({
+				selection: {
+					anchor: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
+					head: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
+				},
+			});
+			view.scrollDOM.scrollTop = suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine;
+
+			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					applySuggestion();
+					await deleteSuggestion();
+					incrememntSuggestionIndex();
+					decrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
@@ -32,6 +103,9 @@ export const SuggestionDialog = ({
 				if (event.key === 'n') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					deleteSuggestion();
+					incrememntSuggestionIndex();
+					decrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
@@ -40,6 +114,7 @@ export const SuggestionDialog = ({
 				if (event.key === 'j') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					incrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
@@ -48,6 +123,7 @@ export const SuggestionDialog = ({
 				if (event.key === 'k') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					decrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
@@ -59,7 +135,7 @@ export const SuggestionDialog = ({
 				document.removeEventListener('keydown', handleKKey);
 			};
 		}
-	}, [activeSuggestionIndex, setActiveIndex, paneId, index]);
+	}, [activeSuggestionIndex, setActiveIndex, paneId, index, paneTree, getPane]);
 
 	return (
 		<div id={`suggestion-${suggestion.id}`}

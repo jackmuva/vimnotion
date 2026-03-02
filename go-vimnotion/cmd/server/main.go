@@ -32,6 +32,7 @@ func main() {
 	mux.Handle("/api/image", middleware.AuthMiddleware(handlers.InsertImage(tursoDb)))
 	mux.Handle("/api/ai/ascii", middleware.AuthMiddleware(handlers.ReturnAscii()))
 	mux.Handle("/api/ai/agent", middleware.AuthMiddleware(handlers.AgentResponse(tursoDb)))
+	mux.Handle("/api/suggestion/{id}", middleware.AuthMiddleware(handlers.RouteSuggestionRequests(tursoDb)))
 	mux.HandleFunc("/", handlers.Healthcheck)
 
 	corsHandler := middleware.EnableCors(mux)

@@ -374,6 +374,7 @@ export const VimEditor = ({
 			</div>
 			{pane[paneId].suggestions.length > 0 && pane[paneId].suggestionOpen &&
 				<SuggestionSidebar paneId={paneId}
+					editorView={view}
 					suggestions={pane[paneId].suggestions}
 					totalLines={pane[paneId].buffer.split("\n").length} />
 			}

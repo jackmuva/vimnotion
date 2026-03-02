@@ -17,4 +17,5 @@ export type Suggestion = {
 	oldString: string,
 	newString: string,
 	explanation: string,
+	deleted?: boolean,
 }
