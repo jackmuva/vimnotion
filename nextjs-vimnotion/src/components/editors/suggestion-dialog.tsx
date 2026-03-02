@@ -24,23 +24,15 @@ export const SuggestionDialog = ({
 
 	const incrememntSuggestionIndex = () => {
 		let curIndex = activeSuggestionIndex + 1;
-		while (curIndex < getPane(activePane)[activePane].suggestions.length) {
-			if (getPane(activePane)[activePane].suggestions[curIndex].deleted) {
-				curIndex += 1;
-			} else {
-				setActiveIndex(curIndex);
-			}
+		if (curIndex < getPane(activePane)[activePane].suggestions.length) {
+			setActiveIndex(curIndex);
 		}
 	}
 
 	const decrememntSuggestionIndex = () => {
 		let curIndex = activeSuggestionIndex - 1;
-		while (curIndex >= 0) {
-			if (getPane(activePane)[activePane].suggestions[curIndex].deleted) {
-				curIndex -= 1;
-			} else {
-				setActiveIndex(curIndex);
-			}
+		if (curIndex >= 0) {
+			setActiveIndex(curIndex);
 		}
 	}
 
@@ -49,15 +41,12 @@ export const SuggestionDialog = ({
 		setPaneTree({
 			...paneTree, [paneId]: {
 				...paneTree[paneId],
-				suggestions: paneTree[paneId].suggestions.map((sugg: Suggestion, i: number) => {
-					if (i === index) {
-						return { ...sugg, deleted: true };
-					} else {
-						return sugg;
-					}
-				})
+				suggestions: paneTree[paneId].suggestions.filter((_: Suggestion, i: number) => i !== index)
 			}
 		});
+		//TODO: TEST THIS BEHAVIOR
+		incrememntSuggestionIndex();
+		decrememntSuggestionIndex();
 	}
 
 	const applySuggestion = () => {
@@ -93,8 +82,6 @@ export const SuggestionDialog = ({
 					event.stopImmediatePropagation();
 					applySuggestion();
 					await deleteSuggestion();
-					incrememntSuggestionIndex();
-					decrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
