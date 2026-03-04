@@ -129,13 +129,15 @@ export const VimEditor = ({
 	});
 
 	const cursorListener = EditorView.updateListener.of((v) => {
-		const currentPane: PaneNode = getPane(paneId);
-		const updatedPane: PaneNode = { ...currentPane };
 
 		if (v.selectionSet) {
-			updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
+			const currentPane: PaneNode = getPane(paneId);
+			if (currentPane[paneId].cursorPosition !== v.view.state.selection.ranges[0].from) {
+				const updatedPane: PaneNode = { ...currentPane };
+				updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
+				updatePane(updatedPane);
+			}
 		}
-		updatePane(updatedPane);
 	});
 
 	useEffect(() => {
@@ -367,13 +369,25 @@ export const VimEditor = ({
 		}
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
+	const numSuggestions = useRef<number>(pane[paneId].suggestions.length);
+	const isSuggestionOpen = useRef<boolean>(pane[paneId].suggestionOpen);
+
+	useEffect(() => {
+		console.log("setting num suggestion ref");
+		numSuggestions.current = pane[paneId].suggestions.length;
+	}, [pane[paneId].suggestions]);
+
+	useEffect(() => {
+		isSuggestionOpen.current = pane[paneId].suggestionOpen;
+	}, [pane[paneId].suggestionOpen]);
+
 	return (
 		<div className={`${activeId === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} rounded-sm relative h-full w-full z-20 bg-background
 		flex gap-1 justify-between`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
-			{pane[paneId].suggestions.length > 0 && pane[paneId].suggestionOpen && vimEditor &&
+			{numSuggestions.current > 0 && numSuggestions.current && vimEditor &&
 				<SuggestionSidebar paneId={paneId}
 					editorView={vimEditor}
 					suggestions={pane[paneId].suggestions} />

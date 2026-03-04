@@ -73,7 +73,6 @@ export async function getVnObjectById(fileId: string, isPublic: boolean = false)
 			return null;
 		}
 		const body: VnObjectResponse = await res.json();
-		console.log('vn object data: ', body);
 		return {
 			file: body.Data[0] ?? null,
 			suggestions: body.Suggestions
@@ -118,6 +117,7 @@ export async function grepVnObjects(pattern: string): Promise<VnObject[]> {
 export async function deleteSuggestionById(suggestionId: string): Promise<void> {
 	try {
 		const res = await fetch(`${BACKEND_BASE_URL}/api/suggestion/${suggestionId}`, {
+			method: "DELETE",
 			credentials: "include",
 		});
 		if (!res.ok) {

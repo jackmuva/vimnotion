@@ -1,5 +1,6 @@
 import { deleteSuggestionById } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
+import { PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
 import { useEffect } from "react";
@@ -15,15 +16,16 @@ export const SuggestionDialog = ({
 	index: number,
 	view: EditorView,
 }) => {
+	//TODO: Refactor the activeSuggestionIndex to be a part of the pane state
 	const activeSuggestionIndex = useEditorStore((state) => state.activeSuggestionIndex);
 	const setActiveIndex = useEditorStore((state) => state.setActiveSuggestionIndex);
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
 	const setPaneTree = useEditorStore((state) => state.setPaneTree);
-	const paneTree = useEditorStore((state) => state.paneTree);
+	const getPaneById = useEditorStore((state) => state.getPaneById);
+	const updatePane = useEditorStore((state) => state.updatePane);
 
 	const incrememntSuggestionIndex = () => {
-		console.log("incrementing sugg index");
 		let curIndex = activeSuggestionIndex + 1;
 		if (curIndex < getPane(activePane)[activePane].suggestions.length) {
 			setActiveIndex(curIndex);
@@ -39,10 +41,11 @@ export const SuggestionDialog = ({
 
 	const deleteSuggestion = async () => {
 		await deleteSuggestionById(suggestion.id);
-		setPaneTree({
-			...paneTree, [paneId]: {
-				...paneTree[paneId],
-				suggestions: paneTree[paneId].suggestions.filter((_: Suggestion, i: number) => i !== index)
+		const curPane: PaneNode = getPaneById(paneId);
+		updatePane({
+			[paneId]: {
+				...curPane[paneId],
+				suggestions: curPane[paneId].suggestions.filter((_: Suggestion, i: number) => i !== index)
 			}
 		});
 		//TODO: TEST THIS BEHAVIOR
@@ -69,13 +72,12 @@ export const SuggestionDialog = ({
 
 	useEffect(() => {
 		if (paneId === activePane && activeSuggestionIndex === index) {
-			// view.dispatch({
-			// 	selection: {
-			// 		anchor: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
-			// 		head: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
-			// 	},
-			// });
-			// view.scrollDOM.scrollTop = suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine;
+			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
+			const line = view.state.doc.line(lineNumber);
+			view.dispatch({
+				selection: { anchor: line.from, head: line.from },
+				scrollIntoView: true,
+			});
 
 			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
@@ -123,7 +125,7 @@ export const SuggestionDialog = ({
 				document.removeEventListener('keydown', handleKKey);
 			};
 		}
-	}, [activeSuggestionIndex, setActiveIndex, paneId, index, paneTree, getPane]);
+	}, [activeSuggestionIndex, setActiveIndex, paneId, index, getPaneById, updatePane, getPane]);
 
 	return (
 		<div id={`suggestion-${suggestion.id}`}
