@@ -23,6 +23,7 @@ export const SuggestionDialog = ({
 	const paneTree = useEditorStore((state) => state.paneTree);
 
 	const incrememntSuggestionIndex = () => {
+		console.log("incrementing sugg index");
 		let curIndex = activeSuggestionIndex + 1;
 		if (curIndex < getPane(activePane)[activePane].suggestions.length) {
 			setActiveIndex(curIndex);
@@ -68,13 +69,13 @@ export const SuggestionDialog = ({
 
 	useEffect(() => {
 		if (paneId === activePane && activeSuggestionIndex === index) {
-			view.dispatch({
-				selection: {
-					anchor: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
-					head: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
-				},
-			});
-			view.scrollDOM.scrollTop = suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine;
+			// view.dispatch({
+			// 	selection: {
+			// 		anchor: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
+			// 		head: suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine,
+			// 	},
+			// });
+			// view.scrollDOM.scrollTop = suggestion.startLine > view.state.doc.length ? view.state.doc.length : suggestion.startLine;
 
 			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
@@ -95,7 +96,7 @@ export const SuggestionDialog = ({
 					decrememntSuggestionIndex();
 				}
 			};
-			document.addEventListener('keydown', handleYKey);
+			document.addEventListener('keydown', handleNKey);
 
 			const handleJKey = (event: KeyboardEvent) => {
 				if (event.key === 'j') {
@@ -104,7 +105,7 @@ export const SuggestionDialog = ({
 					incrememntSuggestionIndex();
 				}
 			};
-			document.addEventListener('keydown', handleYKey);
+			document.addEventListener('keydown', handleJKey);
 
 			const handleKKey = (event: KeyboardEvent) => {
 				if (event.key === 'k') {
@@ -113,7 +114,7 @@ export const SuggestionDialog = ({
 					decrememntSuggestionIndex();
 				}
 			};
-			document.addEventListener('keydown', handleYKey);
+			document.addEventListener('keydown', handleKKey);
 
 			return () => {
 				document.removeEventListener('keydown', handleYKey);
@@ -126,7 +127,8 @@ export const SuggestionDialog = ({
 
 	return (
 		<div id={`suggestion-${suggestion.id}`}
-			className={`${(paneId === activePane && activeSuggestionIndex === index && getPane(paneId)[paneId].suggestionActive) ? "bg-foreground/15" : ""} 
+			className={`${(paneId === activePane && activeSuggestionIndex === index && getPane(paneId)[paneId].suggestionActive) ?
+				"bg-foreground/15" : ""} 
 			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}>
 			<div className="flex text-sm font-bold">
 				{suggestion.startLine !== suggestion.endLine ? ` Lines: ${suggestion.startLine} - ${suggestion.endLine}` :
