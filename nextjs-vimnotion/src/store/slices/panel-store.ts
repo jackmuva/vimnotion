@@ -217,8 +217,6 @@ export const createPanelSlice = (
 		let firstOption: string = paneId;
 		let secondOption: string = paneId;
 
-		console.log("split state: ", curPanel.state);
-		console.log("direction: ", direction);
 		if (curPanel.deleted) {
 			return curPanel.neighbors[direction] ? get().drillDownDirectionally(curPanel.neighbors[direction], direction, childType) : paneId;
 		}
@@ -287,7 +285,6 @@ export const createPanelSlice = (
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
 		if (paneTree[paneId].suggestionOpen && !paneTree[paneId].suggestionActive && direction === Direction.EAST) {
-			console.log("setting suggestion");
 			set({
 				activePanel: PanelType.SUGGESTION,
 				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: true } },

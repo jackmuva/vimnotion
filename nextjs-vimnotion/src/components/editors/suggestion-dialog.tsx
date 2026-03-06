@@ -79,6 +79,7 @@ export const SuggestionDialog = ({
 				selection: { anchor: line.from, head: line.from },
 				scrollIntoView: true,
 			});
+			view.scrollDOM.scrollTop = line.from;
 
 			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
