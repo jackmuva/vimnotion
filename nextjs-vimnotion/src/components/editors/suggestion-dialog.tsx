@@ -1,6 +1,6 @@
 import { deleteSuggestionById } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
-import { PaneNode } from "@/types/editor-types";
+import { PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
 import { useEffect } from "react";
@@ -21,9 +21,10 @@ export const SuggestionDialog = ({
 	const setActiveIndex = useEditorStore((state) => state.setActiveSuggestionIndex);
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
-	const setPaneTree = useEditorStore((state) => state.setPaneTree);
 	const getPaneById = useEditorStore((state) => state.getPaneById);
 	const updatePane = useEditorStore((state) => state.updatePane);
+	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
+	const activePanel = useEditorStore((state) => state.activePanel);
 
 	const incrememntSuggestionIndex = () => {
 		let curIndex = activeSuggestionIndex + 1;
@@ -71,7 +72,7 @@ export const SuggestionDialog = ({
 	}
 
 	useEffect(() => {
-		if (paneId === activePane && activeSuggestionIndex === index) {
+		if (paneId === activePane && activeSuggestionIndex === index && activePanel === PanelType.SUGGESTION) {
 			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
 			const line = view.state.doc.line(lineNumber);
 			view.dispatch({
@@ -118,17 +119,29 @@ export const SuggestionDialog = ({
 			};
 			document.addEventListener('keydown', handleKKey);
 
+			const handleSpaceKey = (event: KeyboardEvent) => {
+				if (event.key === ' ') {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					toggleLeaderPanel();
+				}
+			};
+			document.addEventListener('keydown', handleSpaceKey);
+
+
 			return () => {
 				document.removeEventListener('keydown', handleYKey);
 				document.removeEventListener('keydown', handleNKey);
 				document.removeEventListener('keydown', handleJKey);
 				document.removeEventListener('keydown', handleKKey);
+				document.removeEventListener('keydown', handleSpaceKey);
 			};
 		}
-	}, [activeSuggestionIndex, setActiveIndex, paneId, index, getPaneById, updatePane, getPane]);
+	}, [activeSuggestionIndex, setActiveIndex, paneId, index, getPaneById,
+		updatePane, getPane, toggleLeaderPanel, activePanel]);
 
 	return (
-		<div id={`suggestion-${suggestion.id}`}
+		<div id={`suggestion--${paneId}-${suggestion.id}`}
 			className={`${(paneId === activePane && activeSuggestionIndex === index && getPane(paneId)[paneId].suggestionActive) ?
 				"bg-foreground/15" : ""} 
 			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}>
@@ -155,7 +168,7 @@ export const SuggestionDialog = ({
 			</div>
 			<div className="flex gap-4 w-full justify-center">
 				<div className="text-sm">
-					<button className="cursor-pointer" id={`accept-suggestion-${suggestion.id}`}>
+					<button className="cursor-pointer" id={`accept-suggestion-${paneId}-${suggestion.id}`}>
 						<span className="font-bold text-orange-500">[y]</span>
 					</button>es, accept
 				</div>
