@@ -91,11 +91,11 @@ export const SuggestionDialog = ({
 			};
 			document.addEventListener('keydown', handleYKey);
 
-			const handleNKey = (event: KeyboardEvent) => {
+			const handleNKey = async (event: KeyboardEvent) => {
 				if (event.key === 'n') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
-					deleteSuggestion();
+					await deleteSuggestion();
 					incrememntSuggestionIndex();
 					decrememntSuggestionIndex();
 				}

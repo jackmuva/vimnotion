@@ -374,7 +374,6 @@ export const VimEditor = ({
 	const isSuggestionOpen = useRef<boolean>(pane[paneId].suggestionOpen);
 
 	useEffect(() => {
-		console.log("setting num suggestion ref");
 		numSuggestions.current = pane[paneId].suggestions.length;
 	}, [pane[paneId].suggestions]);
 

@@ -110,11 +110,11 @@ func ExecuteSuggestionSubagentTool(vnObjectId string, suggestions *string, fileN
 									},
 									"oldString": {
 										Type:        "string",
-										Description: "Original text to replace",
+										Description: "existing text to replace",
 									},
 									"newString": {
 										Type:        "string",
-										Description: "New text to insert",
+										Description: "new text to insert",
 									},
 									"explanation": {
 										Type:        "string",

@@ -14,7 +14,7 @@ func RouteSuggestionRequests(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodDelete:
-			DeleteSuggestion(db)
+			DeleteSuggestion(db)(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
