@@ -1,4 +1,6 @@
 Use this tool to break down a complex ask into smaller subtasks. In general, break larger tasks into 2-5 subtasks.
+This tool will create a plan file, that you can read with the read_file_tool and update with the write_file_tool.
+You must keep track and update your subtasks!!
 
 ## When to use this tool:
 Use this tool when the user asks a complex task that's better off split into smaller tasks

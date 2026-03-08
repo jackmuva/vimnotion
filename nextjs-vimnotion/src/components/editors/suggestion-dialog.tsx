@@ -49,9 +49,6 @@ export const SuggestionDialog = ({
 				suggestions: curPane[paneId].suggestions.filter((_: Suggestion, i: number) => i !== index)
 			}
 		});
-		//TODO: TEST THIS BEHAVIOR
-		incrememntSuggestionIndex();
-		decrememntSuggestionIndex();
 	}
 
 	const applySuggestion = () => {

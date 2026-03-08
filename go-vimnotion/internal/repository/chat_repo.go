@@ -144,8 +144,8 @@ func GetChatFilesBySessionId(db *sql.DB, sessionId string, email string) ([]mode
 	return chatFiles, nil
 }
 
-func GetChatFilesByFileName(db *sql.DB, fileName string, sessionId string, email string) ([]models.ChatFile, error) {
-	rows, err := db.Query("SELECT fileId, fileName, fileContents, email, sessionId FROM ChatFiles WHERE sessionId=? AND email=? AND fileName=?", sessionId, email, fileName)
+func GetChatFilesById(db *sql.DB, fileId string, sessionId string, email string) ([]models.ChatFile, error) {
+	rows, err := db.Query("SELECT fileId, fileName, fileContents, email, sessionId FROM ChatFiles WHERE sessionId=? AND email=? AND fileId=?", sessionId, email, fileId)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return nil, err

@@ -20,23 +20,35 @@ var ReadFileTool models.AiTool = models.AiTool{
 		Parameters: models.AiFunctionParams{
 			Type: "object",
 			Properties: map[string]models.AiFunctionProperties{
-				"fileName": {
+				"fileId": {
 					Type:        "string",
-					Description: "file name of the file you want to read",
+					Description: "file ID of the file you want to read",
 				},
 			},
-			Required: []string{"fileName"},
+			Required: []string{"fileId"},
 		},
 	},
 }
 
-func ExecuteReadFileTool(fileName string, email string, sessionId string, db *sql.DB) (*string, error) {
-	files, err := repository.GetChatFilesByFileName(db, fileName, sessionId, email)
+func ExecuteReadFileTool(fileId string, email string, sessionId string, db *sql.DB) (*string, error) {
+	chatFiles, err := repository.GetChatFilesById(db, fileId, sessionId, email)
 	if err != nil {
 		return nil, err
 	}
-	if len(files) == 0 {
-		return nil, fmt.Errorf("no files found")
+	if len(chatFiles) == 0 {
+		vnFiles, err := repository.GetVnObjectById(db, fileId)
+		if err != nil {
+			return nil, err
+		}
+		if len(vnFiles) == 0 {
+			return nil, fmt.Errorf("no files found")
+		}
+		return &vnFiles[0].Contents, nil
+	} else {
+		return &chatFiles[0].FileContents, nil
 	}
-	return &files[0].FileContents, nil
+}
+
+func AppendLineNumber(contents string) string {
+
 }

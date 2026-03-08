@@ -40,7 +40,7 @@ var PlanTool models.AiTool = models.AiTool{
 	},
 }
 
-func ExecutePlanTool(planName string, todos []string, email string, sessionId string, db *sql.DB) (*string, error) {
+func ExecutePlanTool(planName string, todos []string, email string, sessionId string, db *sql.DB) (*string, *string, error) {
 	var planContents strings.Builder
 	for _, todo := range todos {
 		planContents.WriteString("- [ ] ")
@@ -48,8 +48,9 @@ func ExecutePlanTool(planName string, todos []string, email string, sessionId st
 		planContents.WriteString("\n")
 	}
 	planString := planContents.String()
+	planFileId := uuid.New().String()
 	var planFile = models.ChatFile{
-		FileId:       uuid.New().String(),
+		FileId:       planFileId,
 		FileName:     planName,
 		FileContents: planString,
 		Email:        email,
@@ -57,7 +58,7 @@ func ExecutePlanTool(planName string, todos []string, email string, sessionId st
 	}
 	err := repository.InsertChatFile(db, planFile)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &planString, nil
+	return &planString, &planFileId, nil
 }
