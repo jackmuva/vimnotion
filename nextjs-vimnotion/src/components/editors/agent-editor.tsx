@@ -349,7 +349,7 @@ export const AgentEditor = ({
 
 	return (
 
-		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} relative h-full w-full z-20 bg-background 
+		<div className={`${activePane === paneId ? "" : "brightness[82%]"} relative h-full w-full z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
 			${(!messages || !messages.messages || messages.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
 			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 

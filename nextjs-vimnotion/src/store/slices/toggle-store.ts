@@ -17,6 +17,7 @@ export const createToggleSlice = (
 	openAsciiModal: false,
 
 	//TODO: similar to toggle window, I should refactor and move away from MAIN being the default panel type
+	//Consider refactoring to have just a single active state where everything is a "pane"
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
 		if (openSidebar) {

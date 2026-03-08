@@ -75,7 +75,7 @@ export async function getVnObjectById(fileId: string, isPublic: boolean = false)
 		const body: VnObjectResponse = await res.json();
 		return {
 			file: body.Data[0] ?? null,
-			suggestions: body.Suggestions
+			suggestions: body.Suggestions ?? []
 		};
 	} catch (err) {
 		console.error("Unable to get vnobject:", err);
