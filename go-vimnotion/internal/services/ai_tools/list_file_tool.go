@@ -15,7 +15,7 @@ var listFileToolDescription string
 var ListFilesTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{
-		Name:        "list_file_names_tool",
+		Name:        "list_files_tool",
 		Description: listFileToolDescription,
 		Parameters: models.AiFunctionParams{
 			Type:       "object",
@@ -25,7 +25,10 @@ var ListFilesTool models.AiTool = models.AiTool{
 	},
 }
 
-func ExecuteListFilesTool(email string, sessionId string, db *sql.DB) ([]string, error) {
+func ExecuteListFilesTool(email string, sessionId string, db *sql.DB) ([]struct {
+	FileId   string
+	FileName string
+}, error) {
 	files, err := repository.GetChatFilesBySessionId(db, sessionId, email)
 	if err != nil {
 		return nil, err
@@ -33,9 +36,18 @@ func ExecuteListFilesTool(email string, sessionId string, db *sql.DB) ([]string,
 	if len(files) == 0 {
 		return nil, fmt.Errorf("no files found")
 	}
-	var fileNames []string
-	for _, file := range files {
-		fileNames = append(fileNames, file.FileName)
+	var fileData []struct {
+		FileId   string
+		FileName string
 	}
-	return fileNames, nil
+	for _, file := range files {
+		fileData = append(fileData, struct {
+			FileId   string
+			FileName string
+		}{
+			FileId:   file.FileId,
+			FileName: file.FileName,
+		})
+	}
+	return fileData, nil
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"strings"
 
 	"vimnotion.com/server/internal/models"
 	"vimnotion.com/server/internal/repository"
@@ -43,12 +44,21 @@ func ExecuteReadFileTool(fileId string, email string, sessionId string, db *sql.
 		if len(vnFiles) == 0 {
 			return nil, fmt.Errorf("no files found")
 		}
-		return &vnFiles[0].Contents, nil
+		contentsWithLines := AppendLineNumber(vnFiles[0].Contents)
+		return &contentsWithLines, nil
 	} else {
-		return &chatFiles[0].FileContents, nil
+		contentsWithLines := AppendLineNumber(chatFiles[0].FileContents)
+		return &contentsWithLines, nil
 	}
 }
 
 func AppendLineNumber(contents string) string {
-
+	lines := strings.Split(contents, "\n")
+	var result []string
+	for i, line := range lines {
+		if len(line) > 0 {
+			result = append(result, fmt.Sprintf("%d %s", i+1, line))
+		}
+	}
+	return strings.Join(result, "\n")
 }

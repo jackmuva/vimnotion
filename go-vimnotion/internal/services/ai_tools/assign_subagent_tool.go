@@ -43,14 +43,17 @@ var AssignSubagentTool models.AiTool = models.AiTool{
 	},
 }
 
+var subagentSystemPrompt string = `You are a subagent that completes specialized tasks. 
+
+You have the following tools: write_file_fool, read_file_tool, list_files_tool, and suggest_tool.
+
+When finished with the task, provide a summary of what you did and the final result`
+
 func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, db *sql.DB) (*string, error) {
 	if len(messages) == 0 {
-		var sysPrompt string = `You are a subagent that completes specialized tasks. 
-
-			When finished with the task, provide a summary of what you did and the final result`
 		messages = append(messages, models.AiMessage{
 			Role:    "developer",
-			Content: &sysPrompt,
+			Content: &subagentSystemPrompt,
 		})
 		messages = append(messages, models.AiMessage{
 			Role:    "user",
@@ -76,7 +79,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 	cfg := config.Get()
 	requestUrl := "https://ai-gateway.vercel.sh/v1/chat/completions"
-	tools := []models.AiTool{PlanTool, WriteFileTool, ReadFileTool, ListFilesTool, SuggestTool}
+	tools := []models.AiTool{WriteFileTool, ReadFileTool, ListFilesTool, SuggestTool}
 	requestBody := map[string]any{
 		"model":    "anthropic/claude-haiku-4.5",
 		"messages": messages,
@@ -146,7 +149,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		}
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
-				populateToolCallMap(toolCalls, toolCallMap)
+				PopulateToolCallMap(toolCalls, toolCallMap)
 			}
 		}
 	}
@@ -331,13 +334,13 @@ func AppendToolCallMessages(messages []models.AiMessage, toolCallMap map[string]
 				} else {
 					execRes = *fileContents
 				}
-			} else if *v.Function.Name == "list_file_names_tool" {
+			} else if *v.Function.Name == "list_files_tool" {
 				fmt.Printf("calling list tool \n\n")
-				fileNames, err := ExecuteListFilesTool(email, sessionId, db)
+				fileData, err := ExecuteListFilesTool(email, sessionId, db)
 				if err != nil {
 					execRes = fmt.Sprintf("Error listing files: %s", err.Error())
 				} else {
-					filesJson, jsonErr := json.Marshal(fileNames)
+					filesJson, jsonErr := json.Marshal(fileData)
 					if jsonErr != nil {
 						execRes = "Error serializing file list"
 					} else {
