@@ -150,7 +150,7 @@ export const SuggestionDialog = ({
 			<div className="text-sm text-black flex flex-col">
 				{suggestion.oldString.split('\n').map((line, i) => (
 					<div key={i}>
-						<span className="bg-red-200/70 px-1 rounded-xs">{line}</span>
+						<span className="bg-red-200/70 px-1 rounded-xs">{`[${suggestion.startLine + i}]`} {line}</span>
 					</div>
 				))}
 			</div>
