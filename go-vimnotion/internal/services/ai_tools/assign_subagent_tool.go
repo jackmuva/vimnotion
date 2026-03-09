@@ -48,7 +48,7 @@ You have the following tools: write_file_fool, read_file_tool, list_files_tool, 
 
 When finished with the task, provide a summary of what you did and the final result`
 
-func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, db *sql.DB) (*string, error) {
+func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, parentSessionId string, db *sql.DB) (*string, error) {
 	if len(messages) == 0 {
 		messages = append(messages, models.AiMessage{
 			Role:    "developer",
@@ -154,7 +154,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 	}
 
 	if isTool && len(toolCallMap) > 0 {
-		messages = AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
+		messages = AppendToolCallMessages(messages, toolCallMap, email, parentSessionId, db)
 		err := repository.UpdateChatSession(db, models.ChatSession{
 			SessionId:  session.SessionId,
 			Messages:   messages,
@@ -166,7 +166,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			fmt.Printf("Unable to update session\n")
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
-		messageContent, err := ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, db)
+		messageContent, err := ExecuteAssignSubagentTool(messages, task, subagentPrompt, email, session, parentSessionId, db)
 		if err != nil {
 			fmt.Printf("unable to recurse\n")
 			return nil, fmt.Errorf("unable to recurse subagent")
