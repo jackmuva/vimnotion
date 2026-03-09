@@ -350,7 +350,7 @@ export const VimEditor = ({
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
-		<div className={`${activeId === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} rounded-sm relative h-full w-full z-20 bg-background`}>
+		<div className={`${activeId === paneId ? "" : "brightness-[82%]"} rounded-sm relative h-full w-full z-20 bg-background`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
