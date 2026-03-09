@@ -35,6 +35,7 @@ import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
 
+//BUG:Splitting agent pane causes both panes to clear
 const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
 		<div className={`${message.role === "user" ? "bg-foreground-muted/20 pl-2 border-l-3 border-orange-500" : ""} px-1 py-4`}>

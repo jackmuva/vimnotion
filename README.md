@@ -25,7 +25,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] compaction hook
     - [ ] endpoint timeout?
     - [ ] evaluation hook
-    - [ ] suggestion rendering
+    - [x] suggestion rendering
 - [ ] RSS feed
 - [ ] tiptap editor
 

@@ -54,16 +54,16 @@ export const SuggestionDialog = ({
 	const applySuggestion = () => {
 		const content: string = view.state.doc.toString();
 
-		const prefix: string[] = content.split("\n").slice(0, suggestion.startLine);
-		const suffix: string[] = content.split("\n").slice(suggestion.endLine + 1);
-		let toChange: string = content.split("\n").slice(suggestion.startLine, suggestion.endLine + 1).join("\n");
+		const prefix: string[] = content.split("\n").slice(0, suggestion.startLine - 1);
+		const suffix: string[] = content.split("\n").slice(suggestion.endLine);
+		let toChange: string = content.split("\n").slice(suggestion.startLine - 1, suggestion.endLine).join("\n");
 		toChange = toChange.replace(suggestion.oldString, suggestion.newString);
 
 		view.dispatch({
 			changes: {
 				from: 0,
 				to: content.length,
-				insert: prefix.join("\n") + "\n" + toChange + "\n" + suffix.join("\n"),
+				insert: prefix.join("\n") + (prefix.length > 0 ? "\n" : "") + toChange + (suffix.length > 0 ? "\n" : "") + suffix.join("\n"),
 			}
 		});
 	}

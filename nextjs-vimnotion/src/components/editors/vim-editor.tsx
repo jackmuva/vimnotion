@@ -382,7 +382,7 @@ export const VimEditor = ({
 	}, [pane[paneId].suggestionOpen]);
 
 	return (
-		<div className={`${activeId === paneId ? "" : "brightness-[82%]"} rounded-sm relative h-full w-full z-20 bg-background`}>
+		<div className={`${activeId === paneId ? "" : "brightness-[82%]"} flex rounded-sm relative h-full w-full z-20 bg-background`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
