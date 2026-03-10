@@ -27,12 +27,12 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] evaluation hook
 - [ ] RSS feed
 - [ ] tiptap editor
-- [x] agent split bug
+- [ ] agent split bug
 
 ## QOL Todos
-- [ ] Refactor how state is managed with activePane and activePanel and toggles
-- [ ] make suggestionIndex a part of each pane's state
-- [x] Keep cursor position on directory editor
+- [x] Refactor how state is managed with activePane and activePanel and toggles
+- [x] make suggestionIndex a part of each pane's state
+- [ ] Keep cursor position on directory editor
 
 ## High-level Todos
 - [ ] create teams
