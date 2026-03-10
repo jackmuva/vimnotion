@@ -25,9 +25,14 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] compaction hook
     - [ ] endpoint timeout?
     - [ ] evaluation hook
-    - [x] suggestion rendering
 - [ ] RSS feed
 - [ ] tiptap editor
+- [x] agent split bug
+
+## QOL Todos
+- [ ] Refactor how state is managed with activePane and activePanel and toggles
+- [ ] make suggestionIndex a part of each pane's state
+- [x] Keep cursor position on directory editor
 
 ## High-level Todos
 - [ ] create teams

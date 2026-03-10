@@ -284,14 +284,14 @@ export const createPanelSlice = (
 
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
-		if (paneTree[paneId].suggestionOpen && !paneTree[paneId].suggestionActive && direction === Direction.EAST) {
+		if (paneTree[paneId].suggestionOpen && !paneTree[paneId].suggestionActive && paneTree[paneId].suggestions.length > 0 && direction === Direction.EAST) {
 			set({
 				activePanel: PanelType.SUGGESTION,
 				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: true } },
 				activeSuggestionIndex: 0,
 			});
 			return paneId;
-		} else if (paneTree[paneId].suggestionOpen && paneTree[paneId].suggestionActive && direction === Direction.WEST) {
+		} else if (paneTree[paneId].suggestionOpen && paneTree[paneId].suggestionActive && paneTree[paneId].suggestions.length > 0 && direction === Direction.WEST) {
 			set({
 				activePanel: PanelType.MAIN,
 				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: false } }

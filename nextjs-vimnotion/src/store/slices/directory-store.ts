@@ -5,6 +5,7 @@ import { getVnObjectById } from "@/services/api-service";
 import { Suggestion, VnObject } from "@/types/primitive-types";
 import { StoreSetter, StoreGetter } from "../../types/store-types";
 
+//TODO: Have a state var to track cursor position
 export const createDirectorySlice = (
 	set: StoreSetter,
 	get: StoreGetter

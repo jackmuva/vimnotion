@@ -171,7 +171,7 @@ export const VimEditor = ({
 
 	useEffect(() => {
 		if (vimEditor && activeId === paneId) {
-			if (pane[paneId].suggestionOpen && pane[paneId].suggestionActive) {
+			if (pane[paneId].suggestionOpen && pane[paneId].suggestionActive && pane[paneId].suggestions.length > 0) {
 				const button = document.getElementById(`accept-suggestion-${paneId}-${pane[paneId].suggestions[activeSuggestionIndex].id}`);
 				if (button) button.focus();
 				setActivePanel(PanelType.SUGGESTION);
