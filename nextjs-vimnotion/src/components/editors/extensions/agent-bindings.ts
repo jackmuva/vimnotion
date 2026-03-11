@@ -1,6 +1,6 @@
 import { getAgentStream, getVnObjectById } from "@/services/api-service";
 import { AiMessage } from "@/types/ai-types"
-import { PanelType, PaneNode } from "@/types/editor-types";
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { Vim } from "@replit/codemirror-vim"
@@ -185,7 +185,7 @@ export const applyAgentBindings = ({
 		const paneId: string = Object.keys(getPane())[0];
 		const getPaneData = () => getPane()[Object.keys(getPane())[0]];
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN && getPaneData().agentState.agentActive) {
+		if (activePanel === PanelType.MAIN && getPaneData().editorType === EditorType.AGENT) {
 			const newMessages: AiMessage[] = getPaneData().agentState.messages;
 			if (newMessages.length === 0) {
 				updatePane({

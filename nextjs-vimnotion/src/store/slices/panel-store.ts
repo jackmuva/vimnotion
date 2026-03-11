@@ -5,6 +5,8 @@ import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
 
+//TODO:Splitting panes has weird effects in agent mode
+//also, closing agent editor uses the prompt buffer and needs to use the fildid's buffer
 export const createPanelSlice = (
 	set: StoreSetter,
 	get: StoreGetter
@@ -63,7 +65,6 @@ export const createPanelSlice = (
 				activeSuggestionIndex: 0,
 			},
 			agentState: {
-				agentActive: false,
 				messages: [],
 				streaming: false,
 				sessionId: "",
@@ -117,7 +118,6 @@ export const createPanelSlice = (
 					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
 				},
 				agentState: {
-					agentActive: paneTree[parentId].agentState.agentActive,
 					messages: paneTree[parentId].agentState.messages,
 					streaming: paneTree[parentId].agentState.streaming,
 					sessionId: paneTree[parentId].agentState.sessionId,
@@ -149,10 +149,9 @@ export const createPanelSlice = (
 					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
 				},
 				agentState: {
-					agentActive: paneTree[parentId].agentState.agentActive,
-					messages: paneTree[parentId].agentState.messages,
-					streaming: paneTree[parentId].agentState.streaming,
-					sessionId: paneTree[parentId].agentState.sessionId,
+					messages: [],
+					streaming: false,
+					sessionId: "",
 				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
