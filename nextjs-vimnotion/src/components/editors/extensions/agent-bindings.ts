@@ -1,18 +1,15 @@
 import { getAgentStream, getVnObjectById } from "@/services/api-service";
-import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
-import { PanelType } from "@/types/editor-types";
+import { AiMessage } from "@/types/ai-types"
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
 
 export const applyAgentBindings = ({
-	setMessageMap,
-	setInputMessageMap,
-	getActivePane,
+	getPane,
+	updatePane,
 	getActivePanel,
-	getMessageMap,
-	getInputMessageMap,
 	getDirectoryState,
 	getLocationMap,
 	getOilLine,
@@ -23,12 +20,9 @@ export const applyAgentBindings = ({
 	setLocation,
 	getLocation,
 }: {
-	setMessageMap: (messageMap: MessageStates) => void,
-	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
-	getActivePane: () => string,
+	getPane: () => PaneNode,
+	updatePane: (paneNode: PaneNode) => void,
 	getActivePanel: () => PanelType,
-	getMessageMap: () => MessageStates,
-	getInputMessageMap: () => { [paneId: string]: MessageInput },
 	getDirectoryState: () => DirectoryTree,
 	getLocationMap: (diretoryState: DirectoryTree) => {
 		[uuid: string]: {
@@ -46,23 +40,28 @@ export const applyAgentBindings = ({
 	getLocation: () => string,
 }) => {
 	const renderStream = async (response: Response) => {
-		const activePane: string = getActivePane();
 		const reader = response.body?.getReader();
 		if (!reader) return;
-		const decoder = new TextDecoder("utf-8");
-		const newMessages = [...getMessageMap()[activePane].messages];
+		const decoder: TextDecoder = new TextDecoder("utf-8");
+		const paneId: string = Object.keys(getPane())[0];
+		const getPaneData = () => getPane()[Object.keys(getPane())[0]];
+		const newMessages = [...getPaneData().agentState.messages];
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
 		}
 		newMessages.push(curAiMessage);
-		setMessageMap({
-			...getMessageMap(), [activePane]: {
-				messages: newMessages,
-				streaming: true,
-				sessionId: getMessageMap()[activePane].sessionId,
+		updatePane({
+			[paneId]: {
+				...getPaneData(),
+				agentState: {
+					...getPaneData().agentState,
+					messages: newMessages,
+					streaming: true,
+				}
 			}
 		});
+
 		let buffer = "";
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
@@ -71,10 +70,13 @@ export const applyAgentBindings = ({
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
-				setMessageMap({
-					...getMessageMap(), [activePane]: {
-						...getMessageMap()[activePane],
-						streaming: false
+				updatePane({
+					[paneId]: {
+						...getPaneData(),
+						agentState: {
+							...getPaneData().agentState,
+							streaming: false,
+						}
 					}
 				});
 				break;
@@ -132,10 +134,13 @@ export const applyAgentBindings = ({
 						curAiMessage.toolCalls = sortedToolCalls;
 					}
 					curAiMessage.content = text;
-					setMessageMap({
-						...getMessageMap(), [activePane]: {
-							...getMessageMap()[activePane],
-							messages: newMessages
+					updatePane({
+						[paneId]: {
+							...getPaneData(),
+							agentState: {
+								...getPaneData().agentState,
+								messages: newMessages
+							}
 						}
 					});
 				} catch { }
@@ -177,22 +182,35 @@ export const applyAgentBindings = ({
 	}
 
 	Vim.defineAction("submitMessage", async () => {
+		const paneId: string = Object.keys(getPane())[0];
+		const getPaneData = () => getPane()[Object.keys(getPane())[0]];
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.AGENT) {
-			const activePane: string = getActivePane();
-			const newMessages: AiMessage[] = activePane in getMessageMap() ? [...getMessageMap()[activePane].messages] : [];
+		if (activePanel === PanelType.MAIN && getPaneData().editorType === EditorType.AGENT) {
+			const newMessages: AiMessage[] = getPaneData().agentState.messages;
 			if (newMessages.length === 0) {
-				setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], sessionId: v4() } });
+				updatePane({
+					[paneId]: {
+						...getPaneData(),
+						agentState: {
+							...getPaneData().agentState,
+							sessionId: v4()
+						}
+					}
+				});
 			}
-			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(getInputMessageMap()[activePane].buffer)) });
-			setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], messages: newMessages } });
-			const res: Response = await getAgentStream(newMessages, getMessageMap()[activePane].sessionId);
-			setInputMessageMap({
-				...getInputMessageMap(), [activePane]: {
+			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(getPaneData().buffer)) });
+			updatePane({
+				[paneId]: {
+					...getPaneData(),
+					agentState: {
+						...getPaneData().agentState,
+						messages: newMessages
+					},
 					buffer: "\n",
-					bufferVersion: getInputMessageMap()[activePane].bufferVersion + 1,
+					bufferVersion: getPaneData().bufferVersion + 1,
 				}
 			});
+			const res: Response = await getAgentStream(newMessages, getPaneData().agentState.sessionId);
 			await renderStream(res);
 		} else if (activePanel === PanelType.SIDEBAR) {
 			const newChanges: DirectoryChanges = detectAllDirectoryChanges();

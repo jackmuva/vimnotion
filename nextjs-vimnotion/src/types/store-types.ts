@@ -1,7 +1,6 @@
 import { PaneNode, SplitState, Direction, ChildType, PanelType, TabMap } from "@/types/editor-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { SearchResults, SearchType } from "@/types/search-types";
-import { MessageInput, MessageStates } from "@/types/ai-types";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -34,7 +33,6 @@ export type PanelState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
-	activeSuggestionIndex: number;
 
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
@@ -57,7 +55,6 @@ export type PanelState = {
 	saveVnObjectBuffer: () => Promise<boolean>;
 	publishVnObject: (publish: boolean) => Promise<boolean>;
 	updateAllBuffers: (fileId: string, buffer: string) => void;
-	setActiveSuggestionIndex: (i: number) => void;
 };
 
 export type TabState = {
@@ -131,23 +128,12 @@ export type SearchState = {
 	setNewAiBlock: (url: string) => void;
 };
 
-export type AgentState = {
-	messageMap: MessageStates;
-	setMessageMap: (messageMap: MessageStates) => void;
-	getMessageMap: () => MessageStates;
-	inputMessageMap: { [paneId: string]: MessageInput };
-	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
-	getInputMessageMap: () => { [paneId: string]: MessageInput };
-	updateInputMessageMap: (input: { [paneId: string]: MessageInput }) => void;
-};
-
 export type EditorState =
 	ToggleState &
 	PanelState &
 	TabState &
 	DirectoryState &
-	SearchState &
-	AgentState;
+	SearchState;
 
 export type StoreSetter = {
 	(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;

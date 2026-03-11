@@ -1,5 +1,5 @@
 import { Vim } from "@replit/codemirror-vim"
-import { PanelType, PaneNode } from '@/types/editor-types';
+import { EditorType, PanelType, PaneNode } from '@/types/editor-types';
 
 export const applyPanelBindings = ({
 	splitVertical,
@@ -14,6 +14,7 @@ export const applyPanelBindings = ({
 	refetchFileInBuffer,
 	getActivePane,
 	getPane,
+	updatePane,
 }: {
 	splitVertical: () => void,
 	splitHorizontal: () => void,
@@ -27,10 +28,12 @@ export const applyPanelBindings = ({
 	refetchFileInBuffer: (fileId: string) => void,
 	getActivePane: () => string,
 	getPane: (paneId: string) => PaneNode,
+	updatePane: (paneNode: PaneNode) => void,
 }) => {
 	Vim.defineEx('write', 'w', async function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		const paneData = getPane(getActivePane())[getActivePane()];
+		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
 			await saveVnObjectBuffer();
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
@@ -47,8 +50,16 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('quit', 'q', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
+		const paneData = getPane(getActivePane())[getActivePane()];
+		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
 			closePane();
+		} else if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
+			updatePane({
+				[getActivePane()]: {
+					...paneData,
+					editorType: EditorType.VIM,
+				}
+			});
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 			toggleSidebar();
@@ -57,9 +68,17 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('wquit', 'wq', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		const paneData = getPane(getActivePane())[getActivePane()];
+		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
 			saveVnObjectBuffer();
 			closePane();
+		} else if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
+			updatePane({
+				[getActivePane()]: {
+					...paneData,
+					editorType: EditorType.VIM,
+				}
+			});
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 		}
@@ -67,21 +86,21 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('split', 'split', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
+		if (activePanel === PanelType.MAIN) {
 			splitHorizontal();
 		}
 	});
 
 	Vim.defineEx('vsplit shorthand', 'vs', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
+		if (activePanel === PanelType.MAIN) {
 			splitVertical();
 		}
 	});
 
 	Vim.defineEx('vsplit', 'vsplit', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN || activePanel === PanelType.AGENT) {
+		if (activePanel === PanelType.MAIN) {
 			splitVertical();
 		}
 	});

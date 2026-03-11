@@ -5,6 +5,8 @@ import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
 
+//TODO:Splitting panes has weird effects in agent mode
+//also, closing agent editor uses the prompt buffer and needs to use the fildid's buffer
 export const createPanelSlice = (
 	set: StoreSetter,
 	get: StoreGetter
@@ -56,9 +58,17 @@ export const createPanelSlice = (
 			editorType: EditorType.VIM,
 			buffer: START_BUFFER,
 			bufferVersion: 1,
-			suggestions: [],
-			suggestionOpen: true,
-			suggestionActive: false,
+			suggestionState: {
+				suggestions: [],
+				suggestionOpen: true,
+				suggestionActive: false,
+				activeSuggestionIndex: 0,
+			},
+			agentState: {
+				messages: [],
+				streaming: false,
+				sessionId: "",
+			},
 			fileId: "START_PAGE",
 			public: false,
 			scrollPosition: 0,
@@ -101,9 +111,17 @@ export const createPanelSlice = (
 				editorType: paneTree[parentId].editorType,
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
-				suggestions: paneTree[parentId].suggestions,
-				suggestionOpen: paneTree[parentId].suggestionOpen,
-				suggestionActive: paneTree[parentId].suggestionActive,
+				suggestionState: {
+					suggestions: paneTree[parentId].suggestionState.suggestions,
+					suggestionOpen: paneTree[parentId].suggestionState.suggestionOpen,
+					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
+					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
+				},
+				agentState: {
+					messages: paneTree[parentId].agentState.messages,
+					streaming: paneTree[parentId].agentState.streaming,
+					sessionId: paneTree[parentId].agentState.sessionId,
+				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -124,9 +142,17 @@ export const createPanelSlice = (
 				editorType: paneTree[parentId].editorType,
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
-				suggestions: paneTree[parentId].suggestions,
-				suggestionOpen: paneTree[parentId].suggestionOpen,
-				suggestionActive: paneTree[parentId].suggestionActive,
+				suggestionState: {
+					suggestions: paneTree[parentId].suggestionState.suggestions,
+					suggestionOpen: paneTree[parentId].suggestionState.suggestionOpen,
+					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
+					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
+				},
+				agentState: {
+					messages: [],
+					streaming: false,
+					sessionId: "",
+				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -284,17 +310,33 @@ export const createPanelSlice = (
 
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
-		if (paneTree[paneId].suggestionOpen && !paneTree[paneId].suggestionActive && paneTree[paneId].suggestions.length > 0 && direction === Direction.EAST) {
+		if (paneTree[paneId].suggestionState.suggestionOpen && !paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.EAST) {
 			set({
-				activePanel: PanelType.SUGGESTION,
-				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: true } },
-				activeSuggestionIndex: 0,
+				paneTree: {
+					...paneTree,
+					[paneId]: {
+						...paneTree[paneId],
+						suggestionState: {
+							...paneTree[paneId].suggestionState,
+							suggestionActive: true,
+							activeSuggestionIndex: 0,
+						}
+					},
+				}
 			});
 			return paneId;
-		} else if (paneTree[paneId].suggestionOpen && paneTree[paneId].suggestionActive && paneTree[paneId].suggestions.length > 0 && direction === Direction.WEST) {
+		} else if (paneTree[paneId].suggestionState.suggestionOpen && paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
 			set({
-				activePanel: PanelType.MAIN,
-				paneTree: { ...paneTree, [paneId]: { ...paneTree[paneId], suggestionActive: false } }
+				paneTree: {
+					...paneTree,
+					[paneId]: {
+						...paneTree[paneId],
+						suggestionState: {
+							...paneTree[paneId].suggestionState,
+							suggestionActive: false
+						},
+					}
+				}
 			});
 			return paneId;
 		}
@@ -401,10 +443,6 @@ export const createPanelSlice = (
 		activePane[Object.keys(activePane)[0]].fileId = "VIM_TUTOR";
 		activePane[Object.keys(activePane)[0]].buffer = VIM_TUTOR_BUFFER;
 		get().updatePane(activePane);
-	},
-
-	setActiveSuggestionIndex: (i: number) => {
-		set({ activeSuggestionIndex: i });
 	},
 });
 
