@@ -71,6 +71,7 @@ export type SuggestionState = {
 }
 
 export type AgentState = {
+	agentActive: boolean,
 	messages: AiMessage[],
 	streaming: boolean,
 	sessionId: string,

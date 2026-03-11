@@ -36,6 +36,8 @@ export const createToggleSlice = (
 		const windowPanel = get().openWindowPanel;
 		if (!windowPanel) {
 			get().setActivePanel(PanelType.LEADER);
+		} else {
+			get().setActivePanel(PanelType.MAIN);
 		}
 		set({ openWindowPanel: !windowPanel });
 	},
