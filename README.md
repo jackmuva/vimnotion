@@ -28,6 +28,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] RSS feed
 - [ ] tiptap editor
 - [ ] agent split bug
+- [ ] bug with split pane, then going to the same file
 
 ## QOL Todos
 - [x] Refactor how state is managed with activePane and activePanel and toggles
