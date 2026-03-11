@@ -43,7 +43,6 @@ export const VimEditor = ({
 	const createNewTab = useEditorStore(state => state.createNewTab);
 	const nextTab = useEditorStore(state => state.nextTab);
 	const prevTab = useEditorStore(state => state.prevTab);
-	const activeSuggestionIndex = useEditorStore(state => state.activeSuggestionIndex);
 	const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
 	const updatePane = useEditorStore((state) => state.updatePane);
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
@@ -51,8 +50,7 @@ export const VimEditor = ({
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
-		updateAllBuffers, setMessageMap, getMessageMap,
-		setActivePanel, constructLocationMapHelper, getDirectoryState
+		updateAllBuffers, setActivePanel, constructLocationMapHelper, getDirectoryState
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -172,7 +170,7 @@ export const VimEditor = ({
 	useEffect(() => {
 		if (vimEditor && activeId === paneId) {
 			if (pane[paneId].suggestionState.suggestionOpen && pane[paneId].suggestionState.suggestionActive && pane[paneId].suggestionState.suggestions.length > 0) {
-				const button = document.getElementById(`accept-suggestion-${paneId}-${pane[paneId].suggestionState.suggestions[activeSuggestionIndex].id}`);
+				const button = document.getElementById(`accept-suggestion-${paneId}-${pane[paneId].suggestionState.suggestions[pane[paneId].suggestionState.activeSuggestionIndex].id}`);
 				if (button) button.focus();
 			} else if (activePanel === PanelType.MAIN) {
 				vimEditor.focus();

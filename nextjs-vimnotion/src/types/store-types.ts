@@ -33,7 +33,6 @@ export type PanelState = {
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
-	activeSuggestionIndex: number;
 
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
@@ -56,7 +55,6 @@ export type PanelState = {
 	saveVnObjectBuffer: () => Promise<boolean>;
 	publishVnObject: (publish: boolean) => Promise<boolean>;
 	updateAllBuffers: (fileId: string, buffer: string) => void;
-	setActiveSuggestionIndex: (i: number) => void;
 };
 
 export type TabState = {
@@ -130,18 +128,12 @@ export type SearchState = {
 	setNewAiBlock: (url: string) => void;
 };
 
-export type AgentState = {
-	setMessageMap: (paneId: string, messageMap: AgentState) => void;
-	getMessageMap: (paneId: string) => AgentState;
-};
-
 export type EditorState =
 	ToggleState &
 	PanelState &
 	TabState &
 	DirectoryState &
-	SearchState &
-	AgentState;
+	SearchState;
 
 export type StoreSetter = {
 	(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;

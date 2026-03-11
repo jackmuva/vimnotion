@@ -30,7 +30,7 @@ import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { Completion, CompletionContext, closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, CompletionResult } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
-import { PanelType, PaneNode, AgentState } from "@/types/editor-types";
+import { PaneNode, AgentState } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
@@ -77,7 +77,6 @@ export const AgentEditor = ({
 
 	const agentState: AgentState | undefined = useEditorStore((state) => state.paneTree[paneId]?.agentState);
 	const bufferVersion: number = useEditorStore((state) => state.paneTree[paneId]?.bufferVersion);
-	const setActivePanel = useEditorStore((state) => state.setActivePanel);
 	const activePane = useEditorStore((state) => state.activePane);
 	const directoryState: DirectoryTree = useEditorStore((state) => state.directoryState);
 	const getLocationMap: (tree: DirectoryTree) => {
@@ -144,6 +143,7 @@ export const AgentEditor = ({
 							[paneId]: {
 								...currentPane[paneId],
 								agentState: {
+									agentActive: true,
 									messages: [],
 									streaming: false,
 									sessionId: v4(),

@@ -16,32 +16,45 @@ export const SuggestionDialog = ({
 	index: number,
 	view: EditorView,
 }) => {
-	const activeSuggestionIndex = useEditorStore((state) => state.activeSuggestionIndex);
-	const setActiveIndex = useEditorStore((state) => state.setActiveSuggestionIndex);
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
-	const getPaneById = useEditorStore((state) => state.getPaneById);
 	const updatePane = useEditorStore((state) => state.updatePane);
 	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const activePanel = useEditorStore((state) => state.activePanel);
 
 	const incrememntSuggestionIndex = () => {
-		let curIndex = activeSuggestionIndex + 1;
-		if (curIndex < getPane(activePane)[activePane].suggestionState.suggestions.length) {
-			setActiveIndex(curIndex);
+		let curIndex = getPane(paneId)[paneId].suggestionState.activeSuggestionIndex + 1;
+		if (curIndex < getPane(paneId)[paneId].suggestionState.suggestions.length) {
+			updatePane({
+				[paneId]: {
+					...getPane(paneId)[paneId],
+					suggestionState: {
+						...getPane(paneId)[paneId].suggestionState,
+						activeSuggestionIndex: curIndex,
+					}
+				}
+			});
 		}
 	}
 
 	const decrememntSuggestionIndex = () => {
-		let curIndex = activeSuggestionIndex - 1;
+		let curIndex = getPane(paneId)[paneId].suggestionState.activeSuggestionIndex - 1;
 		if (curIndex >= 0) {
-			setActiveIndex(curIndex);
+			updatePane({
+				[paneId]: {
+					...getPane(paneId)[paneId],
+					suggestionState: {
+						...getPane(paneId)[paneId].suggestionState,
+						activeSuggestionIndex: curIndex,
+					}
+				}
+			});
 		}
 	}
 
 	const deleteSuggestion = async () => {
 		await deleteSuggestionById(suggestion.id);
-		const curPane: PaneNode = getPaneById(paneId);
+		const curPane: PaneNode = getPane(paneId);
 		updatePane({
 			[paneId]: {
 				...curPane[paneId],
@@ -71,7 +84,7 @@ export const SuggestionDialog = ({
 	}
 
 	useEffect(() => {
-		if (paneId === activePane && activeSuggestionIndex === index) {
+		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index) {
 			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
 			const line = view.state.doc.line(lineNumber);
 			view.dispatch({
@@ -137,12 +150,13 @@ export const SuggestionDialog = ({
 				document.removeEventListener('keydown', handleSpaceKey);
 			};
 		}
-	}, [activeSuggestionIndex, setActiveIndex, paneId, index, getPaneById,
+	}, [getPane(paneId)[paneId].suggestionState.activeSuggestionIndex, updatePane, paneId, index,
 		updatePane, getPane, toggleLeaderPanel, activePanel]);
 
 	return (
 		<div id={`suggestion--${paneId}-${suggestion.id}`}
-			className={`${(paneId === activePane && activeSuggestionIndex === index && getPane(paneId)[paneId].suggestionState.suggestionActive) ?
+			className={`${(paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index
+				&& getPane(paneId)[paneId].suggestionState.suggestionActive) ?
 				"bg-foreground/15" : ""} 
 			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}>
 			<div className="flex text-sm font-bold">

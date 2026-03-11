@@ -445,9 +445,5 @@ export const createPanelSlice = (
 		activePane[Object.keys(activePane)[0]].buffer = VIM_TUTOR_BUFFER;
 		get().updatePane(activePane);
 	},
-
-	setActiveSuggestionIndex: (i: number) => {
-		set({ activeSuggestionIndex: i });
-	},
 });
 
