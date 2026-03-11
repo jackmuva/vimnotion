@@ -1,3 +1,4 @@
+import { AiMessage } from "./ai-types"
 import { Suggestion } from "./primitive-types"
 
 export enum PanelType {
@@ -5,8 +6,6 @@ export enum PanelType {
 	SIDEBAR = "SIDEBAR",
 	MAIN = "MAIN",
 	MODAL = "MODAL",
-	AGENT = "AGENT",
-	SUGGESTION = "SUGGESTION",
 }
 
 
@@ -55,14 +54,26 @@ export type PaneNode = {
 		editorType: EditorType,
 		buffer: string,
 		bufferVersion: number,
-		suggestions: Suggestion[],
-		suggestionOpen: boolean,
-		suggestionActive: boolean,
+		suggestionState: SuggestionState,
+		agentState: AgentState,
 		fileId: string,
 		public: boolean,
 		scrollPosition: number,
 		cursorPosition: number,
 	}
+}
+
+export type SuggestionState = {
+	suggestions: Suggestion[],
+	suggestionOpen: boolean,
+	suggestionActive: boolean,
+	activeSuggestionIndex: number,
+}
+
+export type AgentState = {
+	messages: AiMessage[],
+	streaming: boolean,
+	sessionId: string,
 }
 
 export type TabMap = {

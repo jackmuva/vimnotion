@@ -1,7 +1,6 @@
 import { PaneNode, SplitState, Direction, ChildType, PanelType, TabMap } from "@/types/editor-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { SearchResults, SearchType } from "@/types/search-types";
-import { MessageInput, MessageStates } from "@/types/ai-types";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -132,13 +131,8 @@ export type SearchState = {
 };
 
 export type AgentState = {
-	messageMap: MessageStates;
-	setMessageMap: (messageMap: MessageStates) => void;
-	getMessageMap: () => MessageStates;
-	inputMessageMap: { [paneId: string]: MessageInput };
-	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
-	getInputMessageMap: () => { [paneId: string]: MessageInput };
-	updateInputMessageMap: (input: { [paneId: string]: MessageInput }) => void;
+	setMessageMap: (paneId: string, messageMap: AgentState) => void;
+	getMessageMap: (paneId: string) => AgentState;
 };
 
 export type EditorState =
