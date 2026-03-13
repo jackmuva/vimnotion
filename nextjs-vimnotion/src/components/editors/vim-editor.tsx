@@ -126,7 +126,6 @@ export const VimEditor = ({
 	});
 
 	const cursorListener = EditorView.updateListener.of((v) => {
-
 		if (v.selectionSet) {
 			const currentPane: PaneNode = getPane(paneId);
 			if (currentPane[paneId].cursorPosition !== v.view.state.selection.ranges[0].from) {

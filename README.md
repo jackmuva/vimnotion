@@ -29,9 +29,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] tiptap editor
 - [x] bug with split pane, then going to the same file
 
-## QOL Todos
-- [x] Keep cursor position on directory editor
-
 ## High-level Todos
 - [ ] create teams
 - [ ] extensability with hotkeys for apis

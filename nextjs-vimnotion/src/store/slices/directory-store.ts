@@ -5,7 +5,6 @@ import { getVnObjectById } from "@/services/api-service";
 import { Suggestion, VnObject } from "@/types/primitive-types";
 import { StoreSetter, StoreGetter } from "../../types/store-types";
 
-//TODO: Have a state var to track cursor position
 export const createDirectorySlice = (
 	set: StoreSetter,
 	get: StoreGetter
@@ -20,6 +19,7 @@ export const createDirectorySlice = (
 	sidebarBufferMap: {},
 	lastDeleted: null,
 	directoryConfirmation: false,
+	dirCursorPosition: 0,
 
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	getDirectoryState: (): DirectoryTree => get().directoryState,
@@ -355,4 +355,8 @@ export const createDirectorySlice = (
 		}
 		return resLoc;
 	},
+
+	setDirCursorPosition: (pos: number) => {
+		set({ dirCursorPosition: pos });
+	}
 });

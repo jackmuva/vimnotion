@@ -83,6 +83,7 @@ export type DirectoryState = {
 	sidebarBufferMap: { [id: string]: string };
 	lastDeleted: DirectoryTree[] | null;
 	directoryConfirmation: boolean;
+	dirCursorPosition: number;
 
 	setDirectoryState: (tree: DirectoryTree) => void;
 	getDirectoryState: () => DirectoryTree;
@@ -111,8 +112,8 @@ export type DirectoryState = {
 	};
 	dedupeProposedDirectory: () => void;
 	getLocationById: (id: string) => string | null;
-
 	openFileInBuffer: (id?: string) => void;
+	setDirCursorPosition: (pos: number) => void;
 };
 
 export type SearchState = {
