@@ -30,7 +30,7 @@ import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { Completion, CompletionContext, closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, CompletionResult } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
-import { PaneNode, AgentState } from "@/types/editor-types";
+import { PaneNode, AgentState, PanelType } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
@@ -85,7 +85,7 @@ export const AgentEditor = ({
 			isFile: boolean,
 		},
 	} = useEditorStore((state) => state.constructLocationMapHelper);
-	const { updateActivePane, getPaneById, updatePane, getLocationById, setLocation } = useEditorStore(state => state);
+	const { updateActivePane, getPaneById, updatePane, getLocationById, setLocation, activePanel } = useEditorStore(state => state);
 	const pane: PaneNode = getPaneById(paneId);
 
 
@@ -304,10 +304,10 @@ export const AgentEditor = ({
 	}, [isClient]);
 
 	useEffect(() => {
-		if (activePane === paneId && vimEditor) {
+		if (activePane === paneId && vimEditor && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
-	}, [activePane]);
+	}, [activePane, activePanel]);
 
 	useEffect(() => {
 		const view = document.getElementById("messages-view");
@@ -315,7 +315,6 @@ export const AgentEditor = ({
 			view.scrollTo({ top: view.scrollHeight, behavior: "smooth" });
 		}
 	}, [agentState?.messages?.at(-1)?.content ?? ""]);
-
 
 	useEffect(() => {
 		if (vimEditor) {

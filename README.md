@@ -27,7 +27,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] evaluation hook
 - [ ] RSS feed
 - [ ] tiptap editor
-- [x] bug with split pane, then going to the same file
+- [x] bugs with splitting panes, opening, etc.
+    - bug when quitting ae, need to reload prev buffer
 
 ## High-level Todos
 - [ ] create teams
