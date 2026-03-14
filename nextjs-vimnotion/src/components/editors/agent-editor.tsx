@@ -73,7 +73,6 @@ export const AgentEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-
 	const agentState: AgentState | undefined = useEditorStore((state) => state.paneTree[paneId]?.agentState);
 	const bufferVersion: number = useEditorStore((state) => state.paneTree[paneId]?.bufferVersion);
 	const activePane = useEditorStore((state) => state.activePane);

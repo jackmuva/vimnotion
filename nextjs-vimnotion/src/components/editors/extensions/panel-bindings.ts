@@ -54,12 +54,18 @@ export const applyPanelBindings = ({
 		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
 			closePane();
 		} else if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
-			updatePane({
-				[getActivePane()]: {
-					...paneData,
-					editorType: EditorType.VIM,
-				}
-			});
+			const fileId: string = getPane(getActivePane())[getActivePane()].fileId;
+			if (fileId === "START_PAGE") {
+				closePane();
+			} else {
+				updatePane({
+					[getActivePane()]: {
+						...paneData,
+						editorType: EditorType.VIM,
+					}
+				});
+				refetchFileInBuffer(fileId);
+			}
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 			toggleSidebar();
@@ -73,12 +79,18 @@ export const applyPanelBindings = ({
 			saveVnObjectBuffer();
 			closePane();
 		} else if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
-			updatePane({
-				[getActivePane()]: {
-					...paneData,
-					editorType: EditorType.VIM,
-				}
-			});
+			const fileId: string = getPane(getActivePane())[getActivePane()].fileId;
+			if (fileId === "START_PAGE") {
+				closePane();
+			} else {
+				updatePane({
+					[getActivePane()]: {
+						...paneData,
+						editorType: EditorType.VIM,
+					}
+				});
+				refetchFileInBuffer(fileId);
+			}
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 		}

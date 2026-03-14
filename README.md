@@ -28,7 +28,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] RSS feed
 - [ ] tiptap editor
 - [x] bugs with splitting panes, opening, etc.
-    - bug when quitting ae, need to reload prev buffer
+    - bug where stream stops when shifting active id
+    - bug still there with ae not being able to focus when moving to an edge
 
 ## High-level Todos
 - [ ] create teams

@@ -312,10 +312,11 @@ export const VimEditor = ({
 		const currentPane: PaneNode = getPane(paneId);
 		view.dispatch({
 			selection: {
-				anchor: currentPane[paneId].cursorPosition,
-				head: currentPane[paneId].cursorPosition,
+				anchor: pane[paneId].cursorPosition > view.state.doc.length ? view.state.doc.length : pane[paneId].cursorPosition,
+				head: pane[paneId].cursorPosition > view.state.doc.length ? view.state.doc.length : pane[paneId].cursorPosition,
 			},
 		});
+
 		view.scrollDOM.scrollTop = currentPane[paneId].scrollPosition;
 
 		return () => {
