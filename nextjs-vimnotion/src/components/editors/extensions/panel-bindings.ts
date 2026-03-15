@@ -42,7 +42,8 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('edits', 'e', function() {
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN) {
+		const paneData = getPane(getActivePane())[getActivePane()];
+		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
 			const pane: PaneNode = getPane(getActivePane());
 			refetchFileInBuffer(pane[Object.keys(pane)[0]].fileId);
 		}

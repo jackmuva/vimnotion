@@ -207,7 +207,8 @@ export const VimEditor = ({
 		}
 	}, [activePane, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl,
 		pane[paneId].suggestionState.suggestionOpen, pane[paneId].suggestionState.suggestionActive,
-		pane[paneId].suggestionState.activeSuggestionIndex])
+		pane[paneId].suggestionState.activeSuggestionIndex, pane[paneId].suggestionState.suggestions.length
+	]);
 
 	useEffect(() => {
 		if (!isClient || vimEditor !== null) {
@@ -367,23 +368,23 @@ export const VimEditor = ({
 		}
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
-	const numSuggestions = useRef<number>(pane[paneId].suggestionState.suggestions.length);
-	const isSuggestionOpen = useRef<boolean>(pane[paneId].suggestionState.suggestionOpen);
-
-	useEffect(() => {
-		numSuggestions.current = pane[paneId].suggestionState.suggestions.length;
-	}, [pane[paneId].suggestionState.suggestions]);
-
-	useEffect(() => {
-		isSuggestionOpen.current = pane[paneId].suggestionState.suggestionOpen;
-	}, [pane[paneId].suggestionState.suggestionOpen]);
+	// const numSuggestions = useRef<number>(pane[paneId].suggestionState.suggestions.length);
+	// const isSuggestionOpen = useRef<boolean>(pane[paneId].suggestionState.suggestionOpen);
+	//
+	// useEffect(() => {
+	// 	numSuggestions.current = pane[paneId].suggestionState.suggestions.length;
+	// }, [pane[paneId].suggestionState.suggestions]);
+	//
+	// useEffect(() => {
+	// 	isSuggestionOpen.current = pane[paneId].suggestionState.suggestionOpen;
+	// }, [pane[paneId].suggestionState.suggestionOpen]);
 
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} flex rounded-sm relative h-full w-full z-20 bg-background`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
-			{numSuggestions.current > 0 && numSuggestions.current && vimEditor &&
+			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && vimEditor &&
 				<SuggestionSidebar paneId={paneId}
 					editorView={vimEditor}
 					suggestions={pane[paneId].suggestionState.suggestions} />

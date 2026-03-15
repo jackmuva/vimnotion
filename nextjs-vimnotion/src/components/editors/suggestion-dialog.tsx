@@ -61,6 +61,9 @@ export const SuggestionDialog = ({
 				suggestionState: {
 					...curPane[paneId].suggestionState,
 					suggestions: curPane[paneId].suggestionState.suggestions.filter((_: Suggestion, i: number) => i !== index),
+					activeSuggestionIndex: curPane[paneId].suggestionState.activeSuggestionIndex >= curPane[paneId].suggestionState.suggestions.filter((_: Suggestion, i: number) => i !== index).length ?
+						curPane[paneId].suggestionState.suggestions.filter((_: Suggestion, i: number) => i !== index).length - 1 :
+						curPane[paneId].suggestionState.activeSuggestionIndex
 				}
 			}
 		});

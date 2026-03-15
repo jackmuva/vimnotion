@@ -28,7 +28,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] evaluation hook
 - [ ] RSS feed
 - [x] bugs with splitting panes, opening, etc.
-    - bug still there with ae not being able to focus when moving to an edge
+- [ ] suggestion experience
+  - load suggestions when ae finishes
 - [ ] more intuitive regex on searches
 
 ## High-level Todos
