@@ -34,13 +34,22 @@ export const applyAgentBindings = ({
 		},
 	},
 	getOilLine: () => string,
-	openFileInBuffer: () => void,
+	openFileInBuffer: (fileId?: string, paneId?: string) => void,
 	detectAllDirectoryChanges: () => DirectoryChanges,
 	setDirectoryConfirmation: () => void,
 	toggleSidebar: () => void,
 	setLocation: (loc: string) => void,
 	getLocation: () => string,
 }) => {
+	const updateAllBuffers = (fileId: string) => {
+		const paneTree: PaneNode = getPaneTree();
+		for (const paneId of Object.keys(paneTree)) {
+			if (paneTree[paneId].fileId === fileId) {
+				openFileInBuffer(fileId, paneId);
+			}
+		}
+	}
+
 	const renderStream = async (response: Response, paneId: string) => {
 		const reader = response.body?.getReader();
 		if (!reader) return;
@@ -67,10 +76,14 @@ export const applyAgentBindings = ({
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
 		let toolIndex: number = 0;
+		let suggestionPresent: boolean = false;
 
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
+				if (suggestionPresent) {
+					updateAllBuffers(paneData.fileId);
+				}
 				updatePane({
 					[paneId]: {
 						...getPaneTree()[paneId],
@@ -124,6 +137,7 @@ export const applyAgentBindings = ({
 
 						let toolCallDisplay = "";
 						for (const tc of sortedToolCalls) {
+							if (tc.name === "suggest_tool") suggestionPresent = true;
 							let argsDisplay = tc.arguments;
 							try {
 								const parsedArgs = JSON.parse(tc.arguments);

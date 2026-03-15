@@ -3,7 +3,7 @@ import { useEditorStore } from "@/store/editor-store";
 import { PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const SuggestionDialog = ({
 	suggestion,
@@ -21,6 +21,7 @@ export const SuggestionDialog = ({
 	const updatePane = useEditorStore((state) => state.updatePane);
 	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const activePanel = useEditorStore((state) => state.activePanel);
+	const [applying, setApplying] = useState<boolean>(false);
 
 	const incrememntSuggestionIndex = () => {
 		let curIndex = getPane(paneId)[paneId].suggestionState.activeSuggestionIndex + 1;
@@ -76,14 +77,19 @@ export const SuggestionDialog = ({
 		const suffix: string[] = content.split("\n").slice(suggestion.endLine);
 		let toChange: string = content.split("\n").slice(suggestion.startLine - 1, suggestion.endLine).join("\n");
 		toChange = toChange.replace(suggestion.oldString, suggestion.newString);
+		const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
+		const line = view.state.doc.line(lineNumber);
 
 		view.dispatch({
 			changes: {
 				from: 0,
 				to: content.length,
 				insert: prefix.join("\n") + (prefix.length > 0 ? "\n" : "") + toChange + (suffix.length > 0 ? "\n" : "") + suffix.join("\n"),
-			}
+			},
+			selection: { anchor: line.from, head: line.from },
+			scrollIntoView: true,
 		});
+		view.scrollDOM.scrollTop = line.from;
 	}
 
 	useEffect(() => {
@@ -100,8 +106,12 @@ export const SuggestionDialog = ({
 				if (event.key === 'y') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					setApplying(true);
 					applySuggestion();
-					await deleteSuggestion();
+					setTimeout(async () => {
+						await deleteSuggestion();
+						setApplying(false);
+					}, 3000);
 				}
 			};
 			document.addEventListener('keydown', handleYKey);
@@ -184,17 +194,25 @@ export const SuggestionDialog = ({
 				{suggestion.explanation}
 			</div>
 			<div className="flex gap-4 w-full justify-center">
-				<div className="text-sm">
-					<button className="cursor-pointer" id={`accept-suggestion-${paneId}-${suggestion.id}`}>
-						<span className="font-bold text-orange-500">[y]</span>
-					</button>es, accept
-				</div>
-				<div className="text-sm">
-					<button className="cursor-pointer">
-						<span className="font-bold text-orange-500">[n]</span>
-					</button>o, decline
-				</div>
-
+				{!applying &&
+					<>
+						<div className="text-sm">
+							<button className="cursor-pointer" id={`accept-suggestion-${paneId}-${suggestion.id}`}>
+								<span className="font-bold text-orange-500">[y]</span>
+							</button>es, accept
+						</div>
+						<div className="text-sm">
+							<button className="cursor-pointer">
+								<span className="font-bold text-orange-500">[n]</span>
+							</button>o, decline
+						</div>
+					</>
+				}
+				{applying &&
+					<div className="text-sm font-bold text-orange-500">
+						change applied
+					</div>
+				}
 			</div>
 		</div>
 	);

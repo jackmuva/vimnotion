@@ -113,7 +113,7 @@ export type DirectoryState = {
 	};
 	dedupeProposedDirectory: () => void;
 	getLocationById: (id: string) => string | null;
-	openFileInBuffer: (id?: string) => void;
+	openFileInBuffer: (id?: string, paneId?: string) => void;
 	setDirCursorPosition: (pos: number) => void;
 };
 

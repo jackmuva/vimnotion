@@ -291,7 +291,7 @@ export const VimEditor = ({
 				};
 			} => constructLocationMapHelper(directoryState),
 			getOilLine: () => getOilLine(),
-			openFileInBuffer: () => openFileInBuffer(),
+			openFileInBuffer: (fileId?: string, paneId?: string) => openFileInBuffer(fileId, paneId),
 			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 			toggleSidebar: toggleSidebar,
