@@ -7,7 +7,8 @@ import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
 
 export const applyAgentBindings = ({
-	getPane,
+	getPaneTree,
+	getActivePane,
 	updatePane,
 	getActivePanel,
 	getDirectoryState,
@@ -20,7 +21,8 @@ export const applyAgentBindings = ({
 	setLocation,
 	getLocation,
 }: {
-	getPane: () => PaneNode,
+	getPaneTree: () => PaneNode,
+	getActivePane: () => string,
 	updatePane: (paneNode: PaneNode) => void,
 	getActivePanel: () => PanelType,
 	getDirectoryState: () => DirectoryTree,
@@ -43,7 +45,7 @@ export const applyAgentBindings = ({
 		const reader = response.body?.getReader();
 		if (!reader) return;
 		const decoder: TextDecoder = new TextDecoder("utf-8");
-		const paneData = getPane()[paneId];
+		const paneData = getPaneTree()[paneId];
 		const newMessages = [...paneData.agentState.messages];
 		const curAiMessage: AiMessage = {
 			type: "message",
@@ -71,9 +73,9 @@ export const applyAgentBindings = ({
 			if (done) {
 				updatePane({
 					[paneId]: {
-						...getPane()[paneId],
+						...getPaneTree()[paneId],
 						agentState: {
-							...getPane()[paneId].agentState,
+							...getPaneTree()[paneId].agentState,
 							streaming: false,
 						}
 					}
@@ -127,13 +129,12 @@ export const applyAgentBindings = ({
 								const parsedArgs = JSON.parse(tc.arguments);
 								argsDisplay = JSON.stringify(parsedArgs, null, 2);
 							} catch { }
-							toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay}\n\`\`\`\n`;
+							toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay ? argsDisplay : "no arguments needed"}\n\`\`\`\n`;
 						}
 						text = toolCallDisplay;
 						curAiMessage.toolCalls = sortedToolCalls;
 					}
 					curAiMessage.content = text;
-					console.log("new messages: ", newMessages);
 					updatePane({
 						[paneId]: {
 							...paneData,
@@ -182,8 +183,8 @@ export const applyAgentBindings = ({
 	}
 
 	Vim.defineAction("submitMessage", async () => {
-		const paneId: string = Object.keys(getPane())[0];
-		const paneData = getPane()[paneId];
+		const paneId: string = getActivePane();
+		const paneData = getPaneTree()[paneId];
 		const activePanel: PanelType = getActivePanel();
 		if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
 			const newMessages: AiMessage[] = paneData.agentState.messages;

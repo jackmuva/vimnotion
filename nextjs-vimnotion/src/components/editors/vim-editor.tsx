@@ -50,6 +50,7 @@ export const VimEditor = ({
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
 		updateAllBuffers, setActivePanel, constructLocationMapHelper, getDirectoryState, activePane,
+		getPaneTree,
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -276,7 +277,8 @@ export const VimEditor = ({
 			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 		});
 		applyAgentBindings({
-			getPane: () => getPane(paneId),
+			getPaneTree: () => getPaneTree(),
+			getActivePane: () => getActivePane(),
 			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 			getActivePanel: () => getActivePanel(),
 			getDirectoryState: () => getDirectoryState(),

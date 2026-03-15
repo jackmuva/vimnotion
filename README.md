@@ -28,7 +28,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] evaluation hook
 - [ ] RSS feed
 - [x] bugs with splitting panes, opening, etc.
-    - bug where stream gets messed up when moving from ae to ae
     - bug still there with ae not being able to focus when moving to an edge
 - [ ] more intuitive regex on searches
 

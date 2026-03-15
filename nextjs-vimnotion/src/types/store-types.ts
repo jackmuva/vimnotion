@@ -37,6 +37,7 @@ export type PanelState = {
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
+	getPaneTree: () => PaneNode;
 	setPaneTree: (tree: PaneNode) => void;
 	setActivePanel: (panel: PanelType) => void;
 	newRoot: () => string;

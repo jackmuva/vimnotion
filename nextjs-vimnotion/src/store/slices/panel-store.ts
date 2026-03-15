@@ -37,6 +37,7 @@ export const createPanelSlice = (
 	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
+	getPaneTree: () => get().paneTree,
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	newRoot: () => {
