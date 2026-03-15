@@ -276,7 +276,7 @@ export const VimEditor = ({
 			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 		});
 		applyAgentBindings({
-			getPane: () => getPane(getActivePane()),
+			getPane: () => getPane(paneId),
 			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 			getActivePanel: () => getActivePanel(),
 			getDirectoryState: () => getDirectoryState(),

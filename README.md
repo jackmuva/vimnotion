@@ -21,15 +21,16 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [ ] Editor
+- [x] tiptap editor
+- [ ] agent
     - [ ] compaction hook
     - [ ] endpoint timeout?
     - [ ] evaluation hook
 - [ ] RSS feed
-- [ ] tiptap editor
 - [x] bugs with splitting panes, opening, etc.
-    - bug where stream stops when shifting active id
+    - bug where stream gets messed up when moving from ae to ae
     - bug still there with ae not being able to focus when moving to an edge
+- [ ] more intuitive regex on searches
 
 ## High-level Todos
 - [ ] create teams
