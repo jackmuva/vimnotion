@@ -46,12 +46,27 @@ export const VimEditor = ({
 	const updatePane = useEditorStore((state) => state.updatePane);
 	const directoryConfirmation: boolean = useEditorStore((state) => state.directoryConfirmation);
 	const pane: PaneNode = getPane(paneId);
-	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
-		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
-		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
-		updateAllBuffers, setActivePanel, constructLocationMapHelper, getDirectoryState, activePane,
-		getPaneTree,
-	} = useEditorStore((state) => state);
+	const setDirectoryConfirmation = useEditorStore(state => state.setDirectoryConfirmation);
+	const renderVimTutor = useEditorStore(state => state.renderVimTutor);
+	const getActivePane = useEditorStore(state => state.getActivePane);
+	const activePane = useEditorStore(state => state.activePane);
+	const getPaneTree = useEditorStore(state => state.getPaneTree);
+	const getDirectoryState = useEditorStore(state => state.getDirectoryState);
+	const constructLocationMapHelper = useEditorStore(state => state.constructLocationMapHelper);
+	const setActivePanel = useEditorStore(state => state.setActivePanel);
+	const updateAllBuffers = useEditorStore(state => state.updateAllBuffers);
+	const setNewAiBlock = useEditorStore(state => state.setNewAiBlock);
+	const newAiBlock = useEditorStore(state => state.newAiBlock);
+	const getLocationById = useEditorStore(state => state.getLocationById);
+	const detectAllDirectoryChanges = useEditorStore(state => state.detectAllDirectoryChanges);
+	const renderMdTutor = useEditorStore(state => state.renderMdTutor);
+	const setNewImageUrl = useEditorStore(state => state.setNewImageUrl);
+	const newImageUrl = useEditorStore(state => state.newImageUrl);
+	const saveVnObjectBuffer = useEditorStore(state => state.saveVnObjectBuffer);
+	const openFileInBuffer = useEditorStore(state => state.openFileInBuffer);
+	const getOilLine = useEditorStore(state => state.getOilLine);
+	const setLocation = useEditorStore(state => state.setLocation);
+	const getLocation = useEditorStore(state => state.getLocation);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
 		// To prioritize view initialization, generate options after view initialization is complete
@@ -324,6 +339,7 @@ export const VimEditor = ({
 
 		return () => {
 			view.scrollDOM.removeEventListener("scroll", handleScroll)
+			view.destroy();
 		}
 	}, [isClient]);
 
