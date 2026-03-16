@@ -99,7 +99,7 @@ export const AgentEditor = ({
 			return locationMap[uuid].isFile
 		}).map((uuid: string) => {
 			return {
-				location: "@" + locationMap[uuid].location.split("||").map((str) => str.split("|")[1]).join(""),
+				location: "@" + locationMap[uuid].location.split("||").map((str) => str.split("|")[1]).join("") + " ",
 				uuid: uuid,
 			}
 		})

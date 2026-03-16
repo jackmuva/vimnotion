@@ -21,6 +21,7 @@ export const SuggestionDialog = ({
 	const updatePane = useEditorStore((state) => state.updatePane);
 	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const activePanel = useEditorStore((state) => state.activePanel);
+	const activeIndex = useEditorStore((state) => state.paneTree[paneId].suggestionState.activeSuggestionIndex);
 	const [applying, setApplying] = useState<boolean>(false);
 
 	const incrememntSuggestionIndex = () => {
@@ -70,13 +71,41 @@ export const SuggestionDialog = ({
 		});
 	}
 
-	const applySuggestion = () => {
+	const findClosestIndex = (matchString: string, line: number): number | null => {
 		const content: string = view.state.doc.toString();
 
-		const prefix: string[] = content.split("\n").slice(0, suggestion.startLine - 1);
-		const suffix: string[] = content.split("\n").slice(suggestion.endLine);
-		let toChange: string = content.split("\n").slice(suggestion.startLine - 1, suggestion.endLine).join("\n");
-		toChange = toChange.replace(suggestion.oldString, suggestion.newString);
+		const matchIndexes: number[] = [];
+		let curStart: number = 0;
+		while (content.slice(curStart).indexOf(matchString) !== -1) {
+			matchIndexes.push(content.slice(curStart).indexOf(matchString) + curStart);
+			curStart += content.slice(curStart).indexOf(matchString) + 1;
+		}
+
+		const lineIndex: number = content.split("\n").slice(0, line).join("\n").length;
+
+		let closestIndex: number | null = null;
+		let closestDist: number | null = null;
+		for (const matchIndex of matchIndexes) {
+			const dist = Math.abs(lineIndex - matchIndex);
+			if (closestDist === null) {
+				closestDist = dist;
+				closestIndex = matchIndex;
+			} else if (dist < closestDist) {
+				closestDist = dist;
+				closestIndex = matchIndex;
+			}
+		}
+		return closestIndex;
+	}
+
+	const applySuggestion = () => {
+		const content: string = view.state.doc.toString();
+		const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine);
+
+		const prefix: string = content.slice(0, closestIndex!);
+		const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
+		const toChange = suggestion.newString;
+
 		const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
 		const line = view.state.doc.line(lineNumber);
 
@@ -84,7 +113,7 @@ export const SuggestionDialog = ({
 			changes: {
 				from: 0,
 				to: content.length,
-				insert: prefix.join("\n") + (prefix.length > 0 ? "\n" : "") + toChange + (suffix.length > 0 ? "\n" : "") + suffix.join("\n"),
+				insert: prefix + toChange + suffix,
 			},
 			selection: { anchor: line.from, head: line.from },
 			scrollIntoView: true,
@@ -95,7 +124,8 @@ export const SuggestionDialog = ({
 	useEffect(() => {
 		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index &&
 			activePanel === PanelType.MAIN && getPane(paneId)[paneId].suggestionState.suggestionActive) {
-			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
+			const matchLine: number = view.state.doc.toString().slice(0, findClosestIndex(suggestion.oldString, suggestion.startLine)!).split("\n").length;
+			const lineNumber = Math.min(matchLine, view.state.doc.lines);
 			const line = view.state.doc.line(lineNumber);
 			view.dispatch({
 				selection: { anchor: line.from, head: line.from },
@@ -162,8 +192,8 @@ export const SuggestionDialog = ({
 				document.removeEventListener('keydown', handleSpaceKey);
 			};
 		}
-	}, [getPane(paneId)[paneId].suggestionState.activeSuggestionIndex, updatePane, paneId, index,
-		updatePane, getPane, toggleLeaderPanel, activePanel]);
+	}, [activeIndex, updatePane, paneId, index, activePane, view,
+		getPane, toggleLeaderPanel, activePanel, suggestion]);
 
 	return (
 		<div id={`suggestion--${paneId}-${suggestion.id}`}
