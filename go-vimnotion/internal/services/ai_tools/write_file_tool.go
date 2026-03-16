@@ -12,6 +12,7 @@ import (
 //go:embed write_file_tool_description.md
 var writeFileToolDescription string
 
+// TODO:May want to have an update tool or update functionality here
 var WriteFileTool models.AiTool = models.AiTool{
 	Type: "function",
 	Function: models.AiFunction{

@@ -18,6 +18,7 @@
   --font-mono: var(--font-geist-mono);
   --font-robo-slab: var(--font-robo-slab);
   --font-robo-mono: var(--font-robo-mono);
+  --font-ibm-mono: var(--font-ibm-plex-mono);
 }
 
 @media (prefers-color-scheme: dark) {

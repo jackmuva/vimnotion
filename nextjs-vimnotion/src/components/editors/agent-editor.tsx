@@ -30,7 +30,7 @@ import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { Completion, CompletionContext, closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, CompletionResult } from "@codemirror/autocomplete";
 import { lintKeymap } from "@codemirror/lint";
 import { EditorState, Extension } from "@codemirror/state";
-import { PanelType, PaneNode } from "@/types/editor-types";
+import { PaneNode, AgentState, PanelType } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
@@ -73,16 +73,8 @@ export const AgentEditor = ({
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-
-	const messages: {
-		messages: AiMessage[],
-		streaming: boolean,
-	} = useEditorStore((state) => state.messageMap[paneId]);
-	const inputBufferVersion: number = useEditorStore((state) => state.inputMessageMap[paneId]?.bufferVersion);
-	const getInputMessageMap = useEditorStore((state) => state.getInputMessageMap);
-	const setMessageMap = useEditorStore((state) => state.setMessageMap);
-	const getMessageMap = useEditorStore((state) => state.getMessageMap);
-	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const agentState: AgentState | undefined = useEditorStore((state) => state.paneTree[paneId]?.agentState);
+	const bufferVersion: number = useEditorStore((state) => state.paneTree[paneId]?.bufferVersion);
 	const activePane = useEditorStore((state) => state.activePane);
 	const directoryState: DirectoryTree = useEditorStore((state) => state.directoryState);
 	const getLocationMap: (tree: DirectoryTree) => {
@@ -92,7 +84,7 @@ export const AgentEditor = ({
 			isFile: boolean,
 		},
 	} = useEditorStore((state) => state.constructLocationMapHelper);
-	const { updateActivePane, getPaneById, getLocationById, setLocation } = useEditorStore(state => state);
+	const { updateActivePane, getPaneById, updatePane, getLocationById, setLocation, activePanel } = useEditorStore(state => state);
 	const pane: PaneNode = getPaneById(paneId);
 
 
@@ -107,7 +99,7 @@ export const AgentEditor = ({
 			return locationMap[uuid].isFile
 		}).map((uuid: string) => {
 			return {
-				location: "@" + locationMap[uuid].location.split("||").map((str) => str.split("|")[1]).join(""),
+				location: "@" + locationMap[uuid].location.split("||").map((str) => str.split("|")[1]).join("") + " ",
 				uuid: uuid,
 			}
 		})
@@ -144,12 +136,15 @@ export const AgentEditor = ({
 				displayLabel: slashCommands[key],
 				apply: key === "/new" ?
 					(view: EditorView, completion: Completion, from: number, to: number) => {
-						setMessageMap({
-							...getMessageMap(),
+						const currentPane = getPaneById(paneId);
+						updatePane({
 							[paneId]: {
-								messages: [],
-								streaming: false,
-								sessionId: v4(),
+								...currentPane[paneId],
+								agentState: {
+									messages: [],
+									streaming: false,
+									sessionId: v4(),
+								}
 							}
 						});
 
@@ -201,10 +196,11 @@ export const AgentEditor = ({
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
-			useEditorStore.getState().updateInputMessageMap({
+			const currentPane = useEditorStore.getState().getPaneById(paneId);
+			updatePane({
 				[paneId]: {
+					...currentPane[paneId],
 					buffer: v.state.doc.toString(),
-					bufferVersion: 0
 				}
 			});
 		}
@@ -235,10 +231,11 @@ export const AgentEditor = ({
 			};
 			mediaQuery.addEventListener('change', handleChange);
 
-			useEditorStore.getState().updateInputMessageMap({
+			const currentPane = getPaneById(paneId);
+			updatePane({
 				[paneId]: {
+					...currentPane[paneId],
 					buffer: vimEditor.state.doc.toString(),
-					bufferVersion: 0
 				}
 			});
 
@@ -249,7 +246,6 @@ export const AgentEditor = ({
 	}, [vimEditor, theme]);
 
 	useEffect(() => {
-		setActivePanel(PanelType.AGENT);
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
@@ -307,54 +303,54 @@ export const AgentEditor = ({
 	}, [isClient]);
 
 	useEffect(() => {
-		if (activePane === paneId && vimEditor) {
+		if (activePane === paneId && vimEditor && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
 		}
-	}, [activePane]);
+	}, [activePane, activePanel]);
 
 	useEffect(() => {
 		const view = document.getElementById("messages-view");
 		if (view) {
 			view.scrollTo({ top: view.scrollHeight, behavior: "smooth" });
 		}
-	}, [messages?.messages?.at(-1)?.content ?? ""]);
-
+	}, [agentState?.messages?.at(-1)?.content ?? ""]);
 
 	useEffect(() => {
 		if (vimEditor) {
+			const currentPane = getPaneById(paneId);
 			vimEditor.dispatch({
 				changes: {
 					from: 0,
 					to: vimEditor.state.doc.length,
-					insert: getInputMessageMap()[paneId].buffer ?? "",
+					insert: currentPane[paneId]?.buffer ?? "",
 				},
 			});
 		}
-	}, [inputBufferVersion]);
+	}, [bufferVersion]);
 
 	const memoizedMessages = useMemo(() => {
-		return ((messages && messages.messages && messages.messages.length > 0) &&
+		return ((agentState && agentState.messages && agentState.messages.length > 0) &&
 			<div id="messages-view" className="flex flex-col w-full overflow-y-auto flex-1 min-h-0 gap-2">
-				{messages.messages.map((message, i) => (
+				{agentState.messages.map((message, i) => (
 					<Message key={`${i}-${message.content?.length ?? 0}`} message={message} />
 				))}
-				{messages.messages.at(-1)?.toolCalls &&
-					messages.messages.at(-1)!.toolCalls?.map((tool) => tool.name).includes("assign_subagent_tool") &&
-					messages.streaming &&
+				{agentState.messages.at(-1)?.toolCalls &&
+					agentState.messages.at(-1)!.toolCalls?.map((tool) => tool.name).includes("assign_subagent_tool") &&
+					agentState.streaming &&
 					<div className="w-full dark:text-indigo-300 text-blue-500 animate-pulse italic">
 						Subagent working...
 					</div>}
 			</div>)
-	}, [messages, messages?.messages?.at(-1)?.content, messages?.messages?.at(-1)?.toolCalls, messages?.streaming]);
+	}, [agentState, agentState?.messages?.at(-1)?.content, agentState?.messages?.at(-1)?.toolCalls, agentState?.streaming]);
 
 	return (
 
-		<div className={`${activePane === paneId ? "outline-2 outline-offset-2 outline-indigo-300/70 dark:outline-indigo-300/30" : ""} relative h-full w-full z-20 bg-background 
+		<div className={`${activePane === paneId ? "" : "brightness[82%]"} relative h-full w-full z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
-			${(!messages || !messages.messages || messages.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
+			${(!agentState || !agentState.messages || agentState.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
 			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 
-					${(messages && messages.messages && messages.messages.length > 0) ? "h-full" : ""}`}>
-				{(!messages || !messages.messages || messages.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
+					${(agentState && agentState.messages && agentState.messages.length > 0) ? "h-full" : ""}`}>
+				{(!agentState || !agentState.messages || agentState.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
 					<span className="text-orange-500">[E]</span>ditor
 				</div>}
 				{memoizedMessages}

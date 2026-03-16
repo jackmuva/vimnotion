@@ -1,18 +1,16 @@
 import { getAgentStream, getVnObjectById } from "@/services/api-service";
-import { AiMessage, MessageInput, MessageStates } from "@/types/ai-types"
-import { PanelType } from "@/types/editor-types";
-import { VnObject } from "@/types/primitive-types";
+import { AiMessage } from "@/types/ai-types"
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
+import { Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { Vim } from "@replit/codemirror-vim"
 import { v4 } from "uuid";
 
 export const applyAgentBindings = ({
-	setMessageMap,
-	setInputMessageMap,
+	getPaneTree,
 	getActivePane,
+	updatePane,
 	getActivePanel,
-	getMessageMap,
-	getInputMessageMap,
 	getDirectoryState,
 	getLocationMap,
 	getOilLine,
@@ -23,12 +21,10 @@ export const applyAgentBindings = ({
 	setLocation,
 	getLocation,
 }: {
-	setMessageMap: (messageMap: MessageStates) => void,
-	setInputMessageMap: (inputMap: { [paneId: string]: MessageInput }) => void,
+	getPaneTree: () => PaneNode,
 	getActivePane: () => string,
+	updatePane: (paneNode: PaneNode) => void,
 	getActivePanel: () => PanelType,
-	getMessageMap: () => MessageStates,
-	getInputMessageMap: () => { [paneId: string]: MessageInput },
 	getDirectoryState: () => DirectoryTree,
 	getLocationMap: (diretoryState: DirectoryTree) => {
 		[uuid: string]: {
@@ -38,43 +34,63 @@ export const applyAgentBindings = ({
 		},
 	},
 	getOilLine: () => string,
-	openFileInBuffer: () => void,
+	openFileInBuffer: (fileId?: string, paneId?: string) => void,
 	detectAllDirectoryChanges: () => DirectoryChanges,
 	setDirectoryConfirmation: () => void,
 	toggleSidebar: () => void,
 	setLocation: (loc: string) => void,
 	getLocation: () => string,
 }) => {
-	const renderStream = async (response: Response) => {
-		const activePane: string = getActivePane();
+	const updateAllBuffers = (fileId: string) => {
+		const paneTree: PaneNode = getPaneTree();
+		for (const paneId of Object.keys(paneTree)) {
+			if (paneTree[paneId].fileId === fileId) {
+				openFileInBuffer(fileId, paneId);
+			}
+		}
+	}
+
+	const renderStream = async (response: Response, paneId: string) => {
 		const reader = response.body?.getReader();
 		if (!reader) return;
-		const decoder = new TextDecoder("utf-8");
-		const newMessages = [...getMessageMap()[activePane].messages];
+		const decoder: TextDecoder = new TextDecoder("utf-8");
+		const paneData = getPaneTree()[paneId];
+		const newMessages = [...paneData.agentState.messages];
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
 		}
 		newMessages.push(curAiMessage);
-		setMessageMap({
-			...getMessageMap(), [activePane]: {
-				messages: newMessages,
-				streaming: true,
-				sessionId: getMessageMap()[activePane].sessionId,
+		updatePane({
+			[paneId]: {
+				...paneData,
+				agentState: {
+					...paneData.agentState,
+					messages: newMessages,
+					streaming: true,
+				}
 			}
 		});
+
 		let buffer = "";
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
 		let toolIndex: number = 0;
+		let suggestionPresent: boolean = false;
 
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
-				setMessageMap({
-					...getMessageMap(), [activePane]: {
-						...getMessageMap()[activePane],
-						streaming: false
+				if (suggestionPresent) {
+					updateAllBuffers(paneData.fileId);
+				}
+				updatePane({
+					[paneId]: {
+						...getPaneTree()[paneId],
+						agentState: {
+							...getPaneTree()[paneId].agentState,
+							streaming: false,
+						}
 					}
 				});
 				break;
@@ -121,21 +137,25 @@ export const applyAgentBindings = ({
 
 						let toolCallDisplay = "";
 						for (const tc of sortedToolCalls) {
+							if (tc.name === "suggest_tool") suggestionPresent = true;
 							let argsDisplay = tc.arguments;
 							try {
 								const parsedArgs = JSON.parse(tc.arguments);
 								argsDisplay = JSON.stringify(parsedArgs, null, 2);
 							} catch { }
-							toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay}\n\`\`\`\n`;
+							toolCallDisplay += `\n**${tc.name}:**\n\`\`\`json\n${argsDisplay ? argsDisplay : "no arguments needed"}\n\`\`\`\n`;
 						}
 						text = toolCallDisplay;
 						curAiMessage.toolCalls = sortedToolCalls;
 					}
 					curAiMessage.content = text;
-					setMessageMap({
-						...getMessageMap(), [activePane]: {
-							...getMessageMap()[activePane],
-							messages: newMessages
+					updatePane({
+						[paneId]: {
+							...paneData,
+							agentState: {
+								...paneData.agentState,
+								messages: newMessages
+							}
 						}
 					});
 				} catch { }
@@ -161,16 +181,13 @@ export const applyAgentBindings = ({
 		for (const line of message.split("\n")) {
 			for (const word of line.split(" ")) {
 				if (word in locationMap && !isPrompt) {
-					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-					parsed += " " + `[User's provided file content: ${vnObject?.contents}]`
+					parsed += " " + `[User's provided file: \nvnObjectId: ${locationMap[word]}]\n`
 				} else if (word in locationMap && isPrompt) {
-					const vnObject: VnObject | null = await getVnObjectById(locationMap[word]);
-					parsed += " " + `[Prompt file contents: ${vnObject?.contents}]`
+					const vnObjectData: { file: VnObject | null, suggestions: Suggestion[] } | null = await getVnObjectById(locationMap[word]);
+					parsed += " " + vnObjectData?.file?.contents
 				} else if (word === "/prompt") {
-					parsed += "\nUse the following prompt file(s):";
 					isPrompt = true;
-				}
-				else {
+				} else {
 					isPrompt = false;
 					parsed += " " + word;
 				}
@@ -180,23 +197,36 @@ export const applyAgentBindings = ({
 	}
 
 	Vim.defineAction("submitMessage", async () => {
+		const paneId: string = getActivePane();
+		const paneData = getPaneTree()[paneId];
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.AGENT) {
-			const activePane: string = getActivePane();
-			const newMessages: AiMessage[] = activePane in getMessageMap() ? [...getMessageMap()[activePane].messages] : [];
+		if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
+			const newMessages: AiMessage[] = paneData.agentState.messages;
 			if (newMessages.length === 0) {
-				setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], sessionId: v4() } });
+				updatePane({
+					[paneId]: {
+						...paneData,
+						agentState: {
+							...paneData.agentState,
+							sessionId: v4()
+						}
+					}
+				});
 			}
-			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(getInputMessageMap()[activePane].buffer)) });
-			setMessageMap({ ...getMessageMap(), [activePane]: { ...getMessageMap()[activePane], messages: newMessages } });
-			const res: Response = await getAgentStream(newMessages, getMessageMap()[activePane].sessionId);
-			setInputMessageMap({
-				...getInputMessageMap(), [activePane]: {
+			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(paneData.buffer)) });
+			updatePane({
+				[paneId]: {
+					...paneData,
+					agentState: {
+						...paneData.agentState,
+						messages: newMessages
+					},
 					buffer: "\n",
-					bufferVersion: getInputMessageMap()[activePane].bufferVersion + 1,
+					bufferVersion: paneData.bufferVersion + 1,
 				}
 			});
-			await renderStream(res);
+			const res: Response = await getAgentStream(newMessages, paneData.agentState.sessionId);
+			await renderStream(res, paneId);
 		} else if (activePanel === PanelType.SIDEBAR) {
 			const newChanges: DirectoryChanges = detectAllDirectoryChanges();
 			if (getOilLine().at(-1) === "/") {

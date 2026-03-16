@@ -12,7 +12,6 @@ export const WindowPanel = () => {
 
 	const handleNavigation = (paneId: string) => {
 		closePanel();
-		setActivePanel(PanelType.MAIN);
 		setActivePane(paneId);
 	};
 
@@ -27,7 +26,6 @@ export const WindowPanel = () => {
 
 		const handleHKey = (event: KeyboardEvent) => {
 			if (event.key === 'h') {
-				console.log("h");
 				event.preventDefault();
 				event.stopImmediatePropagation();
 				handleNavigation(goToNeighbor(activePane, Direction.WEST));
@@ -84,55 +82,56 @@ export const WindowPanel = () => {
 
 	return (
 		<div id={`window-panel`}
-			className='font-robo-mono text-xl z-30 w-full bg-background-muted h-1/4 absolute bottom-0 left-0
-					rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4'>
-			<div>
-				<button
-					id={`first-window-option`}
-					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.WEST))}
-				>
-					<span className="font-bold text-orange-500">[h]</span>
-				</button>
-				&rarr;move left a window
+			className='px-2 pb-2 font-robo-mono text-xl z-20 w-full h-1/4 absolute bottom-0 left-0'>
+			<div className="bg-background-muted rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4
+				h-full">
+				<div>
+					<button
+						id={`first-window-option`}
+						className="cursor-pointer"
+						onClick={() => handleNavigation(goToNeighbor(activePane, Direction.WEST))}
+					>
+						<span className="font-bold text-orange-500">[h]</span>
+					</button>
+					&rarr;move left a window
+				</div>
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => handleNavigation(goToNeighbor(activePane, Direction.SOUTH))}
+					>
+						<span className="font-bold text-orange-500">[j]</span>
+					</button>
+					&rarr;move down a window
+				</div>
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => handleNavigation(goToNeighbor(activePane, Direction.NORTH))}
+					>
+						<span className="font-bold text-orange-500">[k]</span>
+					</button>
+					&rarr;move up a window
+				</div>
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => handleNavigation(goToNeighbor(activePane, Direction.EAST))}
+					>
+						<span className="font-bold text-orange-500">[l]</span>
+					</button>
+					&rarr;move right a window
+				</div>
+				<div>
+					<button
+						className="cursor-pointer"
+						onClick={() => handleNavigation(cycleNeighbor())}
+					>
+						<span className="font-bold text-orange-500">[w]</span>
+					</button>
+					&rarr;next window
+				</div>
 			</div>
-			<div>
-				<button
-					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.SOUTH))}
-				>
-					<span className="font-bold text-orange-500">[j]</span>
-				</button>
-				&rarr;move down a window
-			</div>
-			<div>
-				<button
-					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.NORTH))}
-				>
-					<span className="font-bold text-orange-500">[k]</span>
-				</button>
-				&rarr;move up a window
-			</div>
-			<div>
-				<button
-					className="cursor-pointer"
-					onClick={() => handleNavigation(goToNeighbor(activePane, Direction.EAST))}
-				>
-					<span className="font-bold text-orange-500">[l]</span>
-				</button>
-				&rarr;move right a window
-			</div>
-			<div>
-				<button
-					className="cursor-pointer"
-					onClick={() => handleNavigation(cycleNeighbor())}
-				>
-					<span className="font-bold text-orange-500">[w]</span>
-				</button>
-				&rarr;next window
-			</div>
-
 		</div>
 	);
 

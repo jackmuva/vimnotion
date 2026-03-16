@@ -5,6 +5,8 @@ import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
 
+//TODO:Splitting panes has weird effects in agent mode
+//also, closing agent editor uses the prompt buffer and needs to use the fildid's buffer
 export const createPanelSlice = (
 	set: StoreSetter,
 	get: StoreGetter
@@ -35,6 +37,7 @@ export const createPanelSlice = (
 	setActivePanel: (panel: PanelType) => set({ activePanel: panel }),
 
 	setPaneTree: (tree: PaneNode) => set({ paneTree: tree }),
+	getPaneTree: () => get().paneTree,
 	updateActivePane: (newPane: string) => set({ activePane: newPane }),
 
 	newRoot: () => {
@@ -56,6 +59,16 @@ export const createPanelSlice = (
 			editorType: EditorType.VIM,
 			buffer: START_BUFFER,
 			bufferVersion: 1,
+			suggestionState: {
+				suggestions: [],
+				suggestionActive: false,
+				activeSuggestionIndex: 0,
+			},
+			agentState: {
+				messages: [],
+				streaming: false,
+				sessionId: "",
+			},
 			fileId: "START_PAGE",
 			public: false,
 			scrollPosition: 0,
@@ -98,6 +111,16 @@ export const createPanelSlice = (
 				editorType: paneTree[parentId].editorType,
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
+				suggestionState: {
+					suggestions: paneTree[parentId].suggestionState.suggestions,
+					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
+					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
+				},
+				agentState: {
+					messages: paneTree[parentId].agentState.messages,
+					streaming: paneTree[parentId].agentState.streaming,
+					sessionId: paneTree[parentId].agentState.sessionId,
+				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -118,6 +141,16 @@ export const createPanelSlice = (
 				editorType: paneTree[parentId].editorType,
 				buffer: paneTree[parentId].buffer,
 				bufferVersion: paneTree[parentId].bufferVersion,
+				suggestionState: {
+					suggestions: paneTree[parentId].suggestionState.suggestions,
+					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
+					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
+				},
+				agentState: {
+					messages: [],
+					streaming: false,
+					sessionId: "",
+				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
 				scrollPosition: paneTree[parentId].scrollPosition,
@@ -233,7 +266,6 @@ export const createPanelSlice = (
 			secondOption = get().drillDownDirectionally(curPanel.children.filter(
 				(childId) => paneTree[childId].childType === ChildType.SECOND
 			)[0], direction, childType);
-
 		} else if (curPanel.state === SplitState.HORIZONTAL
 			&& (direction === Direction.EAST || direction === Direction.WEST)) {
 			firstOption = get().drillDownDirectionally(curPanel.children.filter(
@@ -276,23 +308,71 @@ export const createPanelSlice = (
 
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
+		if (!paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.EAST) {
+			set({
+				paneTree: {
+					...paneTree,
+					[paneId]: {
+						...paneTree[paneId],
+						suggestionState: {
+							...paneTree[paneId].suggestionState,
+							suggestionActive: true,
+							activeSuggestionIndex: 0,
+						}
+					},
+				},
+				activePanel: PanelType.MAIN,
+			});
+			return paneId;
+		} else if (paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
+			set({
+				paneTree: {
+					...paneTree,
+					[paneId]: {
+						...paneTree[paneId],
+						suggestionState: {
+							...paneTree[paneId].suggestionState,
+							suggestionActive: false
+						},
+					}
+				},
+				activePanel: PanelType.MAIN,
+			});
+			return paneId;
+		}
 
 		let currentId: string = paneId;
 		const childType: ChildType = paneTree[paneId].childType;
 		let resId: string = paneId;
 		while (currentId !== null) {
 			const currentPane = paneTree[currentId];
-			if (!currentPane) break;
 			const neighborId: string | null = currentPane.neighbors[direction];
 			if (neighborId) {
 				resId = drillDownDirectionally(neighborId, direction, childType);
 			}
 			if (resId !== paneId) {
+				if (paneTree[resId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
+					set({
+						paneTree: {
+							...paneTree,
+							[resId]: {
+								...paneTree[resId],
+								suggestionState: {
+									...paneTree[resId].suggestionState,
+									suggestionActive: true,
+									activeSuggestionIndex: 0,
+								}
+							},
+						}
+					});
+				}
+				set({ activePanel: PanelType.MAIN });
 				return resId
 			}
 			//@ts-expect-error can be null or string
 			currentId = currentPane.parent;
 		}
+		set({ activePanel: PanelType.MAIN });
 		return resId;
 	},
 

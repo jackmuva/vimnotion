@@ -20,6 +20,7 @@ import data from '@emoji-mart/data';
 import type { EmojiMartData } from '@emoji-mart/data';
 import { applyAgentBindings } from './extensions/agent-bindings';
 import { DirectoryTree } from '@/types/sidebar-types';
+import { SuggestionSidebar } from './suggestion-sidebar';
 
 export const VimEditor = ({
 	paneId,
@@ -33,7 +34,6 @@ export const VimEditor = ({
 	const [vimEditor, setVimEditor] = useState<EditorView | null>(null);
 	const [isClient, setIsClient] = useState(false);
 
-	const activeId: string = useEditorStore((state) => state.activePane);
 	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
 	const getActivePanel: () => PanelType = useEditorStore((state) => state.getActivePanel);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
@@ -49,8 +49,8 @@ export const VimEditor = ({
 	const { getLocation, setLocation, getOilLine, setDirectoryConfirmation,
 		openFileInBuffer, saveVnObjectBuffer, newImageUrl, setNewImageUrl, renderMdTutor, renderVimTutor,
 		detectAllDirectoryChanges, getLocationById, newAiBlock, setNewAiBlock, getActivePane,
-		updateAllBuffers, setMessageMap, setInputMessageMap, getMessageMap, getInputMessageMap,
-		setActivePanel, constructLocationMapHelper, getDirectoryState,
+		updateAllBuffers, setActivePanel, constructLocationMapHelper, getDirectoryState, activePane,
+		getPaneTree,
 	} = useEditorStore((state) => state);
 
 	const emojiCompletionOptions: Completion[] = useMemo(() => {
@@ -94,7 +94,17 @@ export const VimEditor = ({
 	const focusListener = EditorView.updateListener.of((v) => {
 		if (v.view.hasFocus) {
 			updateActivePane(paneId);
+			setActivePanel(PanelType.MAIN);
+
 			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					suggestionActive: false,
+				}
+			};
+			updatePane(updatedPane);
+
 			const loc: string | null = getLocationById(currentPane[Object.keys(pane)[0]].fileId);
 			if (loc) setLocation(loc);
 		}
@@ -117,13 +127,14 @@ export const VimEditor = ({
 	});
 
 	const cursorListener = EditorView.updateListener.of((v) => {
-		const currentPane: PaneNode = getPane(paneId);
-		const updatedPane: PaneNode = { ...currentPane };
-
 		if (v.selectionSet) {
-			updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
+			const currentPane: PaneNode = getPane(paneId);
+			if (currentPane[paneId].cursorPosition !== v.view.state.selection.ranges[0].from) {
+				const updatedPane: PaneNode = { ...currentPane };
+				updatedPane[paneId].cursorPosition = v.view.state.selection.ranges[0].from;
+				updatePane(updatedPane);
+			}
 		}
-		updatePane(updatedPane);
 	});
 
 	useEffect(() => {
@@ -137,8 +148,8 @@ export const VimEditor = ({
 			});
 			vimEditor.dispatch({
 				selection: {
-					anchor: pane[paneId].cursorPosition,
-					head: pane[paneId].cursorPosition,
+					anchor: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
+					head: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
 				},
 			});
 			vimEditor.scrollDOM.scrollTop = pane[paneId].scrollPosition;
@@ -156,46 +167,54 @@ export const VimEditor = ({
 	}, [vimEditor]);
 
 	useEffect(() => {
-		if (vimEditor && activeId === paneId && activePanel === PanelType.MAIN) {
-			vimEditor.focus();
-			if (newImageUrl) {
-				const mdImage = `![your-image-name](${newImageUrl})`
-				const cursorPosition: number = vimEditor.state.selection.main.head;
-				const transaction = vimEditor.state.update({
-					changes: {
-						from: cursorPosition,
-						insert: mdImage,
-					},
-					selection: { anchor: cursorPosition + 1 },
-					scrollIntoView: true,
-				});
-				if (transaction) {
-					vimEditor.dispatch(transaction);
+		if (vimEditor && activePane === paneId) {
+			if (pane[paneId].suggestionState.suggestionActive && pane[paneId].suggestionState.suggestions.length > 0) {
+				const button = document.getElementById(`accept-suggestion-${paneId}-${pane[paneId].suggestionState.suggestions[pane[paneId].suggestionState.activeSuggestionIndex].id}`);
+				if (button) button.focus();
+			} else if (activePanel === PanelType.MAIN) {
+				vimEditor.focus();
+				if (newImageUrl) {
+					const mdImage = `![your-image-name](${newImageUrl})`
+					const cursorPosition: number = vimEditor.state.selection.main.head;
+					const transaction = vimEditor.state.update({
+						changes: {
+							from: cursorPosition,
+							insert: mdImage,
+						},
+						selection: { anchor: cursorPosition + 1 },
+						scrollIntoView: true,
+					});
+					if (transaction) {
+						vimEditor.dispatch(transaction);
+					}
+					setNewImageUrl("");
+				} else if (newAiBlock) {
+					const cursorPosition: number = vimEditor.state.selection.main.head;
+					const transaction = vimEditor.state.update({
+						changes: {
+							from: cursorPosition,
+							insert: newAiBlock,
+						},
+						selection: { anchor: cursorPosition + 1 },
+						scrollIntoView: true,
+					});
+					if (transaction) {
+						vimEditor.dispatch(transaction);
+					}
+					setNewAiBlock("");
 				}
-				setNewImageUrl("");
-			} else if (newAiBlock) {
-				const cursorPosition: number = vimEditor.state.selection.main.head;
-				const transaction = vimEditor.state.update({
-					changes: {
-						from: cursorPosition,
-						insert: newAiBlock,
-					},
-					selection: { anchor: cursorPosition + 1 },
-					scrollIntoView: true,
-				});
-				if (transaction) {
-					vimEditor.dispatch(transaction);
-				}
-				setNewAiBlock("");
 			}
 		}
-	}, [activeId, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl])
+	}, [activePane, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl,
+		pane[paneId].suggestionState.suggestionActive,
+		pane[paneId].suggestionState.activeSuggestionIndex, pane[paneId].suggestionState.suggestions.length
+	]);
 
 	useEffect(() => {
-		setActivePanel(PanelType.MAIN);
 		if (!isClient || vimEditor !== null) {
 			return;
 		}
+		setActivePanel(PanelType.MAIN);
 
 		const editorElement = document.querySelector(`#vim-editor-${paneId}`);
 		if (!editorElement) {
@@ -256,14 +275,13 @@ export const VimEditor = ({
 			refetchFileInBuffer: (fileId: string) => openFileInBuffer(fileId),
 			getActivePane: () => getActivePane(),
 			getPane: (paneId: string) => getPane(paneId),
+			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 		});
 		applyAgentBindings({
-			setMessageMap: (messageMap): void => setMessageMap(messageMap),
-			setInputMessageMap: (inputMap) => setInputMessageMap(inputMap),
+			getPaneTree: () => getPaneTree(),
 			getActivePane: () => getActivePane(),
+			updatePane: (paneNode: PaneNode) => updatePane(paneNode),
 			getActivePanel: () => getActivePanel(),
-			getMessageMap: () => getMessageMap(),
-			getInputMessageMap: () => getInputMessageMap(),
 			getDirectoryState: () => getDirectoryState(),
 			getLocationMap: (directoryState: DirectoryTree): {
 				[uuid: string]: {
@@ -273,7 +291,7 @@ export const VimEditor = ({
 				};
 			} => constructLocationMapHelper(directoryState),
 			getOilLine: () => getOilLine(),
-			openFileInBuffer: () => openFileInBuffer(),
+			openFileInBuffer: (fileId?: string, paneId?: string) => openFileInBuffer(fileId, paneId),
 			detectAllDirectoryChanges: () => detectAllDirectoryChanges(),
 			setDirectoryConfirmation: () => setDirectoryConfirmation(true),
 			toggleSidebar: toggleSidebar,
@@ -297,10 +315,11 @@ export const VimEditor = ({
 		const currentPane: PaneNode = getPane(paneId);
 		view.dispatch({
 			selection: {
-				anchor: currentPane[paneId].cursorPosition,
-				head: currentPane[paneId].cursorPosition,
+				anchor: pane[paneId].cursorPosition > view.state.doc.length ? view.state.doc.length : pane[paneId].cursorPosition,
+				head: pane[paneId].cursorPosition > view.state.doc.length ? view.state.doc.length : pane[paneId].cursorPosition,
 			},
 		});
+
 		view.scrollDOM.scrollTop = currentPane[paneId].scrollPosition;
 
 		return () => {
@@ -350,10 +369,15 @@ export const VimEditor = ({
 	}, [vimEditor, paneId, theme, updateActivePane]);
 
 	return (
-		<div className={`${activeId === paneId ? "" : "brightness-[82%]"} rounded-sm relative h-full w-full z-20 bg-background`}>
+		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} flex rounded-sm relative h-full w-full z-20 bg-background`}>
 			<div id={`vim-editor-${paneId}`}
 				className={`no-scrollbar h-full w-full`}>
 			</div>
+			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && vimEditor &&
+				<SuggestionSidebar paneId={paneId}
+					editorView={vimEditor}
+					suggestions={pane[paneId].suggestionState.suggestions} />
+			}
 		</div>
 	);
 }

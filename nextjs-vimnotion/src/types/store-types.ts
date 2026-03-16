@@ -1,7 +1,6 @@
 import { PaneNode, SplitState, Direction, ChildType, PanelType, TabMap } from "@/types/editor-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { SearchResults, SearchType } from "@/types/search-types";
-import { MessageInput, MessageStates } from "@/types/ai-types";
 
 export interface DrillDownResult {
 	nearestId: string;
@@ -38,6 +37,7 @@ export type PanelState = {
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;
+	getPaneTree: () => PaneNode;
 	setPaneTree: (tree: PaneNode) => void;
 	setActivePanel: (panel: PanelType) => void;
 	newRoot: () => string;
@@ -84,6 +84,7 @@ export type DirectoryState = {
 	sidebarBufferMap: { [id: string]: string };
 	lastDeleted: DirectoryTree[] | null;
 	directoryConfirmation: boolean;
+	dirCursorPosition: number;
 
 	setDirectoryState: (tree: DirectoryTree) => void;
 	getDirectoryState: () => DirectoryTree;
@@ -112,8 +113,8 @@ export type DirectoryState = {
 	};
 	dedupeProposedDirectory: () => void;
 	getLocationById: (id: string) => string | null;
-
-	openFileInBuffer: (id?: string) => void;
+	openFileInBuffer: (id?: string, paneId?: string) => void;
+	setDirCursorPosition: (pos: number) => void;
 };
 
 export type SearchState = {
@@ -129,23 +130,12 @@ export type SearchState = {
 	setNewAiBlock: (url: string) => void;
 };
 
-export type AgentState = {
-	messageMap: MessageStates;
-	setMessageMap: (messageMap: MessageStates) => void;
-	getMessageMap: () => MessageStates;
-	inputMessageMap: { [paneId: string]: MessageInput };
-	setInputMessageMap: (messageMap: { [paneId: string]: MessageInput }) => void;
-	getInputMessageMap: () => { [paneId: string]: MessageInput };
-	updateInputMessageMap: (input: { [paneId: string]: MessageInput }) => void;
-};
-
 export type EditorState =
 	ToggleState &
 	PanelState &
 	TabState &
 	DirectoryState &
-	SearchState &
-	AgentState;
+	SearchState;
 
 export type StoreSetter = {
 	(partial: EditorState | Partial<EditorState> | ((state: EditorState) => EditorState | Partial<EditorState>), replace?: false): void;

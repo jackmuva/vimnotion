@@ -32,7 +32,7 @@ export const SidebarEditor = () => {
 	const [isClient, setIsClient] = useState(false);
 	const { location, setOilLine, directoryState, pushSidebarBufferHistory, setSidebarBufferMap,
 		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges, directoryConfirmation,
-		setDirectoryConfirmation,
+		setDirectoryConfirmation, dirCursorPosition, setDirCursorPosition,
 	} = useEditorStore((state) => state);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
@@ -74,6 +74,10 @@ export const SidebarEditor = () => {
 				cur += (line.length + 1);
 			}
 			setOilLine(res);
+
+			if (v.view.state.selection.ranges[0].from !== 0 && dirCursorPosition !== v.view.state.selection.ranges[0].from) {
+				setDirCursorPosition(v.view.state.selection.ranges[0].from);
+			}
 		}
 	});
 
@@ -119,6 +123,16 @@ export const SidebarEditor = () => {
 				to: vimEditor.state.doc.length,
 				insert: newContent
 			}
+		});
+		vimEditor.dispatch({
+			selection: {
+				anchor: dirCursorPosition > vimEditor.state.doc.length ?
+					vimEditor.state.doc.length :
+					dirCursorPosition,
+				head: dirCursorPosition > vimEditor.state.doc.length ?
+					vimEditor.state.doc.length :
+					dirCursorPosition,
+			},
 		});
 	}, [directoryState, location, isClient, vimEditor]);
 

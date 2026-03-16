@@ -1,12 +1,12 @@
 import { AiMessage } from "@/types/ai-types";
-import { VnObject } from "@/types/primitive-types";
+import { Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
-import { v4 } from "uuid";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 export type VnObjectResponse = {
 	Data: VnObject[];
+	Suggestions: Suggestion[];
 };
 
 export const getAsciiStream = async (content: string): Promise<Response> => {
@@ -63,7 +63,7 @@ export async function getDirectory(): Promise<any> {
 	}
 }
 
-export async function getVnObjectById(fileId: string, isPublic: boolean = false): Promise<VnObject | null> {
+export async function getVnObjectById(fileId: string, isPublic: boolean = false): Promise<{ file: VnObject | null, suggestions: Suggestion[] } | null> {
 	try {
 		const res = await fetch(`${BACKEND_BASE_URL}/api/vnobject/${isPublic ? "public/" : ""}${fileId}`, {
 			credentials: !isPublic ? "include" : undefined
@@ -73,7 +73,10 @@ export async function getVnObjectById(fileId: string, isPublic: boolean = false)
 			return null;
 		}
 		const body: VnObjectResponse = await res.json();
-		return body.Data[0] ?? null;
+		return {
+			file: body.Data[0] ?? null,
+			suggestions: body.Suggestions ?? []
+		};
 	} catch (err) {
 		console.error("Unable to get vnobject:", err);
 		return null;
@@ -108,5 +111,20 @@ export async function grepVnObjects(pattern: string): Promise<VnObject[]> {
 	} catch (err) {
 		console.error("Unable to grep vnobjects:", err);
 		return [];
+	}
+}
+
+export async function deleteSuggestionById(suggestionId: string): Promise<void> {
+	try {
+		const res = await fetch(`${BACKEND_BASE_URL}/api/suggestion/${suggestionId}`, {
+			method: "DELETE",
+			credentials: "include",
+		});
+		if (!res.ok) {
+			console.error("Failed to delete suggestion: ", res.status);
+		}
+	} catch (err) {
+		console.error("Unable to delete suggestion: ", err);
+		return;
 	}
 }

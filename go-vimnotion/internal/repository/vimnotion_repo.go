@@ -1,0 +1,213 @@
+package repository
+
+import (
+	"database/sql"
+	"fmt"
+	"os"
+
+	"vimnotion.com/server/internal/models"
+)
+
+func GetUser(db *sql.DB, email string) ([]models.User, error) {
+	rows, err := db.Query("SELECT * FROM User WHERE email=?", email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+
+	for rows.Next() {
+		var user models.User
+
+		if err := rows.Scan(&user.Email, &user.Name); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		users = append(users, user)
+		fmt.Println(user.Email, user.Name)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return users, nil
+}
+
+func GetDirectoryStructure(db *sql.DB, email string) ([]models.DirectoryStructure, error) {
+	rows, err := db.Query("SELECT * FROM DirectoryStructure WHERE email=?", email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var directoryStructures []models.DirectoryStructure
+
+	for rows.Next() {
+		var directoryStructure models.DirectoryStructure
+
+		if err := rows.Scan(&directoryStructure.Email, &directoryStructure.Structure); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		directoryStructures = append(directoryStructures, directoryStructure)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return directoryStructures, nil
+}
+
+func GetVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
+	rows, err := db.Query("SELECT * FROM VnObject WHERE id=?", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+	}
+	defer rows.Close()
+
+	var vnObjects []models.VnObject
+
+	for rows.Next() {
+		var vnObject models.VnObject
+
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+
+		vnObjects = append(vnObjects, vnObject)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return vnObjects, nil
+}
+
+func SearchVnObjectByContent(db *sql.DB, search string, email string) ([]models.VnObject, error) {
+	rows, err := db.Query("SELECT * FROM VnObject WHERE email=? AND isFile=1 AND contents LIKE ? LIMIT 100", email, "%"+search+"%")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var vnObjects []models.VnObject
+
+	for rows.Next() {
+		var vnObject models.VnObject
+
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+
+		vnObjects = append(vnObjects, vnObject)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return vnObjects, nil
+}
+
+func GetPublicVnObjectById(db *sql.DB, id string) ([]models.VnObject, error) {
+	rows, err := db.Query("SELECT * FROM VnObject WHERE id=? AND public=1", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+	}
+	defer rows.Close()
+
+	var vnObjects []models.VnObject
+
+	for rows.Next() {
+		var vnObject models.VnObject
+
+		if err := rows.Scan(&vnObject.Id, &vnObject.Name, &vnObject.IsFile, &vnObject.UpdateDate, &vnObject.Contents, &vnObject.Public, &vnObject.Email); err != nil {
+			fmt.Println("Error scanning row:", err)
+		}
+
+		vnObjects = append(vnObjects, vnObject)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+		return nil, err
+	}
+	return vnObjects, nil
+}
+
+func InsertUser(db *sql.DB, user models.User) error {
+	_, err := db.Exec("INSERT INTO User (email, name) VALUES(?, ?)", user.Email, user.Name)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func InsertDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
+	_, err := db.Exec("INSERT INTO DirectoryStructure (email, structure) VALUES(?, ?)", dirStruct.Email, dirStruct.Structure)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func InsertVnObject(db *sql.DB, vnObject models.VnObject) error {
+	_, err := db.Exec("INSERT INTO VnObject (id, name, email, isFile, contents, updateDate, public) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		vnObject.Id, vnObject.Name, vnObject.Email, vnObject.IsFile, vnObject.Contents, vnObject.UpdateDate, vnObject.Public)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateDirectoryStructure(db *sql.DB, dirStruct models.DirectoryStructure) error {
+	_, err := db.Exec("UPDATE DirectoryStructure SET structure=? WHERE email=?",
+		dirStruct.Structure, dirStruct.Email)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateVnObject(db *sql.DB, vnObject models.VnObject) error {
+	_, err := db.Exec("UPDATE VnObject SET Name=?, Email=?, Contents=?, updateDate=?, public=? WHERE id=?",
+		vnObject.Name, vnObject.Email, vnObject.Contents, vnObject.UpdateDate, vnObject.Public, vnObject.Id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateVnObjectLocation(db *sql.DB, id string, name string, isFile bool, dt string) error {
+	_, err := db.Exec("UPDATE VnObject SET Name=?, isFile=?, updateDate=? WHERE id=?",
+		name, isFile, dt, id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func DeleteVnObject(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE FROM VnObject WHERE id=?", id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}

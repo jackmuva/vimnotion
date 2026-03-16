@@ -93,6 +93,9 @@ type ChatFile struct {
 }
 
 type Suggestion struct {
+	Id          string `json:"id"`
+	VnObjectId  string `json:"vnObjectId"`
+	Email       string `json:"email"`
 	StartLine   int    `json:"startLine"`
 	EndLine     int    `json:"endLine"`
 	OldString   string `json:"oldString"`

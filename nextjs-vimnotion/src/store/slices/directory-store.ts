@@ -1,8 +1,8 @@
 import { DirectoryChanges, DirectoryObjectType, DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
-import { PaneNode } from "@/types/editor-types";
+import { EditorType, PaneNode } from "@/types/editor-types";
 import { getVnObjectById } from "@/services/api-service";
-import { VnObject } from "@/types/primitive-types";
+import { Suggestion, VnObject } from "@/types/primitive-types";
 import { StoreSetter, StoreGetter } from "../../types/store-types";
 
 export const createDirectorySlice = (
@@ -19,6 +19,7 @@ export const createDirectorySlice = (
 	sidebarBufferMap: {},
 	lastDeleted: null,
 	directoryConfirmation: false,
+	dirCursorPosition: 0,
 
 	setDirectoryState: (tree: DirectoryTree): void => set({ directoryState: tree }),
 	getDirectoryState: (): DirectoryTree => get().directoryState,
@@ -310,17 +311,18 @@ export const createDirectorySlice = (
 		get().setProposedDirectoryState(proposedDirectoryState);
 	},
 
-	openFileInBuffer: async (id?: string) => {
+	openFileInBuffer: async (id?: string, paneId?: string) => {
 		const fromSearch = id ? true : false;
 		const fileId: string = fromSearch ? id!.split("|")[0] : get().getOilLine().split("|")[0];
-		const activePane: PaneNode = get().getPaneById(get().activePane);
+		const activePane: PaneNode = paneId ? get().getPaneById(paneId) : get().getPaneById(get().activePane);
 
-		const vnObject: VnObject | null = await getVnObjectById(fileId);
-		if (vnObject) {
-			activePane[Object.keys(activePane)[0]].fileId = fromSearch ? vnObject.id + "|" + vnObject.name : get().getOilLine();
-			activePane[Object.keys(activePane)[0]].buffer = vnObject.contents;
-			activePane[Object.keys(activePane)[0]].public = vnObject.public;
+		const vnObjectData: { file: VnObject | null, suggestions: Suggestion[] } | null = await getVnObjectById(fileId);
+		if (vnObjectData && vnObjectData.file) {
+			activePane[Object.keys(activePane)[0]].fileId = fromSearch ? vnObjectData.file.id + "|" + vnObjectData.file.name : get().getOilLine();
+			if (activePane[Object.keys(activePane)[0]].editorType !== EditorType.AGENT) activePane[Object.keys(activePane)[0]].buffer = vnObjectData.file.contents;
+			activePane[Object.keys(activePane)[0]].public = vnObjectData.file.public;
 			activePane[Object.keys(activePane)[0]].bufferVersion++;
+			activePane[Object.keys(activePane)[0]].suggestionState.suggestions = vnObjectData.suggestions;
 			get().updatePane(activePane);
 		}
 	},
@@ -353,4 +355,8 @@ export const createDirectorySlice = (
 		}
 		return resLoc;
 	},
+
+	setDirCursorPosition: (pos: number) => {
+		set({ dirCursorPosition: pos });
+	}
 });
