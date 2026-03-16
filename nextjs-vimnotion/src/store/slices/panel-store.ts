@@ -4,9 +4,8 @@ import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
+import { Edit } from "lucide-react";
 
-//TODO:Splitting panes has weird effects in agent mode
-//also, closing agent editor uses the prompt buffer and needs to use the fildid's buffer
 export const createPanelSlice = (
 	set: StoreSetter,
 	get: StoreGetter
@@ -419,7 +418,7 @@ export const createPanelSlice = (
 		const activePane = get().activePane;
 		const newTree: PaneNode = { ...get().paneTree };
 		for (const paneId of Object.keys(newTree)) {
-			if (newTree[paneId].fileId === fileId && paneId !== activePane) {
+			if (newTree[paneId].fileId === fileId && paneId !== activePane && newTree[paneId].editorType !== EditorType.AGENT) {
 				newTree[paneId].buffer = buffer;
 				newTree[paneId].bufferVersion = (newTree[paneId].bufferVersion || 0) + 1;
 			}
