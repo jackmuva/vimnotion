@@ -168,7 +168,7 @@ export const VimEditor = ({
 
 	useEffect(() => {
 		if (vimEditor && activePane === paneId) {
-			if (pane[paneId].suggestionState.suggestionOpen && pane[paneId].suggestionState.suggestionActive && pane[paneId].suggestionState.suggestions.length > 0) {
+			if (pane[paneId].suggestionState.suggestionActive && pane[paneId].suggestionState.suggestions.length > 0) {
 				const button = document.getElementById(`accept-suggestion-${paneId}-${pane[paneId].suggestionState.suggestions[pane[paneId].suggestionState.activeSuggestionIndex].id}`);
 				if (button) button.focus();
 			} else if (activePanel === PanelType.MAIN) {
@@ -206,7 +206,7 @@ export const VimEditor = ({
 			}
 		}
 	}, [activePane, activePanel, directoryConfirmation, newImageUrl, newAiBlock, setNewAiBlock, setNewImageUrl,
-		pane[paneId].suggestionState.suggestionOpen, pane[paneId].suggestionState.suggestionActive,
+		pane[paneId].suggestionState.suggestionActive,
 		pane[paneId].suggestionState.activeSuggestionIndex, pane[paneId].suggestionState.suggestions.length
 	]);
 
@@ -367,17 +367,6 @@ export const VimEditor = ({
 			};
 		}
 	}, [vimEditor, paneId, theme, updateActivePane]);
-
-	// const numSuggestions = useRef<number>(pane[paneId].suggestionState.suggestions.length);
-	// const isSuggestionOpen = useRef<boolean>(pane[paneId].suggestionState.suggestionOpen);
-	//
-	// useEffect(() => {
-	// 	numSuggestions.current = pane[paneId].suggestionState.suggestions.length;
-	// }, [pane[paneId].suggestionState.suggestions]);
-	//
-	// useEffect(() => {
-	// 	isSuggestionOpen.current = pane[paneId].suggestionState.suggestionOpen;
-	// }, [pane[paneId].suggestionState.suggestionOpen]);
 
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} flex rounded-sm relative h-full w-full z-20 bg-background`}>

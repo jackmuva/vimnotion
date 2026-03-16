@@ -61,7 +61,6 @@ export const createPanelSlice = (
 			bufferVersion: 1,
 			suggestionState: {
 				suggestions: [],
-				suggestionOpen: true,
 				suggestionActive: false,
 				activeSuggestionIndex: 0,
 			},
@@ -114,7 +113,6 @@ export const createPanelSlice = (
 				bufferVersion: paneTree[parentId].bufferVersion,
 				suggestionState: {
 					suggestions: paneTree[parentId].suggestionState.suggestions,
-					suggestionOpen: paneTree[parentId].suggestionState.suggestionOpen,
 					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
 					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
 				},
@@ -145,7 +143,6 @@ export const createPanelSlice = (
 				bufferVersion: paneTree[parentId].bufferVersion,
 				suggestionState: {
 					suggestions: paneTree[parentId].suggestionState.suggestions,
-					suggestionOpen: paneTree[parentId].suggestionState.suggestionOpen,
 					suggestionActive: paneTree[parentId].suggestionState.suggestionActive,
 					activeSuggestionIndex: paneTree[parentId].suggestionState.activeSuggestionIndex,
 				},
@@ -311,7 +308,7 @@ export const createPanelSlice = (
 
 	goToNeighbor: (paneId: string, direction: Direction): string => {
 		const { paneTree, drillDownDirectionally } = get();
-		if (paneTree[paneId].suggestionState.suggestionOpen && !paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.EAST) {
+		if (!paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.EAST) {
 			set({
 				paneTree: {
 					...paneTree,
@@ -323,10 +320,11 @@ export const createPanelSlice = (
 							activeSuggestionIndex: 0,
 						}
 					},
-				}
+				},
+				activePanel: PanelType.MAIN,
 			});
 			return paneId;
-		} else if (paneTree[paneId].suggestionState.suggestionOpen && paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
+		} else if (paneTree[paneId].suggestionState.suggestionActive && paneTree[paneId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
 			set({
 				paneTree: {
 					...paneTree,
@@ -337,7 +335,8 @@ export const createPanelSlice = (
 							suggestionActive: false
 						},
 					}
-				}
+				},
+				activePanel: PanelType.MAIN,
 			});
 			return paneId;
 		}
@@ -347,12 +346,26 @@ export const createPanelSlice = (
 		let resId: string = paneId;
 		while (currentId !== null) {
 			const currentPane = paneTree[currentId];
-			if (!currentPane) break;
 			const neighborId: string | null = currentPane.neighbors[direction];
 			if (neighborId) {
 				resId = drillDownDirectionally(neighborId, direction, childType);
 			}
 			if (resId !== paneId) {
+				if (paneTree[resId].suggestionState.suggestions.length > 0 && direction === Direction.WEST) {
+					set({
+						paneTree: {
+							...paneTree,
+							[resId]: {
+								...paneTree[resId],
+								suggestionState: {
+									...paneTree[resId].suggestionState,
+									suggestionActive: true,
+									activeSuggestionIndex: 0,
+								}
+							},
+						}
+					});
+				}
 				set({ activePanel: PanelType.MAIN });
 				return resId
 			}

@@ -65,7 +65,6 @@ export type PaneNode = {
 
 export type SuggestionState = {
 	suggestions: Suggestion[],
-	suggestionOpen: boolean,
 	suggestionActive: boolean,
 	activeSuggestionIndex: number,
 }

@@ -52,21 +52,8 @@ export const applyPanelBindings = ({
 	Vim.defineEx('quit', 'q', function() {
 		const activePanel: PanelType = getActivePanel();
 		const paneData = getPane(getActivePane())[getActivePane()];
-		if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
+		if (activePanel === PanelType.MAIN) {
 			closePane();
-		} else if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
-			const fileId: string = getPane(getActivePane())[getActivePane()].fileId;
-			if (fileId === "START_PAGE") {
-				closePane();
-			} else {
-				updatePane({
-					[getActivePane()]: {
-						...paneData,
-						editorType: EditorType.VIM,
-					}
-				});
-				refetchFileInBuffer(fileId);
-			}
 		} else if (activePanel === PanelType.SIDEBAR) {
 			setDirectoryConfirmation();
 			toggleSidebar();

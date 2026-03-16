@@ -1,6 +1,6 @@
 import { deleteSuggestionById } from "@/services/api-service";
 import { useEditorStore } from "@/store/editor-store";
-import { PaneNode } from "@/types/editor-types";
+import { PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
 import { useEffect, useState } from "react";
@@ -93,7 +93,8 @@ export const SuggestionDialog = ({
 	}
 
 	useEffect(() => {
-		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index) {
+		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index &&
+			activePanel === PanelType.MAIN && getPane(paneId)[paneId].suggestionState.suggestionActive) {
 			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
 			const line = view.state.doc.line(lineNumber);
 			view.dispatch({
@@ -121,8 +122,6 @@ export const SuggestionDialog = ({
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					await deleteSuggestion();
-					incrememntSuggestionIndex();
-					decrememntSuggestionIndex();
 				}
 			};
 			document.addEventListener('keydown', handleNKey);
@@ -197,13 +196,24 @@ export const SuggestionDialog = ({
 				{!applying &&
 					<>
 						<div className="text-sm">
-							<button className="cursor-pointer" id={`accept-suggestion-${paneId}-${suggestion.id}`}>
+							<button className="cursor-pointer" id={`accept-suggestion-${paneId}-${suggestion.id}`}
+								onClick={() => {
+									setApplying(true);
+									applySuggestion();
+									setTimeout(async () => {
+										await deleteSuggestion();
+										setApplying(false);
+									}, 3000);
+								}}>
 								<span className="font-bold text-orange-500">[y]</span>
 							</button>es, accept
 						</div>
 						<div className="text-sm">
 							<button className="cursor-pointer">
-								<span className="font-bold text-orange-500">[n]</span>
+								<span className="font-bold text-orange-500"
+									onClick={async () => {
+										await deleteSuggestion();
+									}}>[n]</span>
 							</button>o, decline
 						</div>
 					</>
