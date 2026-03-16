@@ -26,9 +26,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] compaction hook
     - [ ] endpoint timeout?
     - [ ] evaluation hook
+    - [ ] model selector
 - [ ] RSS feed
 - [x] bugs with splitting panes, opening, etc.
-  - bug where when suggestions are updated, can't move to that window
 - [ ] more intuitive regex on searches
 
 ## High-level Todos
