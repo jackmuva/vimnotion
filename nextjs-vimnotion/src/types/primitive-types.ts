@@ -1,3 +1,5 @@
+import { AiMessage } from "./ai-types"
+
 export type VnObject = {
 	id: string,
 	name: string,
@@ -18,3 +20,12 @@ export type Suggestion = {
 	newString: string,
 	explanation: string,
 }
+
+export type ChatSession = {
+	sessionId: string,
+	messages: AiMessage[],
+	summary: string,
+	updateDate: string,
+	email: string,
+}
+

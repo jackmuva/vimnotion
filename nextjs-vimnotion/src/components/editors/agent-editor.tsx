@@ -158,7 +158,10 @@ export const AgentEditor = ({
 								changes: { from, to, insert: "/prompt @" }
 							});
 						}
-						: key,
+						:
+						(view: EditorView, completion: Completion, from: number, to: number) => {
+
+						},
 			};
 		});
 	}, [vimEditor, slashCommands]);

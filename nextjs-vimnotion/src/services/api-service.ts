@@ -1,5 +1,5 @@
 import { AiMessage } from "@/types/ai-types";
-import { Suggestion, VnObject } from "@/types/primitive-types";
+import { ChatSession, Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 
 const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -126,5 +126,22 @@ export async function deleteSuggestionById(suggestionId: string): Promise<void> 
 	} catch (err) {
 		console.error("Unable to delete suggestion: ", err);
 		return;
+	}
+}
+
+export async function getChatSessions(): Promise<ChatSession[]> {
+	try {
+		const res = await fetch(`${BACKEND_BASE_URL}/api/chat/session`, {
+			method: "GET",
+			credentials: "include",
+		});
+		if (!res.ok) {
+			console.error("Failed to get sessions: ", res.status);
+		}
+		const body: { Data: ChatSession[] } = await res.json();
+		return body.Data;
+	} catch (err) {
+		console.error("Unable to delete suggestion: ", err);
+		return [];
 	}
 }

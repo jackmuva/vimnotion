@@ -27,7 +27,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] endpoint timeout?
     - [ ] evaluation hook
     - [ ] model selector
-    - [ ] session selector
+    - [x] session selector
     - [ ] Read file in sections
 - [ ] RSS feed
 - [x] bugs with splitting panes, opening, etc.

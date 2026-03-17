@@ -17,6 +17,7 @@ import { PublishModal } from "@/components/modals/publish-modal";
 import { AiPanel } from "./leader-panels/ai-panel";
 import { AiModal } from "./modals/ascii-modal";
 import { getDirectory } from "@/services/api-service";
+import { SessionModal } from "./modals/session-modal";
 
 export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -27,6 +28,7 @@ export default function VimNotion() {
 	const searchModal = useEditorStore((state) => state.searchModal);
 	const imageModal = useEditorStore((state) => state.openImageModal);
 	const publishModal = useEditorStore((state) => state.openPublishModal);
+	const sessionModal = useEditorStore((state) => state.openSessionModal);
 	const { openSidebar, directoryConfirmation, setDirectoryState,
 		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
 
@@ -112,7 +114,6 @@ export default function VimNotion() {
 		}
 	}, [asciiModal]);
 
-
 	const { data, isLoading } = useSWR<SidebarData>(`/api/directory`, async () => {
 		const directory = await getDirectory();
 		return directory;
@@ -142,6 +143,7 @@ export default function VimNotion() {
 			{imageModal && <ImageModal />}
 			{publishModal && <PublishModal />}
 			{asciiModal && <AiModal />}
+			{sessionModal && <SessionModal />}
 		</div>
 	);
 }

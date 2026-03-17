@@ -10,6 +10,7 @@ make the newString replacement if the user accepts the suggestion.
 ### IMPORTANT
 * Make sure the startLine, endLine, and oldString arguments ARE EXACT, or else the suggestion will not go through.
 * Keep suggestions to a 3 line maximum. For suggestions longer than 3 lines, use multiple suggestion_tool calls
+* Make sure the newString is in the the same writing style and tone as the surrounding text
 
 ### Correct Examples
 <example>

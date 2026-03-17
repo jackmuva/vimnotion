@@ -15,6 +15,7 @@ export const createToggleSlice = (
 	openPublishModal: false,
 	openAiPanel: false,
 	openAsciiModal: false,
+	openSessionModal: false,
 
 	toggleSidebar: () => {
 		const openSidebar = get().openSidebar;
@@ -114,4 +115,12 @@ export const createToggleSlice = (
 		set({ openAsciiModal: !aiModal });
 	},
 
+	toggleSessionModal: () => {
+		if (get().openSessionModal) {
+			get().setActivePanel(PanelType.MAIN);
+		} else {
+			get().setActivePanel(PanelType.MODAL);
+		}
+		set({ openSessionModal: !get().openSessionModal });
+	},
 });

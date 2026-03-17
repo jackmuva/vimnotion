@@ -17,6 +17,7 @@ export type ToggleState = {
 	searchModal: SearchType | null;
 	openImageModal: boolean;
 	openPublishModal: boolean;
+	openSessionModal: boolean;
 
 	toggleSidebar: () => void;
 	toggleLeaderPanel: () => void;
@@ -27,6 +28,7 @@ export type ToggleState = {
 	toggleImageModal: () => void;
 	togglePublishModal: () => void;
 	toggleAsciiModal: () => void;
+	toggleSessionModal: () => void;
 };
 
 export type PanelState = {
