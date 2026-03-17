@@ -54,8 +54,7 @@ export const applyAgentBindings = ({
 		const reader = response.body?.getReader();
 		if (!reader) return;
 		const decoder: TextDecoder = new TextDecoder("utf-8");
-		const paneData = getPaneTree()[paneId];
-		const newMessages = [...paneData.agentState.messages];
+		const newMessages = [...getPaneTree()[paneId].agentState.messages];
 		const curAiMessage: AiMessage = {
 			type: "message",
 			role: "assistant",
@@ -63,9 +62,9 @@ export const applyAgentBindings = ({
 		newMessages.push(curAiMessage);
 		updatePane({
 			[paneId]: {
-				...paneData,
+				...getPaneTree()[paneId],
 				agentState: {
-					...paneData.agentState,
+					...getPaneTree()[paneId].agentState,
 					messages: newMessages,
 					streaming: true,
 				}
@@ -82,7 +81,7 @@ export const applyAgentBindings = ({
 			const { done, value } = await reader.read();
 			if (done) {
 				if (suggestionPresent) {
-					updateAllBuffers(paneData.fileId);
+					updateAllBuffers(getPaneTree()[paneId].fileId);
 				}
 				updatePane({
 					[paneId]: {
@@ -151,9 +150,9 @@ export const applyAgentBindings = ({
 					curAiMessage.content = text;
 					updatePane({
 						[paneId]: {
-							...paneData,
+							...getPaneTree()[paneId],
 							agentState: {
-								...paneData.agentState,
+								...getPaneTree()[paneId].agentState,
 								messages: newMessages
 							}
 						}
@@ -198,34 +197,33 @@ export const applyAgentBindings = ({
 
 	Vim.defineAction("submitMessage", async () => {
 		const paneId: string = getActivePane();
-		const paneData = getPaneTree()[paneId];
 		const activePanel: PanelType = getActivePanel();
-		if (activePanel === PanelType.MAIN && paneData.editorType === EditorType.AGENT) {
-			const newMessages: AiMessage[] = paneData.agentState.messages;
+		if (activePanel === PanelType.MAIN && getPaneTree()[paneId].editorType === EditorType.AGENT) {
+			const newMessages: AiMessage[] = getPaneTree()[paneId].agentState.messages;
 			if (newMessages.length === 0) {
 				updatePane({
 					[paneId]: {
-						...paneData,
+						...getPaneTree()[paneId],
 						agentState: {
-							...paneData.agentState,
+							...getPaneTree()[paneId].agentState,
 							sessionId: v4()
 						}
 					}
 				});
 			}
-			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(paneData.buffer)) });
+			newMessages.push({ type: "message", role: "user", content: (await parseUserMessage(getPaneTree()[paneId].buffer)) });
 			updatePane({
 				[paneId]: {
-					...paneData,
+					...getPaneTree()[paneId],
 					agentState: {
-						...paneData.agentState,
+						...getPaneTree()[paneId].agentState,
 						messages: newMessages
 					},
 					buffer: "\n",
-					bufferVersion: paneData.bufferVersion + 1,
+					bufferVersion: getPaneTree()[paneId].bufferVersion + 1,
 				}
 			});
-			const res: Response = await getAgentStream(newMessages, paneData.agentState.sessionId);
+			const res: Response = await getAgentStream(newMessages, getPaneTree()[paneId].agentState.sessionId);
 			await renderStream(res, paneId);
 		} else if (activePanel === PanelType.SIDEBAR) {
 			const newChanges: DirectoryChanges = detectAllDirectoryChanges();
