@@ -127,7 +127,6 @@ export type SearchState = {
 
 	newImageUrl: string;
 	setNewImageUrl: (url: string) => void;
-
 	newAiBlock: string;
 	setNewAiBlock: (url: string) => void;
 };

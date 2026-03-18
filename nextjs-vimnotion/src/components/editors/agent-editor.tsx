@@ -161,7 +161,6 @@ export const AgentEditor = ({
 						}
 						:
 						(view: EditorView, completion: Completion, from: number, to: number) => {
-							console.log('toggling');
 							toggleSessionModal();
 							view.dispatch({
 								changes: { from, to, insert: "" }
@@ -249,6 +248,7 @@ export const AgentEditor = ({
 
 			return () => {
 				mediaQuery.removeEventListener('change', handleChange);
+				vimEditor.destroy();
 			};
 		}
 	}, [vimEditor, theme]);
@@ -313,6 +313,8 @@ export const AgentEditor = ({
 	useEffect(() => {
 		if (activePane === paneId && vimEditor && activePanel === PanelType.MAIN) {
 			vimEditor.focus();
+		} else if (vimEditor) {
+			vimEditor.contentDOM.blur();
 		}
 	}, [activePane, activePanel]);
 

@@ -4,12 +4,18 @@ import { ChatSession } from "@/types/primitive-types";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { Message } from "../editors/agent-editor";
+import { PaneNode } from "@/types/editor-types";
+import { v4 } from "uuid";
 
 export const SessionModal = () => {
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 	const selectedIndexRef = useRef<number>(0);
 	const sessionsRef = useRef<ChatSession[]>([]);
+	const justMounted = useRef<boolean>(true);
 	const toggleSessionModal = useEditorStore((state) => state.toggleSessionModal);
+	const getPaneById = useEditorStore((state) => state.getPaneById);
+	const updatePane = useEditorStore((state) => state.updatePane);
+	const getActivePane = useEditorStore((state) => state.getActivePane);
 
 	const { data: chatSessions, isLoading } = useSWR<ChatSession[]>(`/api/chat/session`, async () => {
 		const sessions: ChatSession[] = await getChatSessions();
@@ -33,6 +39,8 @@ export const SessionModal = () => {
 
 		const handleJKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'j') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				if (selectedIndexRef.current < Object.keys(sessionsRef.current).length - 1) {
 					setSelectedIndex(selectedIndexRef.current + 1);
 				}
@@ -42,6 +50,8 @@ export const SessionModal = () => {
 
 		const handleKKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'k') {
+				event.preventDefault();
+				event.stopImmediatePropagation();
 				if (selectedIndexRef.current > 0) {
 					setSelectedIndex(selectedIndexRef.current - 1);
 				}
@@ -53,10 +63,25 @@ export const SessionModal = () => {
 			if (event.key === 'Enter') {
 				event.preventDefault();
 				event.stopImmediatePropagation();
+				if (justMounted.current) {
+					justMounted.current = false;
+					return;
+				}
+				const agentPane: PaneNode = getPaneById(getActivePane());
+				updatePane({
+					[Object.keys(agentPane)[0]]: {
+						...agentPane[Object.keys(agentPane)[0]],
+						agentState: {
+							messages: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].messages : [],
+							sessionId: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].sessionId : v4(),
+							streaming: false,
+						}
+					}
+				});
 				toggleSessionModal();
 			}
 		};
-		setTimeout(() => document.addEventListener('keydown', handleCrKeyDown), 2000);
+		document.addEventListener('keydown', handleCrKeyDown);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
@@ -82,6 +107,17 @@ export const SessionModal = () => {
 								py-0.5 px-1 flex hover:cursor-pointer text-sm line-clamp-1 overflow-x-hidden
 								whitespace-nowrap`}
 								onClick={() => {
+									const agentPane: PaneNode = getPaneById(getActivePane());
+									updatePane({
+										[Object.keys(agentPane)[0]]: {
+											...agentPane[Object.keys(agentPane)[0]],
+											agentState: {
+												messages: chatSessions ? chatSessions[selectedIndexRef.current].messages : [],
+												sessionId: chatSessions ? chatSessions[selectedIndexRef.current].sessionId : v4(),
+												streaming: false,
+											}
+										}
+									});
 									toggleSessionModal();
 								}}>
 								{new Date(chatSession.updateDate).toLocaleDateString() + ": " + chatSession.summary}
