@@ -116,11 +116,12 @@ export const createToggleSlice = (
 	},
 
 	toggleSessionModal: () => {
+		const sessionModal = get().openSessionModal;
 		if (get().openSessionModal) {
 			get().setActivePanel(PanelType.MAIN);
 		} else {
 			get().setActivePanel(PanelType.MODAL);
 		}
-		set({ openSessionModal: !get().openSessionModal });
+		set({ openSessionModal: !sessionModal });
 	},
 });

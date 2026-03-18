@@ -69,7 +69,7 @@ func OneshotAi(w http.ResponseWriter, flusher http.Flusher, messages []models.Ai
 	return scanner.Err()
 }
 
-var mainAgentSystemPrompt = "You are an agent with the following tools: plan_tool, write_file_fool, read_file_tool, list_files_tool, assign_subagent_tool, and suggest_tool. Help the user with any editing related task they ask. Use the assign_subagent_tool frequently to keep your context window tight."
+var mainAgentSystemPrompt = "You are an agent with the following tools: plan_tool, write_file_tool, read_file_tool, list_files_tool, assign_subagent_tool, and suggest_tool. Help the user with any editing related task they ask. Use the assign_subagent_tool frequently to keep your context window tight."
 
 func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.ChatSession, email string, messages []models.AiMessage, db *sql.DB) error {
 	cfg := config.Get()

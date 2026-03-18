@@ -31,6 +31,7 @@ export default function VimNotion() {
 	const sessionModal = useEditorStore((state) => state.openSessionModal);
 	const { openSidebar, directoryConfirmation, setDirectoryState,
 		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
+	console.log("open sessionModal?", sessionModal);
 
 
 	useEffect(() => {

@@ -35,7 +35,7 @@ import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
 
-const Message = memo(({ message }: { message: AiMessage }) => {
+export const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
 		<div className={`${message.role === "user" ? "bg-foreground-muted/20 pl-2 border-l-3 border-orange-500" : ""} px-1 py-4`}>
 			<Markdown remarkPlugins={[remarkGfm]}
@@ -77,6 +77,7 @@ export const AgentEditor = ({
 	const bufferVersion: number = useEditorStore((state) => state.paneTree[paneId]?.bufferVersion);
 	const activePane = useEditorStore((state) => state.activePane);
 	const directoryState: DirectoryTree = useEditorStore((state) => state.directoryState);
+	const toggleSessionModal = useEditorStore((state) => state.toggleSessionModal);
 	const getLocationMap: (tree: DirectoryTree) => {
 		[uuid: string]: {
 			location: string,
@@ -160,7 +161,11 @@ export const AgentEditor = ({
 						}
 						:
 						(view: EditorView, completion: Completion, from: number, to: number) => {
-
+							console.log('toggling');
+							toggleSessionModal();
+							view.dispatch({
+								changes: { from, to, insert: "" }
+							});
 						},
 			};
 		});
