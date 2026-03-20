@@ -65,7 +65,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			SessionId:  uuid.New().String(),
 			Messages:   messages,
 			Summary:    task,
-			UpdateDate: time.Now().UTC().String(),
+			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 			Email:      email,
 		}
 		err := repository.InsertChatSession(db, newSession)
@@ -179,7 +179,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			SessionId:  session.SessionId,
 			Messages:   messages,
 			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().String(),
+			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 			Email:      email,
 		})
 		if err != nil {
@@ -194,7 +194,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			SessionId:  session.SessionId,
 			Messages:   messages,
 			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().String(),
+			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 			Email:      email,
 		})
 		if err != nil {

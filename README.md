@@ -27,8 +27,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] endpoint timeout?
     - [ ] evaluation hook
     - [ ] model selector
-    - [x] session selector
-        - [ ] need an automated delete session after a certain number or time range
+    - [ ] need an automated delete session after a certain number or time range
     - [ ] Read file in sections
 - [ ] RSS feed
 - [x] bugs with splitting panes, opening, etc.

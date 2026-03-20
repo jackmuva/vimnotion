@@ -97,7 +97,7 @@ func AgentResponse(db *sql.DB) http.HandlerFunc {
 				SessionId:  payload.SessionId,
 				Messages:   payload.Messages,
 				Summary:    summary,
-				UpdateDate: time.Now().UTC().String(),
+				UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 				Email:      email,
 			}
 			existingSession = append(existingSession, newSession)

@@ -15,11 +15,16 @@ func GetAllChatSessionResponse(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
 		}
 		email, err := utils.GetEmailFromToken(r)
 		if err != nil {
 			http.Error(w, "Invalid auth", http.StatusBadRequest)
 			return
+		}
+		err = services.CleanUpChatSessions(db, email)
+		if err != nil {
+			fmt.Printf("Unable to clean up chat sessions")
 		}
 		sessions, err := services.GetChatSessionsByEmail(db, email)
 		if err != nil {

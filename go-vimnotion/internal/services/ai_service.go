@@ -163,7 +163,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			SessionId:  session.SessionId,
 			Messages:   newMessages,
 			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().String(),
+			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 			Email:      email,
 		})
 		if err != nil {
@@ -179,7 +179,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			SessionId:  session.SessionId,
 			Messages:   messages,
 			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().String(),
+			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
 			Email:      email,
 		})
 		if err != nil {

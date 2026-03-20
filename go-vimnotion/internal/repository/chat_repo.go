@@ -116,6 +116,16 @@ func DeleteChatSession(db *sql.DB, chatSession models.ChatSession) error {
 	return nil
 }
 
+func DeleteChatSessionByDate(db *sql.DB, email string, date string) error {
+	_, err := db.Exec("DELETE FROM ChatSession WHERE email=? AND UpdateDate< ?",
+		email, date)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute delete: %v\n", err)
+		return err
+	}
+	return nil
+}
+
 func GetChatFilesBySessionId(db *sql.DB, sessionId string, email string) ([]models.ChatFile, error) {
 	rows, err := db.Query("SELECT fileId, fileName, fileContents, email, sessionId FROM ChatFiles WHERE sessionId=? AND email=?", sessionId, email)
 	if err != nil {
