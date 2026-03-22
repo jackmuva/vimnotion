@@ -36,21 +36,31 @@ const renderContentWithHighlights = (text: string, matches: RegExpMatchArray | n
 const renderPathWithHighlights = (text: string, searchTerm: string): (string | ReactNode)[] => {
 	if (!searchTerm || searchTerm.length === 0) return [text];
 	const parts: (string | ReactNode)[] = [];
-	let lastIndex = 0;
-	searchTerm.split("").forEach((char, idx) => {
-		const matchIndex = text.indexOf(char, lastIndex);
-		if (matchIndex > lastIndex) {
-			parts.push(text.substring(lastIndex, matchIndex));
-		}
+	if (text.indexOf(searchTerm) !== -1) {
+		parts.push(text.substring(0, text.indexOf(searchTerm)));
 		parts.push(
-			<span key={`match-${idx}-${lastIndex}`} className="text-orange-500 font-bold">
-				{char}
+			<span key={`match-${text.length}`} className="text-orange-500 font-bold">
+				{searchTerm}
 			</span>
 		);
-		lastIndex = matchIndex + char.length;
-	});
-	if (lastIndex < text.length) {
-		parts.push(text.substring(lastIndex));
+		parts.push(text.substring(text.indexOf(searchTerm) + searchTerm.length));
+	} else {
+		let lastIndex = 0;
+		searchTerm.split("").forEach((char, idx) => {
+			const matchIndex = text.indexOf(char, lastIndex);
+			if (matchIndex > lastIndex) {
+				parts.push(text.substring(lastIndex, matchIndex));
+			}
+			parts.push(
+				<span key={`match-${idx}-${lastIndex}`} className="text-orange-500 font-bold">
+					{char}
+				</span>
+			);
+			lastIndex = matchIndex + char.length;
+		});
+		if (lastIndex < text.length) {
+			parts.push(text.substring(lastIndex));
+		}
 	}
 	return parts;
 };

@@ -22,12 +22,11 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] tiptap editor
-- [ ] agent
+- agent
     - [ ] compaction hook
     - [x] test automated delete session
     - [ ] Read file in sections
 - [ ] RSS feed
-- [x] more intuitive regex on searches
 
 ## High-level Todos
 - [ ] create teams
