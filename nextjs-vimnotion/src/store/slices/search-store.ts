@@ -41,7 +41,7 @@ export const createSearchSlice = (
 		const filePaths: { [path: string]: string } = get().filePaths;
 
 		for (const fp of Object.keys(filePaths)) {
-			const matches: null | RegExpMatchArray = fp.match(term);
+			const matches: null | RegExpMatchArray = fp.match(term.split("").map((letter) => letter + ".*").join(""));
 			if (matches && fp.at(-1) !== "/") {
 				searchRes[fp] = {
 					id: filePaths[fp],
@@ -52,6 +52,7 @@ export const createSearchSlice = (
 
 		return searchRes;
 	},
+
 	searchByGrep: async (pat: string): Promise<SearchResults> => {
 		const searchRes: SearchResults = {};
 		const vnObjects = await grepVnObjects(pat);

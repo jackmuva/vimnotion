@@ -3,8 +3,8 @@ import { useEditorStore } from "@/store/editor-store";
 import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { SearchResults, SearchType } from "@/types/search-types";
 
-const renderPathWithHighlights = (text: string, matches: RegExpMatchArray | null) => {
-	if (!matches || matches.length === 0) return text;
+const renderContentWithHighlights = (text: string, matches: RegExpMatchArray | null): (string | ReactNode)[] => {
+	if (!matches || matches.length === 0) return [text];
 	const parts: (string | ReactNode)[] = [];
 	let lastIndex = 0;
 	matches.forEach((match, idx) => {
@@ -29,11 +29,42 @@ const renderPathWithHighlights = (text: string, matches: RegExpMatchArray | null
 			lastIndex = 0;
 		}
 	});
-
-
-
 	return parts;
 };
+
+
+const renderPathWithHighlights = (text: string, searchTerm: string): (string | ReactNode)[] => {
+	if (!searchTerm || searchTerm.length === 0) return [text];
+	const parts: (string | ReactNode)[] = [];
+	if (text.indexOf(searchTerm) !== -1) {
+		parts.push(text.substring(0, text.indexOf(searchTerm)));
+		parts.push(
+			<span key={`match-${text.length}`} className="text-orange-500 font-bold">
+				{searchTerm}
+			</span>
+		);
+		parts.push(text.substring(text.indexOf(searchTerm) + searchTerm.length));
+	} else {
+		let lastIndex = 0;
+		searchTerm.split("").forEach((char, idx) => {
+			const matchIndex = text.indexOf(char, lastIndex);
+			if (matchIndex > lastIndex) {
+				parts.push(text.substring(lastIndex, matchIndex));
+			}
+			parts.push(
+				<span key={`match-${idx}-${lastIndex}`} className="text-orange-500 font-bold">
+					{char}
+				</span>
+			);
+			lastIndex = matchIndex + char.length;
+		});
+		if (lastIndex < text.length) {
+			parts.push(text.substring(lastIndex));
+		}
+	}
+	return parts;
+};
+
 
 export const SearchModal = () => {
 	const [inputMode, setInputMode] = useState<boolean>(true);
@@ -53,6 +84,7 @@ export const SearchModal = () => {
 		let searchRes: SearchResults = {};
 		if (searchModal === SearchType.FILENAME) {
 			searchRes = searchByFilename(term);
+			console.log("search res: ", searchRes);
 			setSearchResults(searchRes);
 		} else if (searchModal === SearchType.GREP) {
 			searchByGrep(term).then((res: SearchResults) => {
@@ -165,7 +197,7 @@ export const SearchModal = () => {
 									setSearchModal(null);
 								}}>
 								{searchModal === SearchType.FILENAME ?
-									renderPathWithHighlights(path, searchResults[path].regexMatches) :
+									renderPathWithHighlights(path, searchTerm) :
 									path
 								}
 							</div>);
@@ -176,7 +208,7 @@ export const SearchModal = () => {
 						outline outline-foreground-muted/50 p-3 mb-4 overflow-y-auto 
 						text-xs whitespace-pre-wrap`}>
 						{searchResults[Object.keys(searchResults)[selectedIndex]] &&
-							renderPathWithHighlights(searchResults[Object.keys(searchResults)[selectedIndex]].content!,
+							renderContentWithHighlights(searchResults[Object.keys(searchResults)[selectedIndex]].content!,
 								searchResults[Object.keys(searchResults)[selectedIndex]].regexMatches)}
 					</div>}
 				</div>
