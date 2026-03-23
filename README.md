@@ -23,7 +23,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ## Immediate Todos
 - [x] tiptap editor
 - agent
-    - [ ] compaction hook
+    - [x] compaction hook
     - [x] test automated delete session
     - [ ] Read file in sections
 - [ ] RSS feed

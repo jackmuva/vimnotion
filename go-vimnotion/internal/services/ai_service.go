@@ -18,6 +18,8 @@ import (
 
 var asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
 
+const HAIKU_45_CONTEXT_WINDOW = 200000
+
 func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage models.AiMessage) error {
 	systemMessage := models.AiMessage{
 		Role:    "developer",
@@ -147,7 +149,15 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		} else if _, ok := chatCompletionData.Choices[0].Delta["content"]; ok {
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
+		} else if _, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{}); ok {
+
+			if _, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{})["usage"].(map[string]interface{}); ok {
+				if totalTokens, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{})["usage"].(map[string]interface{})["total_tokens"].(int); ok {
+					fmt.Printf("total tokens: %d\n", totalTokens)
+				}
+			}
 		}
+
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
 				aitools.PopulateToolCallMap(toolCalls, toolCallMap)
