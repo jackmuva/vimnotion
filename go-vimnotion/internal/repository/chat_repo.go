@@ -9,8 +9,8 @@ import (
 	"vimnotion.com/server/internal/models"
 )
 
-func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, error) {
-	rows, err := db.Query("SELECT * FROM ChatSession WHERE email=? LIMIT 50", email)
+func GetMainChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, error) {
+	rows, err := db.Query("SELECT * FROM ChatSession WHERE email=? AND mainSession=1 LIMIT 50", email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return nil, err
@@ -23,7 +23,7 @@ func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, err
 		var session models.ChatSession
 		var messagesJSON string
 
-		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email, &session.Tokens, &session.MainSession); err != nil {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
@@ -57,7 +57,7 @@ func GetChatSessionsBySessionIdAndEmail(db *sql.DB, sessionId string, email stri
 		var session models.ChatSession
 		var messagesJSON string
 
-		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email); err != nil {
+		if err := rows.Scan(&session.SessionId, &session.Summary, &messagesJSON, &session.UpdateDate, &session.Email, &session.Tokens, &session.MainSession); err != nil {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
@@ -82,8 +82,8 @@ func InsertChatSession(db *sql.DB, chatSession models.ChatSession) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO ChatSession(sessionId, summary, messages, updateDate, email) VALUES(?, ?, ?, ?, ?)",
-		chatSession.SessionId, chatSession.Summary, jsonString, chatSession.UpdateDate, chatSession.Email)
+	_, err = db.Exec("INSERT INTO ChatSession(sessionId, summary, messages, updateDate, email, tokens, mainSession) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		chatSession.SessionId, chatSession.Summary, jsonString, chatSession.UpdateDate, chatSession.Email, chatSession.Tokens, chatSession.MainSession)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute insert: %v\n", err)
 		return err
@@ -97,8 +97,8 @@ func UpdateChatSession(db *sql.DB, chatSession models.ChatSession) error {
 		return err
 	}
 
-	_, err = db.Exec("UPDATE ChatSession SET messages=?, updateDate=?, summary=? WHERE sessionId=? AND email=?",
-		jsonString, chatSession.UpdateDate, chatSession.Summary, chatSession.SessionId, chatSession.Email)
+	_, err = db.Exec("UPDATE ChatSession SET messages=?, updateDate=?, summary=?, tokens=? WHERE sessionId=? AND email=?",
+		jsonString, chatSession.UpdateDate, chatSession.Summary, chatSession.Tokens, chatSession.SessionId, chatSession.Email)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute update: %v\n", err)
 		return err

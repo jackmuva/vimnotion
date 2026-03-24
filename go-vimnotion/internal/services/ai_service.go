@@ -116,7 +116,9 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 	var isTool bool = false
 	var isContent bool = false
 	content := ""
+	var tokens int = 0
 	var toolCallMap = make(map[string]models.ToolCallDelta)
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -149,13 +151,8 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		} else if _, ok := chatCompletionData.Choices[0].Delta["content"]; ok {
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
-		} else if _, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{}); ok {
-
-			if _, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{})["usage"].(map[string]interface{}); ok {
-				if totalTokens, ok := chatCompletionData.Choices[0].Delta["provider_metadata"].(map[string]interface{})["usage"].(map[string]interface{})["total_tokens"].(int); ok {
-					fmt.Printf("total tokens: %d\n", totalTokens)
-				}
-			}
+		} else if chatCompletionData.Usage != nil && chatCompletionData.Usage.TotalTokens != nil {
+			tokens += *chatCompletionData.Usage.TotalTokens
 		}
 
 		if isTool {
@@ -169,13 +166,10 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 
 	if isTool && len(toolCallMap) > 0 {
 		newMessages := aitools.AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   newMessages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = newMessages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens += tokens
+		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
@@ -185,13 +179,10 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			Role:    "assistant",
 			Content: &content,
 		})
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   messages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = messages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens += tokens
+		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}

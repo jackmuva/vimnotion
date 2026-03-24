@@ -94,11 +94,13 @@ func AgentResponse(db *sql.DB) http.HandlerFunc {
 				summary = summary[:100] + "..."
 			}
 			newSession := models.ChatSession{
-				SessionId:  payload.SessionId,
-				Messages:   payload.Messages,
-				Summary:    summary,
-				UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-				Email:      email,
+				SessionId:   payload.SessionId,
+				Messages:    payload.Messages,
+				Summary:     summary,
+				UpdateDate:  time.Now().UTC().Format(time.RFC3339Nano),
+				Email:       email,
+				Tokens:      0,
+				MainSession: true,
 			}
 			existingSession = append(existingSession, newSession)
 			err := repository.InsertChatSession(db, newSession)

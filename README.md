@@ -24,9 +24,11 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [x] tiptap editor
 - agent
     - [x] compaction hook
-    - [x] test automated delete session
+    - [x] test automated delete session AND context window view
     - [ ] Read file in sections
 - [ ] RSS feed
+- bug fixes
+    - [ ] window moving on markdown editor
 
 ## High-level Todos
 - [ ] create teams

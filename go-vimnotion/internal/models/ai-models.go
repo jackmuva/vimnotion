@@ -16,12 +16,15 @@ type AiToolCall struct {
 
 // NOTE: Chat Completion Data types from OpenAI / Responses
 type ChatCompletionData struct {
-	Id                string        `json:"id"`
-	Object            string        `json:"object"`
-	Created           int           `json:"created"`
-	Model             string        `json:"model"`
-	Choices           []ChatChoices `json:"choices"`
-	SystemFingerprint string        `json:"system_fingerprint"`
+	Id      string        `json:"id"`
+	Object  string        `json:"object"`
+	Created int           `json:"created"`
+	Model   string        `json:"model"`
+	Choices []ChatChoices `json:"choices"`
+	Usage   *struct {
+		TotalTokens *int `json:"total_tokens"`
+	} `json:"usage"`
+	SystemFingerprint string `json:"system_fingerprint"`
 }
 
 type ChatChoices struct {

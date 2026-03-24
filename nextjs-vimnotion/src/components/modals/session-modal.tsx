@@ -75,6 +75,7 @@ export const SessionModal = () => {
 							messages: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].messages : [],
 							sessionId: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].sessionId : v4(),
 							streaming: false,
+							tokens: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].tokens : 0,
 						}
 					}
 				});

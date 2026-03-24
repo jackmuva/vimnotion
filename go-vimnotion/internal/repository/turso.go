@@ -85,6 +85,8 @@ func ConnectTurso() (*sql.DB, error) {
 		"messages TEXT, " +
 		"updateDate TEXT, " +
 		"email TEXT, " +
+		"tokens INTEGER, " +
+		"mainSession BOOLEAN, " +
 		"FOREIGN KEY(email) REFERENCES User(email) ON DELETE CASCADE" +
 		")")
 	if err != nil {
