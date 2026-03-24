@@ -148,7 +148,7 @@ export const applyAgentBindings = ({
 						text = toolCallDisplay;
 						curAiMessage.toolCalls = sortedToolCalls;
 					} else if (parsed.usage && parsed.usage.total_tokens) {
-						tokens += parsed.usage.total_tokens;
+						tokens = parsed.usage.total_tokens;
 					}
 					curAiMessage.content = text;
 					updatePane({
@@ -157,7 +157,7 @@ export const applyAgentBindings = ({
 							agentState: {
 								...getPaneTree()[paneId].agentState,
 								messages: newMessages,
-								tokens: getPaneTree()[paneId].agentState.tokens + tokens,
+								tokens: tokens,
 							}
 						}
 					});

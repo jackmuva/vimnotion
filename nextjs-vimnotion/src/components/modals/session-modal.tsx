@@ -116,6 +116,7 @@ export const SessionModal = () => {
 												messages: chatSessions ? chatSessions[selectedIndexRef.current].messages : [],
 												sessionId: chatSessions ? chatSessions[selectedIndexRef.current].sessionId : v4(),
 												streaming: false,
+												tokens: sessionsRef.current ? sessionsRef.current[selectedIndexRef.current].tokens : 0,
 											}
 										}
 									});

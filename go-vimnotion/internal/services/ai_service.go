@@ -81,7 +81,9 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		Role:    "developer",
 		Content: &mainAgentSystemPrompt,
 	}
-	messages = append(messages, systemMessage)
+	if len(messages) == 0 || messages[0].Role != "developer" {
+		messages = append([]models.AiMessage{systemMessage}, messages...)
+	}
 
 	requestBody := map[string]any{
 		"model":    "anthropic/claude-haiku-4.5",
@@ -152,7 +154,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
 		} else if chatCompletionData.Usage != nil && chatCompletionData.Usage.TotalTokens != nil {
-			tokens += *chatCompletionData.Usage.TotalTokens
+			tokens = *chatCompletionData.Usage.TotalTokens
 		}
 
 		if isTool {
@@ -168,7 +170,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		newMessages := aitools.AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
 		session.Messages = newMessages
 		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
-		session.Tokens += tokens
+		session.Tokens = tokens
 		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)
@@ -181,7 +183,7 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		})
 		session.Messages = messages
 		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
-		session.Tokens += tokens
+		session.Tokens = tokens
 		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)

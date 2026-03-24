@@ -150,7 +150,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
 		} else if chatCompletionData.Usage != nil && chatCompletionData.Usage.TotalTokens != nil {
-			tokens += *chatCompletionData.Usage.TotalTokens
+			tokens = *chatCompletionData.Usage.TotalTokens
 		}
 
 		if isTool {
@@ -164,7 +164,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		messages = AppendToolCallMessages(messages, toolCallMap, email, parentSessionId, db)
 		session.Messages = messages
 		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
-		session.Tokens += tokens
+		session.Tokens = tokens
 		err := repository.UpdateChatSession(db, *session)
 		if err != nil {
 			fmt.Printf("Unable to update session\n")
@@ -192,7 +192,7 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		})
 		session.Messages = messages
 		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
-		session.Tokens += tokens
+		session.Tokens = tokens
 		err := repository.UpdateChatSession(db, *session)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
