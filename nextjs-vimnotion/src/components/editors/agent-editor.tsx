@@ -363,10 +363,12 @@ export const AgentEditor = ({
 			${(!agentState || !agentState.messages || agentState.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
 			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-2 
 					${(agentState && agentState.messages && agentState.messages.length > 0) ? "h-full" : ""}`}>
-				{(!agentState || !agentState.messages || agentState.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
-					<span className="text-orange-500">[E]</span>ditor
-				</div>}
-				{agentState && agentState.tokens &&
+				{(!agentState || !agentState.messages || agentState.messages.length === 0) &&
+					<div className="text-5xl font-bold dark:text-indigo-300 text-blue-500 mb-8">
+						<span className="text-orange-500">[E]</span>ditor
+					</div>
+				}
+				{agentState && agentState.tokens > 0 &&
 					<div className="flex justify-end w-full">
 						<div className="flex gap-2 items-center text-xs">
 							<label>context used:</label>
