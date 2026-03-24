@@ -9,5 +9,4 @@ export type AiMessage = {
 	type: "message" | "function",
 	content?: string,
 	toolCalls?: ToolCall[],
-
 }

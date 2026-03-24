@@ -35,6 +35,8 @@ import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
 
+export const HAIKU_45_CONTEXT_WINDOW = 200000
+
 export const Message = memo(({ message }: { message: AiMessage }) => {
 	return (
 		<div className={`${message.role === "user" ? "bg-foreground-muted/20 pl-2 border-l-3 border-orange-500" : ""} px-1 py-4`}>
@@ -145,6 +147,7 @@ export const AgentEditor = ({
 									messages: [],
 									streaming: false,
 									sessionId: v4(),
+									tokens: 0,
 								}
 							}
 						});
@@ -358,11 +361,21 @@ export const AgentEditor = ({
 		<div className={`${activePane === paneId ? "" : "brightness[82%]"} relative h-full w-full z-20 bg-background 
 			flex flex-col items-center space-y-2 p-2
 			${(!agentState || !agentState.messages || agentState.messages.length === 0) ? "justify-center" : "justify-start"} font-robo-mono`}>
-			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-8 
+			<div className={`flex flex-col items-center justify-between max-w-[900px] w-full gap-2 
 					${(agentState && agentState.messages && agentState.messages.length > 0) ? "h-full" : ""}`}>
 				{(!agentState || !agentState.messages || agentState.messages.length === 0) && <div className="text-5xl font-bold dark:text-indigo-300 text-blue-500">
 					<span className="text-orange-500">[E]</span>ditor
 				</div>}
+				{agentState && agentState.tokens &&
+					<div className="flex justify-end w-full">
+						<div className="flex gap-2 items-center text-xs">
+							<label>context used:</label>
+							<div>
+								{(100 * agentState.tokens / HAIKU_45_CONTEXT_WINDOW).toFixed(1)}%
+							</div>
+						</div>
+					</div>
+				}
 				{memoizedMessages}
 				<div className="w-full outline outline-offset-2 outline-foreground-muted/50"
 					id={`agent-editor-${paneId}`}

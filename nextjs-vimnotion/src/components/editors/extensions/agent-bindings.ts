@@ -75,6 +75,7 @@ export const applyAgentBindings = ({
 		const toolCallMap: Map<number, { id?: string; name: string; arguments: string }> = new Map();
 		let text = "";
 		let toolIndex: number = 0;
+		let tokens: number = 0;
 		let suggestionPresent: boolean = false;
 
 		while (true) {
@@ -146,6 +147,8 @@ export const applyAgentBindings = ({
 						}
 						text = toolCallDisplay;
 						curAiMessage.toolCalls = sortedToolCalls;
+					} else if (parsed.usage && parsed.usage.total_tokens) {
+						tokens = parsed.usage.total_tokens;
 					}
 					curAiMessage.content = text;
 					updatePane({
@@ -153,7 +156,8 @@ export const applyAgentBindings = ({
 							...getPaneTree()[paneId],
 							agentState: {
 								...getPaneTree()[paneId].agentState,
-								messages: newMessages
+								messages: newMessages,
+								tokens: tokens,
 							}
 						}
 					});

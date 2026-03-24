@@ -18,6 +18,8 @@ import (
 
 var asciiArtSystemPrompt = "You are an ASCII artist. Create ASCII art based off the user's prompt. Only draw the ASCII art, nothing else."
 
+const HAIKU_45_CONTEXT_WINDOW = 200000
+
 func GenerateAsciiArt(w http.ResponseWriter, flusher http.Flusher, userMessage models.AiMessage) error {
 	systemMessage := models.AiMessage{
 		Role:    "developer",
@@ -79,7 +81,9 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		Role:    "developer",
 		Content: &mainAgentSystemPrompt,
 	}
-	messages = append(messages, systemMessage)
+	if len(messages) == 0 || messages[0].Role != "developer" {
+		messages = append([]models.AiMessage{systemMessage}, messages...)
+	}
 
 	requestBody := map[string]any{
 		"model":    "anthropic/claude-haiku-4.5",
@@ -114,7 +118,9 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 	var isTool bool = false
 	var isContent bool = false
 	content := ""
+	var tokens int = 0
 	var toolCallMap = make(map[string]models.ToolCallDelta)
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -147,7 +153,10 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 		} else if _, ok := chatCompletionData.Choices[0].Delta["content"]; ok {
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
+		} else if chatCompletionData.Usage != nil && chatCompletionData.Usage.TotalTokens != nil {
+			tokens = *chatCompletionData.Usage.TotalTokens
 		}
+
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
 				aitools.PopulateToolCallMap(toolCalls, toolCallMap)
@@ -159,13 +168,10 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 
 	if isTool && len(toolCallMap) > 0 {
 		newMessages := aitools.AppendToolCallMessages(messages, toolCallMap, email, session.SessionId, db)
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   newMessages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = newMessages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens = tokens
+		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}
@@ -175,13 +181,10 @@ func CallMainAgent(w http.ResponseWriter, flusher http.Flusher, session models.C
 			Role:    "assistant",
 			Content: &content,
 		})
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   messages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = messages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens = tokens
+		err := repository.UpdateChatSession(db, session)
 		if err != nil {
 			fmt.Printf("Unable to update session: %s\n", session.SessionId)
 		}

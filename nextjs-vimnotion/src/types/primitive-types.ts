@@ -27,5 +27,6 @@ export type ChatSession = {
 	summary: string,
 	updateDate: string,
 	email: string,
+	tokens: number,
 }
 

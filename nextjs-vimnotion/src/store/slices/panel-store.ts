@@ -4,7 +4,6 @@ import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
-import { Edit } from "lucide-react";
 
 export const createPanelSlice = (
 	set: StoreSetter,
@@ -67,6 +66,7 @@ export const createPanelSlice = (
 				messages: [],
 				streaming: false,
 				sessionId: "",
+				tokens: 0,
 			},
 			fileId: "START_PAGE",
 			public: false,
@@ -119,6 +119,7 @@ export const createPanelSlice = (
 					messages: paneTree[parentId].agentState.messages,
 					streaming: paneTree[parentId].agentState.streaming,
 					sessionId: paneTree[parentId].agentState.sessionId,
+					tokens: paneTree[parentId].agentState.tokens,
 				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,
@@ -149,6 +150,7 @@ export const createPanelSlice = (
 					messages: [],
 					streaming: false,
 					sessionId: "",
+					tokens: 0,
 				},
 				fileId: paneTree[parentId].fileId,
 				public: paneTree[parentId].public,

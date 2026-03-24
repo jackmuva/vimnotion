@@ -84,7 +84,6 @@ export const SearchModal = () => {
 		let searchRes: SearchResults = {};
 		if (searchModal === SearchType.FILENAME) {
 			searchRes = searchByFilename(term);
-			console.log("search res: ", searchRes);
 			setSearchResults(searchRes);
 		} else if (searchModal === SearchType.GREP) {
 			searchByGrep(term).then((res: SearchResults) => {

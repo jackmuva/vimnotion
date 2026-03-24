@@ -10,7 +10,7 @@ import (
 )
 
 func GetChatSessionsByEmail(db *sql.DB, email string) ([]models.ChatSession, error) {
-	sessions, err := repository.GetChatSessionsByEmail(db, email)
+	sessions, err := repository.GetMainChatSessionsByEmail(db, email)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to get chat sessions from repo: %s", err)
 	}

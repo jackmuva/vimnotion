@@ -73,6 +73,8 @@ export type AgentState = {
 	messages: AiMessage[],
 	streaming: boolean,
 	sessionId: string,
+	tokens: number,
+	model?: string,
 }
 
 export type TabMap = {

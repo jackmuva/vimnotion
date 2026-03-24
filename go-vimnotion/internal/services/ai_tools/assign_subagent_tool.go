@@ -62,11 +62,13 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 	if session == nil {
 		newSession := models.ChatSession{
-			SessionId:  uuid.New().String(),
-			Messages:   messages,
-			Summary:    task,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
+			SessionId:   uuid.New().String(),
+			Messages:    messages,
+			Summary:     task,
+			UpdateDate:  time.Now().UTC().Format(time.RFC3339Nano),
+			Email:       email,
+			Tokens:      0,
+			MainSession: false,
 		}
 		err := repository.InsertChatSession(db, newSession)
 		if err != nil {
@@ -117,6 +119,8 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 	var isContent bool = false
 	content := ""
 	var toolCallMap = make(map[string]models.ToolCallDelta)
+	var tokens int = 0
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -145,7 +149,10 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 		} else if _, ok := chatCompletionData.Choices[0].Delta["content"]; ok {
 			isContent = true
 			content += chatCompletionData.Choices[0].Delta["content"].(string)
+		} else if chatCompletionData.Usage != nil && chatCompletionData.Usage.TotalTokens != nil {
+			tokens = *chatCompletionData.Usage.TotalTokens
 		}
+
 		if isTool {
 			if toolCalls, ok := chatCompletionData.Choices[0].Delta["tool_calls"].([]interface{}); ok {
 				PopulateToolCallMap(toolCalls, toolCallMap)
@@ -155,13 +162,10 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 
 	if isTool && len(toolCallMap) > 0 {
 		messages = AppendToolCallMessages(messages, toolCallMap, email, parentSessionId, db)
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   messages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().String(),
-			Email:      email,
-		})
+		session.Messages = messages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens = tokens
+		err := repository.UpdateChatSession(db, *session)
 		if err != nil {
 			fmt.Printf("Unable to update session\n")
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
@@ -175,13 +179,9 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			Role:    "assistant",
 			Content: messageContent,
 		})
-		err = repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   messages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = messages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		err = repository.UpdateChatSession(db, *session)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
@@ -190,13 +190,10 @@ func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagen
 			Role:    "assistant",
 			Content: &content,
 		})
-		err := repository.UpdateChatSession(db, models.ChatSession{
-			SessionId:  session.SessionId,
-			Messages:   messages,
-			Summary:    session.Summary,
-			UpdateDate: time.Now().UTC().Format(time.RFC3339Nano),
-			Email:      email,
-		})
+		session.Messages = messages
+		session.UpdateDate = time.Now().UTC().Format(time.RFC3339Nano)
+		session.Tokens = tokens
+		err := repository.UpdateChatSession(db, *session)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to update session: %s\n", session.SessionId)
 		}
