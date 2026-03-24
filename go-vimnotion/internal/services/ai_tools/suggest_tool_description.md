@@ -1,6 +1,7 @@
 ## When to use this tool:
-Use this tool to make suggestion to a user's file. You are not able to make
-edits to a user's file directly, so this suggestion tool will allow you to 
+Whenever you are prompted to write, edit or make suggestions to a **user's file**, use this tool.
+You are not able to make
+edits to a **user's file** directly, so this suggestion tool will allow you to 
 create suggestions for a user to accept or deny.
 
 ## How this tool works:

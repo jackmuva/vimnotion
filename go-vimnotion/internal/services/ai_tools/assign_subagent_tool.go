@@ -46,6 +46,10 @@ var subagentSystemPrompt string = `You are a subagent that completes specialized
 
 You have the following tools: write_file_fool, read_file_tool, list_files_tool, and suggest_tool.
 
+You as the agent have an internal file system that you can list, read, and write to with your tools.
+
+However, the user also has files that you can only read from with the read_file_tool. Instead of writing or editing the user's files, use the suggest_tool.
+
 When finished with the task, provide a summary of what you did and the final result`
 
 func ExecuteAssignSubagentTool(messages []models.AiMessage, task string, subagentPrompt string, email string, session *models.ChatSession, parentSessionId string, db *sql.DB) (*string, error) {
