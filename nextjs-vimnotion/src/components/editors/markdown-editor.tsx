@@ -2,11 +2,21 @@ import { useEditorStore } from "@/store/editor-store";
 import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
-import Markdown from "react-markdown";
 import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { gruvboxDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { unified } from 'unified'
+
+import rehypeStringify from 'rehype-stringify'
+import remarkFrontmatter from 'remark-frontmatter'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+
+import rehypeParse from 'rehype-parse'
+import rehypeRemark from 'rehype-remark'
+import remarkStringify from 'remark-stringify'
+
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
 
 export const MarkdownEditor = ({
 	paneId
@@ -21,6 +31,43 @@ export const MarkdownEditor = ({
 	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const updateAllBuffers = useEditorStore((state) => state.updateAllBuffers);
+	const getActivePane = useEditorStore((state) => state.getActivePane);
+
+	const editor = useEditor({
+		extensions: [StarterKit, Image],
+		content: '<p>Loading...</p>',
+		immediatelyRender: false,
+		onCreate: async ({ editor: currentEditor }) => {
+			const file = await unified()
+				.use(remarkParse)
+				.use(remarkFrontmatter)
+				.use(remarkGfm)
+				.use(remarkRehype)
+				.use(rehypeStringify)
+				.process(pane[paneId].buffer);
+			currentEditor.commands.setContent(String(file));
+		},
+		onUpdate: async ({ editor: currentEditor }) => {
+			const file = await unified()
+				.use(rehypeParse)
+				.use(rehypeRemark)
+				.use(remarkStringify)
+				.process(currentEditor.getHTML())
+			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					buffer: String(file),
+				}
+			};
+			updatePane(updatedPane);
+			if (paneId === getActivePane()) {
+				updateAllBuffers(currentPane[paneId].fileId, String(file));
+			}
+
+		}
+	})
 
 	const shiftToVim = (): void => {
 		const updateNode: PaneNode = {
@@ -105,73 +152,7 @@ export const MarkdownEditor = ({
 			</h1>
 			<div id={`md-editor-${paneId}`}
 				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
-				<Markdown remarkPlugins={[remarkGfm]}
-					rehypePlugins={[rehypeRaw]}
-					components={{
-						a({ node, children, ...props }: any) {
-							return <a target="_blank" {...props}>{children}</a>;
-						},
-						p({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <p data-source-line={line} {...props}>{children}</p>;
-						},
-						h1({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h1 data-source-line={line} {...props}>{children}</h1>;
-						},
-						h2({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h2 data-source-line={line} {...props}>{children}</h2>;
-						},
-						h3({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h3 data-source-line={line} {...props}>{children}</h3>;
-						},
-						h4({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h4 data-source-line={line} {...props}>{children}</h4>;
-						},
-						h5({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h5 data-source-line={line} {...props}>{children}</h5>;
-						},
-						h6({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h6 data-source-line={line} {...props}>{children}</h6>;
-						},
-						li({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <li data-source-line={line} {...props}>{children}</li>;
-						},
-						blockquote({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <blockquote data-source-line={line} {...props}>{children}</blockquote>;
-						},
-						img({ node, src, alt, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <img data-source-line={line} src={src} alt={alt} {...props} />;
-						},
-						pre({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <pre data-source-line={line} {...props}>{children}</pre>;
-						},
-						code({ node, inline, className, children, ...props }: any) {
-							const match = /language-(\w+)/.exec(className || '');
-
-							return !inline && match ? (
-								<SyntaxHighlighter style={gruvboxDark} PreTag="div" language={match[1]} {...props}>
-									{String(children).replace(/\n$/, '')}
-								</SyntaxHighlighter>
-							) : (
-								<code className={className} {...props}>
-									{children}
-								</code>
-							);
-						},
-					}}
-				>
-					{pane[paneId].buffer}
-				</Markdown>
+				<EditorContent editor={editor} />
 			</div>
 		</div>
 	);
