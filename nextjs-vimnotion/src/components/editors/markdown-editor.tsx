@@ -1,5 +1,5 @@
 import { useEditorStore } from "@/store/editor-store";
-import { EditorType, PaneNode } from "@/types/editor-types";
+import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
 import Markdown from "react-markdown";
@@ -17,8 +17,10 @@ export const MarkdownEditor = ({
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const pane: PaneNode = getPane(paneId);
 	const activePane: string = useEditorStore((state) => state.activePane);
-	const { toggleLeaderPanel } = useEditorStore((state) => state);
+	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
+	const updateActivePane = useEditorStore((state) => state.updateActivePane);
+	const setActivePanel = useEditorStore((state) => state.setActivePanel);
 
 	const shiftToVim = (): void => {
 		const updateNode: PaneNode = {
@@ -87,7 +89,11 @@ export const MarkdownEditor = ({
 
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} relative h-full w-full 
-				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}>
+				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}
+			onClick={() => {
+				updateActivePane(paneId);
+				setActivePanel(PanelType.MAIN);
+			}}>
 			<h1 className="flex justify-end w-full italic  
 				border-b border-b-background-muted/50">
 				<button className="flex items-center space-x-1 
