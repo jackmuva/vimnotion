@@ -57,7 +57,7 @@ export const ImageModal = () => {
 			const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/image`, {
 				method: 'POST',
 				headers: { 'Content-Type': contentType },
-				body: binaryData,
+				body: new Blob([binaryData.buffer as ArrayBuffer]),
 				credentials: "include",
 			});
 
