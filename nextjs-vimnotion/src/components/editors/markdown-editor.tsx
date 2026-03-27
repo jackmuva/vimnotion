@@ -8,6 +8,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Highlight from '@tiptap/extension-highlight'
 import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
+import { ResolvedPos } from "@tiptap/pm/model";
 
 export const MarkdownEditor = ({
 	paneId
@@ -28,6 +29,7 @@ export const MarkdownEditor = ({
 	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
 	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
 	const prevCursorPosRef = useRef<number>(0);
+	const columnPosRef = useRef<number | null>(null); // Preserve column position for j/k navigation
 
 	useEffect(() => {
 		modeRef.current = mode;
@@ -44,6 +46,15 @@ export const MarkdownEditor = ({
 			.blur()
 			.run();
 		prevCursorPosRef.current = newPos;
+	};
+
+	const findTargetPosInBlock = (doc: any, blockPos: number, desiredOffset: number): number => {
+		const $block = doc.resolve(blockPos);
+		const blockStart = $block.start($block.depth);
+		const blockEnd = $block.end($block.depth);
+
+		// Clamp to block bounds
+		return Math.min(blockStart + desiredOffset, blockEnd);
 	};
 
 	const editor = useEditor({
@@ -121,13 +132,31 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'j') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+
 					const { from } = editor.state.selection;
-					const lineStart = editor.state.doc.resolve(from).start();
-					editor.chain()
-						.selectNodeForward()
-						.setNodeSelection(lineStart)
-						.run();
-					moveCursorWithHighlight(editor.state.selection.from);
+					const doc = editor.state.doc;
+					const pos = doc.resolve(from);
+
+					// Calculate current character offset within block
+					const blockStart = pos.start(pos.depth);
+					const charOffset = from - blockStart;
+
+					// Use stored column or current offset (Vim behavior - preserve original column)
+					const desiredOffset = columnPosRef.current ?? charOffset;
+					columnPosRef.current = desiredOffset;
+
+					// Find next block
+					const nextBlockPos = pos.after(pos.depth);
+
+					// Edge case: already at last block
+					if (nextBlockPos >= doc.content.size) {
+						return; // Do nothing
+					}
+
+					// Calculate target position in next block
+					const targetPos = findTargetPosInBlock(doc, nextBlockPos, desiredOffset);
+
+					moveCursorWithHighlight(targetPos);
 				}
 			};
 			document.addEventListener('keydown', handleJKey);
@@ -136,13 +165,31 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'k') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+
 					const { from } = editor.state.selection;
-					const lineStart = editor.state.doc.resolve(from).start();
-					editor.chain()
-						.selectNodeBackward()
-						.setNodeSelection(lineStart)
-						.run();
-					moveCursorWithHighlight(editor.state.selection.from);
+					const doc = editor.state.doc;
+					const pos: ResolvedPos = doc.resolve(from);
+
+					// Calculate current character offset within block
+					const blockStart = pos.start(pos.depth);
+					const charOffset = from - blockStart;
+
+					// Use stored column or current offset (Vim behavior - preserve original column)
+					const desiredOffset = columnPosRef.current ?? charOffset;
+					columnPosRef.current = desiredOffset;
+
+					// Find previous block
+					const prevBlockPos = pos.before(pos.depth);
+
+					// Edge case: already at first block
+					if (prevBlockPos <= 0) {
+						return; // Do nothing
+					}
+
+					// Calculate target position in previous block
+					const targetPos = findTargetPosInBlock(doc, prevBlockPos, desiredOffset);
+
+					moveCursorWithHighlight(targetPos);
 				}
 			};
 			document.addEventListener('keydown', handleKKey);
@@ -151,6 +198,7 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'i') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					columnPosRef.current = null; // Reset column tracking on mode change
 					const pos = prevCursorPosRef.current || 1;
 					editor?.chain()
 						.setTextSelection({ from: pos, to: pos + 1 })
@@ -167,6 +215,7 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'l') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					columnPosRef.current = null; // Reset column tracking on horizontal movement
 					const { from } = editor.state.selection;
 					const docLength = editor.state.doc.content.size;
 					if (from < docLength - 1) {
@@ -180,6 +229,7 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'h') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
+					columnPosRef.current = null; // Reset column tracking on horizontal movement
 					const { from } = editor.state.selection;
 					if (from > 1) {
 						moveCursorWithHighlight(from - 1);
