@@ -227,7 +227,21 @@ export const MarkdownEditor = ({
 			}}>
 			<div id={`md-editor-${paneId}`}
 				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
-				<EditorContent editor={editor} onClick={() => setMode("INSERT")} />
+				<EditorContent editor={editor} onClick={() => {
+					if (!editor) return;
+					const { from } = editor.state.selection;
+					editor?.chain()
+						.setTextSelection({
+							from: prevCursorPosRef.current,
+							to: prevCursorPosRef.current + 1
+						})
+						.unsetHighlight()
+						.setTextSelection(from)
+						.focus()
+						.run();
+					prevCursorPosRef.current = from;
+					setMode("INSERT")
+				}} />
 			</div>
 			<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 text-sm font-mono border-t 
 					${mode === "COMMAND"
