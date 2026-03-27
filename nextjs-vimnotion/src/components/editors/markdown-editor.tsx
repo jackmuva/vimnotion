@@ -2,21 +2,11 @@ import { useEditorStore } from "@/store/editor-store";
 import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
-import remarkGfm from 'remark-gfm';
-import { unified } from 'unified'
-
-import rehypeStringify from 'rehype-stringify'
-import remarkFrontmatter from 'remark-frontmatter'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-
-import rehypeParse from 'rehype-parse'
-import rehypeRemark from 'rehype-remark'
-import remarkStringify from 'remark-stringify'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
 
 export const MarkdownEditor = ({
 	paneId
@@ -34,39 +24,61 @@ export const MarkdownEditor = ({
 	const updateAllBuffers = useEditorStore((state) => state.updateAllBuffers);
 	const getActivePane = useEditorStore((state) => state.getActivePane);
 
+	//BUG:The cursor position definitely doesnt work
 	const editor = useEditor({
 		extensions: [StarterKit, Image],
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {
-			const file = await unified()
-				.use(remarkParse)
-				.use(remarkFrontmatter)
-				.use(remarkGfm)
-				.use(remarkRehype)
-				.use(rehypeStringify)
-				.process(pane[paneId].buffer);
-			currentEditor.commands.setContent(String(file));
+			const parser = new DOMParser();
+			let numChars: number = 0;
+			let curLine: string = "";
+			for (const line of pane[paneId].buffer.split("\n")) {
+				const curPos: number = pane[paneId].cursorPosition;
+				if (curPos >= numChars && curPos <= (numChars + line.length)) {
+					curLine = line;
+					break;
+				} else {
+					numChars += line.length
+				}
+			}
+
+			const lineText = parser.parseFromString(await markdownToHtml(curLine), 'text/html');
+			const docText = parser.parseFromString(await markdownToHtml(pane[paneId].buffer), 'text/html');
+
+			currentEditor
+				.chain()
+				.setContent(await markdownToHtml(pane[paneId].buffer))
+				.setTextSelection(docText.body.textContent.indexOf(lineText.body.textContent))
+				.focus()
+				.selectTextblockStart()
+				.scrollIntoView()
+				.run()
 		},
 		onUpdate: async ({ editor: currentEditor }) => {
-			const file = await unified()
-				.use(rehypeParse)
-				.use(rehypeRemark)
-				.use(remarkStringify)
-				.process(currentEditor.getHTML())
 			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {
 					...currentPane[paneId],
-					buffer: String(file),
+					buffer: await htmlToMarkdown(currentEditor?.getHTML() ?? ""),
 				}
 			};
 			updatePane(updatedPane);
 			if (paneId === getActivePane()) {
-				updateAllBuffers(currentPane[paneId].fileId, String(file));
+				updateAllBuffers(currentPane[paneId].fileId, await htmlToMarkdown(editor?.getHTML() ?? ""));
 			}
-
-		}
+		},
+		onSelectionUpdate: ({ editor: currentEditor }) => {
+			const { from } = currentEditor.state.selection;
+			const currentPane = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					cursorPosition: from,
+				}
+			};
+			updatePane(updatedPane);
+		},
 	})
 
 	const shiftToVim = (): void => {
@@ -80,31 +92,11 @@ export const MarkdownEditor = ({
 	}
 
 	useEffect(() => {
-		const mdElement = document.getElementById(`md-editor-${paneId}`);
-		if (!mdElement) return;
-
-		const buffer = pane[paneId].buffer;
-		const cursorPos = pane[paneId].cursorPosition;
-		const textBeforeCursor = buffer.slice(0, cursorPos);
-		const cursorLine = textBeforeCursor.split('\n').length;
-
-		const elementsWithLine = mdElement.querySelectorAll('[data-source-line]');
-		let closestElement: Element | null = null;
-		let closestLine = 0;
-
-		elementsWithLine.forEach((el) => {
-			const line = parseInt(el.getAttribute('data-source-line') || '0', 10);
-			if (line <= cursorLine && line > closestLine) {
-				closestLine = line;
-				closestElement = el;
-			}
+		if (!editor) return;
+		markdownToHtml(pane[paneId].buffer).then((html: string) => {
+			editor.commands.setContent(html);
 		});
-
-		if (closestElement !== null) {
-			(closestElement as Element).scrollIntoView({ block: 'center', behavior: 'instant' });
-		}
-
-	}, [toggleLeaderPanel]);
+	}, [pane[paneId].bufferVersion, pane[paneId].fileId]);
 
 	useEffect(() => {
 		if (activePane === paneId) {
@@ -141,15 +133,6 @@ export const MarkdownEditor = ({
 				updateActivePane(paneId);
 				setActivePanel(PanelType.MAIN);
 			}}>
-			<h1 className="flex justify-end w-full italic  
-				border-b border-b-background-muted/50">
-				<button className="flex items-center space-x-1 
-					hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm"
-					onClick={() => shiftToVim()}>
-					<Loader size={15} />
-					<div className="text-sm">vim-mode</div>
-				</button>
-			</h1>
 			<div id={`md-editor-${paneId}`}
 				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
 				<EditorContent editor={editor} />

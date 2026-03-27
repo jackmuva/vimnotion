@@ -315,3 +315,7 @@ body {
 [right-data-tooltip]:not([data-tooltip-persistent])::before {
     pointer-events: none;
 }
+
+.ProseMirror:focus {
+    outline: none;
+  }
