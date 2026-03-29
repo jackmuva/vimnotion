@@ -3,12 +3,11 @@ import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
 import { Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
-import Highlight from '@tiptap/extension-highlight'
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import FileHandler from '@tiptap/extension-file-handler';
 import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
-import { ResolvedPos } from "@tiptap/pm/model";
 
 export const MarkdownEditor = ({
 	paneId
@@ -19,6 +18,7 @@ export const MarkdownEditor = ({
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const pane: PaneNode = getPane(paneId);
 	const activePane: string = useEditorStore((state) => state.activePane);
+	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
 	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
@@ -28,37 +28,60 @@ export const MarkdownEditor = ({
 
 	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
 	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
-	const prevCursorPosRef = useRef<number>(0);
-	const columnPosRef = useRef<number | null>(null); // Preserve column position for j/k navigation
 
 	useEffect(() => {
 		modeRef.current = mode;
 	}, [mode])
 
-	const moveCursorWithHighlight = (newPos: number) => {
-		if (!editor) return;
-		const prevPos = prevCursorPosRef.current || 1;
-		editor.chain()
-			.setTextSelection({ from: prevPos, to: prevPos + 1 })
-			.unsetHighlight()
-			.setTextSelection({ from: newPos, to: newPos + 1 })
-			.toggleHighlight({ color: "#818cf8" })
-			.blur()
-			.run();
-		prevCursorPosRef.current = newPos;
-	};
-
-	const findTargetPosInBlock = (doc: any, blockPos: number, desiredOffset: number): number => {
-		const $block = doc.resolve(blockPos);
-		const blockStart = $block.start($block.depth);
-		const blockEnd = $block.end($block.depth);
-
-		// Clamp to block bounds
-		return Math.min(blockStart + desiredOffset, blockEnd);
-	};
-
+	//TODO:Upload to image storage and be able to convert back to md
 	const editor = useEditor({
-		extensions: [StarterKit, Image, Highlight.configure({ multicolor: true })],
+		extensions: [StarterKit, Image,
+			FileHandler.configure({
+				allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+				onDrop: (currentEditor, files, pos) => {
+					files.forEach(file => {
+						const fileReader = new FileReader()
+
+						fileReader.readAsDataURL(file)
+						fileReader.onload = () => {
+							currentEditor
+								.chain()
+								.insertContentAt(pos, {
+									type: 'image',
+									attrs: {
+										src: fileReader.result,
+									},
+								})
+								.focus()
+								.run()
+						}
+					})
+				},
+				onPaste: (currentEditor, files, htmlContent) => {
+					files.forEach(file => {
+						if (htmlContent) {
+							return false
+						}
+
+						const fileReader = new FileReader()
+
+						fileReader.readAsDataURL(file)
+						fileReader.onload = () => {
+							currentEditor
+								.chain()
+								.insertContentAt(currentEditor.state.selection.anchor, {
+									type: 'image',
+									attrs: {
+										src: fileReader.result,
+									},
+								})
+								.focus()
+								.run()
+						}
+					})
+				},
+			}),
+		],
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {
@@ -66,14 +89,6 @@ export const MarkdownEditor = ({
 				.chain()
 				.setContent(await markdownToHtml(pane[paneId].buffer))
 				.run()
-
-			// Initialize cursor at position 1 and highlight
-			prevCursorPosRef.current = 1;
-			currentEditor.chain()
-				.setTextSelection({ from: 1, to: 3 })
-				.toggleHighlight({ color: "#818cf8" })
-				.blur()
-				.run();
 		},
 		onUpdate: async ({ editor: currentEditor }) => {
 			const currentPane: PaneNode = getPane(paneId);
@@ -99,7 +114,7 @@ export const MarkdownEditor = ({
 			};
 			updatePane(updatedPane);
 		},
-	})
+	});
 
 	useEffect(() => {
 		if (!editor) return;
@@ -109,7 +124,7 @@ export const MarkdownEditor = ({
 	}, [pane[paneId].bufferVersion, pane[paneId].fileId]);
 
 	useEffect(() => {
-		if (activePane === paneId && editor) {
+		if (activePane === paneId && activePanel === PanelType.MAIN && editor) {
 			const handleSpaceKey = (event: KeyboardEvent) => {
 				if (modeRef.current === "COMMAND" && event.key === ' ') {
 					event.preventDefault();
@@ -132,31 +147,8 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'j') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
-
-					const { from } = editor.state.selection;
-					const doc = editor.state.doc;
-					const pos = doc.resolve(from);
-
-					// Calculate current character offset within block
-					const blockStart = pos.start(pos.depth);
-					const charOffset = from - blockStart;
-
-					// Use stored column or current offset (Vim behavior - preserve original column)
-					const desiredOffset = columnPosRef.current ?? charOffset;
-					columnPosRef.current = desiredOffset;
-
-					// Find next block
-					const nextBlockPos = pos.after(pos.depth);
-
-					// Edge case: already at last block
-					if (nextBlockPos >= doc.content.size) {
-						return; // Do nothing
-					}
-
-					// Calculate target position in next block
-					const targetPos = findTargetPosInBlock(doc, nextBlockPos, desiredOffset);
-
-					moveCursorWithHighlight(targetPos);
+					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
+					editorElem?.scrollBy(0, 100);
 				}
 			};
 			document.addEventListener('keydown', handleJKey);
@@ -165,88 +157,19 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === 'k') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
-
-					const { from } = editor.state.selection;
-					const doc = editor.state.doc;
-					const pos: ResolvedPos = doc.resolve(from);
-
-					// Calculate current character offset within block
-					const blockStart = pos.start(pos.depth);
-					const charOffset = from - blockStart;
-
-					// Use stored column or current offset (Vim behavior - preserve original column)
-					const desiredOffset = columnPosRef.current ?? charOffset;
-					columnPosRef.current = desiredOffset;
-
-					// Find previous block
-					const prevBlockPos = pos.before(pos.depth);
-
-					// Edge case: already at first block
-					if (prevBlockPos <= 0) {
-						return; // Do nothing
-					}
-
-					// Calculate target position in previous block
-					const targetPos = findTargetPosInBlock(doc, prevBlockPos, desiredOffset);
-
-					moveCursorWithHighlight(targetPos);
+					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
+					editorElem?.scrollBy(0, -100);
 				}
 			};
 			document.addEventListener('keydown', handleKKey);
-
-			const handleIKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === 'i') {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					columnPosRef.current = null; // Reset column tracking on mode change
-					const pos = prevCursorPosRef.current || 1;
-					editor?.chain()
-						.setTextSelection({ from: pos, to: pos + 1 })
-						.unsetHighlight()
-						.setTextSelection(pos)
-						.focus()
-						.run();
-					setMode("INSERT");
-				}
-			};
-			document.addEventListener('keydown', handleIKey);
-
-			const handleLKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === 'l') {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					columnPosRef.current = null; // Reset column tracking on horizontal movement
-					const { from } = editor.state.selection;
-					const docLength = editor.state.doc.content.size;
-					if (from < docLength - 1) {
-						moveCursorWithHighlight(from + 1);
-					}
-				}
-			};
-			document.addEventListener('keydown', handleLKey);
-
-			const handleHKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === 'h') {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					columnPosRef.current = null; // Reset column tracking on horizontal movement
-					const { from } = editor.state.selection;
-					if (from > 1) {
-						moveCursorWithHighlight(from - 1);
-					}
-				}
-			};
-			document.addEventListener('keydown', handleHKey);
 
 			const handleEscKey = (event: KeyboardEvent) => {
 				if (modeRef.current === "INSERT" && event.key === 'Escape') {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					const { from } = editor.state.selection;
-					prevCursorPosRef.current = from;
 					editor?.chain()
 						.setTextSelection({ from: from, to: from + 1 })
-						.toggleHighlight({ color: "#818cf8" })
 						.blur()
 						.run();
 					setMode("COMMAND");
@@ -260,13 +183,10 @@ export const MarkdownEditor = ({
 				document.removeEventListener('keydown', handleDashKey);
 				document.removeEventListener('keydown', handleJKey);
 				document.removeEventListener('keydown', handleKKey);
-				document.removeEventListener('keydown', handleIKey);
-				document.removeEventListener('keydown', handleHKey);
-				document.removeEventListener('keydown', handleLKey);
 				document.removeEventListener('keydown', handleEscKey);
 			}
 		}
-	}, [activePane, editor]);
+	}, [activePane, editor, activePanel]);
 
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} relative h-full w-full 
@@ -276,38 +196,28 @@ export const MarkdownEditor = ({
 				setActivePanel(PanelType.MAIN);
 			}}>
 			<div id={`md-editor-${paneId}`}
-				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
+				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth`}>
 				<EditorContent editor={editor} onClick={() => {
 					if (!editor) return;
-					const { from } = editor.state.selection;
 					editor?.chain()
-						.setTextSelection({
-							from: prevCursorPosRef.current,
-							to: prevCursorPosRef.current + 1
-						})
-						.unsetHighlight()
-						.setTextSelection(from)
 						.focus()
 						.run();
-					prevCursorPosRef.current = from;
 					setMode("INSERT")
 				}} />
 			</div>
-			<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 text-sm font-mono border-t 
+			<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 pl-8 text-sm font-mono
 					${mode === "COMMAND"
-					? "bg-indigo-700 text-white border-indigo-900"
-					: "bg-orange-700 text-white border-orange-900"
+					? "bg-indigo-900 text-white"
+					: "bg-orange-900 text-white"
 				}`}>
 				<span className="font-bold mr-4">-- {mode} --</span>
 				{mode === "COMMAND" ? (
 					<span className="flex items-center gap-4">
-						<span>←h l→ move cursor</span>
-						<span className="text-blue-200">|</span>
 						<span>↑j k↓ move</span>
 						<span className="text-blue-200">|</span>
-						<span>i:insert</span>
+						<span>-: directory sidebar</span>
 						<span className="text-blue-200">|</span>
-						<span>-:sidebar</span>
+						<span>SPACE: leader menu</span>
 					</span>
 				) : (
 					<span>esc:command mode</span>
