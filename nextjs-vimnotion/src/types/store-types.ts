@@ -58,6 +58,7 @@ export type PanelState = {
 	saveVnObjectBuffer: () => Promise<boolean>;
 	publishVnObject: (publish: boolean) => Promise<boolean>;
 	updateAllBuffers: (fileId: string, buffer: string) => void;
+	formatMarkdownBuffer: () => Promise<string>;
 };
 
 export type TabState = {

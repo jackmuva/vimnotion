@@ -1,3 +1,4 @@
+import { base64ToBinary, getContentTypeFromDataUri } from "@/lib/utils";
 import { AiMessage } from "@/types/ai-types";
 import { ChatSession, Suggestion, VnObject } from "@/types/primitive-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
@@ -145,3 +146,29 @@ export async function getChatSessions(): Promise<ChatSession[]> {
 		return [];
 	}
 }
+
+export const uploadImageToBackend = async (imageBuffer: string): Promise<{ StatusCode: number, Data: string }> => {
+	const contentType = getContentTypeFromDataUri(imageBuffer);
+	const base64String = imageBuffer.split(',')[1];
+	const binaryData = base64ToBinary(base64String);
+
+	const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/image`, {
+		method: 'POST',
+		headers: { 'Content-Type': contentType },
+		body: new Blob([binaryData.buffer as ArrayBuffer]),
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		console.error('Failed to upload image');
+		return { StatusCode: response.status, Data: await response.json() };
+	}
+
+	const result: {
+		StatusCode: number,
+		Data: string,
+	} = await response.json();
+	return result;
+}
+
+

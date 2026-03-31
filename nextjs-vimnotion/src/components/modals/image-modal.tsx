@@ -1,20 +1,7 @@
 import { useEditorStore } from "@/store/editor-store";
 import { useEffect, useRef, useState } from "react";
 import { PanelType } from "@/types/editor-types";
-
-const base64ToBinary = (base64: string): Uint8Array => {
-	const binaryString = atob(base64);
-	const bytes = new Uint8Array(binaryString.length);
-	for (let i = 0; i < binaryString.length; i++) {
-		bytes[i] = binaryString.charCodeAt(i);
-	}
-	return bytes;
-}
-
-const getContentTypeFromDataUri = (dataUri: string): string => {
-	const match = dataUri.match(/^data:([^;]+);/);
-	return match ? match[1] : 'application/octet-stream';
-}
+import { uploadImageToBackend } from "@/services/api-service";
 
 export const ImageModal = () => {
 	const toggleImageModal = useEditorStore((state) => state.toggleImageModal);
@@ -50,27 +37,7 @@ export const ImageModal = () => {
 		if (!imageBuffer || typeof imageBuffer !== 'string') return;
 
 		try {
-			const contentType = getContentTypeFromDataUri(imageBuffer);
-			const base64String = imageBuffer.split(',')[1];
-			const binaryData = base64ToBinary(base64String);
-
-			const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/image`, {
-				method: 'POST',
-				headers: { 'Content-Type': contentType },
-				body: new Blob([binaryData.buffer as ArrayBuffer]),
-				credentials: "include",
-			});
-
-			if (!response.ok) {
-				console.error('Failed to upload image');
-				return;
-			}
-
-			const result: {
-				StatusCode: number,
-				Data: string,
-			} = await response.json();
-
+			const result = await uploadImageToBackend(imageBuffer);
 			setNewImageUrl(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/image/${result.Data}`);
 			setImagePresent(false);
 			setImageBuffer(null);

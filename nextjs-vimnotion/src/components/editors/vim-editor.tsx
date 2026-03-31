@@ -189,7 +189,7 @@ export const VimEditor = ({
 			} else if (activePanel === PanelType.MAIN) {
 				vimEditor.focus();
 				if (newImageUrl) {
-					const mdImage = `![your-image-name](${newImageUrl})`
+					const mdImage = `![new-image](${newImageUrl})`
 					const cursorPosition: number = vimEditor.state.selection.main.head;
 					const transaction = vimEditor.state.update({
 						changes: {

@@ -33,6 +33,18 @@ export const markdownToHtml = async (markdown: string): Promise<string> => {
 	return String(file);
 }
 
+export const formatMarkdown = async (markdown: string): Promise<string> => {
+	const file = await unified()
+		.use(remarkParse)
+		.use(remarkFrontmatter)
+		.use(remarkGfm)
+		.use(remarkStringify)
+		.process(markdown);
+	return String(file);
+}
+
+
+
 export const htmlToMarkdown = async (html: string): Promise<string> => {
 	const file = await unified()
 		.use(rehypeParse)
@@ -41,3 +53,19 @@ export const htmlToMarkdown = async (html: string): Promise<string> => {
 		.process(html);
 	return String(file);
 }
+
+export const base64ToBinary = (base64: string): Uint8Array => {
+	const binaryString = atob(base64);
+	const bytes = new Uint8Array(binaryString.length);
+	for (let i = 0; i < binaryString.length; i++) {
+		bytes[i] = binaryString.charCodeAt(i);
+	}
+	return bytes;
+}
+
+export const getContentTypeFromDataUri = (dataUri: string): string => {
+	const match = dataUri.match(/^data:([^;]+);/);
+	return match ? match[1] : 'application/octet-stream';
+}
+
+

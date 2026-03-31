@@ -24,7 +24,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [x] tiptap editor
     - suggestions with line numbers are going to be messed up
     - suggestion sidebar
-    - markdown format hotkey
+    - cursor and scroll positions between toggling
 - agent
     - [x] compaction hook
     - [x] test automated delete session

@@ -1,13 +1,12 @@
 import { useEditorStore } from "@/store/editor-store";
-import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
-import { Loader } from "lucide-react";
+import { PanelType, PaneNode } from "@/types/editor-types";
 import { useEffect, useRef, useState } from "react";
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
-import FileHandler from '@tiptap/extension-file-handler';
 import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
+import { CustomFileHandler } from "./markdown-file-handler";
 
 export const MarkdownEditor = ({
 	paneId
@@ -33,55 +32,8 @@ export const MarkdownEditor = ({
 		modeRef.current = mode;
 	}, [mode])
 
-	//TODO:Upload to image storage and be able to convert back to md
 	const editor = useEditor({
-		extensions: [StarterKit, Image,
-			FileHandler.configure({
-				allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-				onDrop: (currentEditor, files, pos) => {
-					files.forEach(file => {
-						const fileReader = new FileReader()
-
-						fileReader.readAsDataURL(file)
-						fileReader.onload = () => {
-							currentEditor
-								.chain()
-								.insertContentAt(pos, {
-									type: 'image',
-									attrs: {
-										src: fileReader.result,
-									},
-								})
-								.focus()
-								.run()
-						}
-					})
-				},
-				onPaste: (currentEditor, files, htmlContent) => {
-					files.forEach(file => {
-						if (htmlContent) {
-							return false
-						}
-
-						const fileReader = new FileReader()
-
-						fileReader.readAsDataURL(file)
-						fileReader.onload = () => {
-							currentEditor
-								.chain()
-								.insertContentAt(currentEditor.state.selection.anchor, {
-									type: 'image',
-									attrs: {
-										src: fileReader.result,
-									},
-								})
-								.focus()
-								.run()
-						}
-					})
-				},
-			}),
-		],
+		extensions: [StarterKit, Image, CustomFileHandler],
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {
@@ -148,7 +100,7 @@ export const MarkdownEditor = ({
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
-					editorElem?.scrollBy(0, 100);
+					editorElem?.scrollBy(0, 200);
 				}
 			};
 			document.addEventListener('keydown', handleJKey);
@@ -158,7 +110,7 @@ export const MarkdownEditor = ({
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
-					editorElem?.scrollBy(0, -100);
+					editorElem?.scrollBy(0, -200);
 				}
 			};
 			document.addEventListener('keydown', handleKKey);
@@ -196,7 +148,7 @@ export const MarkdownEditor = ({
 				setActivePanel(PanelType.MAIN);
 			}}>
 			<div id={`md-editor-${paneId}`}
-				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth`}>
+				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20`}>
 				<EditorContent editor={editor} onClick={() => {
 					if (!editor) return;
 					editor?.chain()
