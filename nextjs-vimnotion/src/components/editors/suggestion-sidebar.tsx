@@ -11,19 +11,19 @@ export const SuggestionSidebar = ({
 	paneId: string,
 	suggestions: Suggestion[],
 	editorView: EditorView,
-	refocus: () => void,
+	refocus: (index: number) => void,
 }) => {
 	return (
 		<div id={`suggestion-sidebar-${paneId}`}
 			className={`max-w-[500px] w-fit flex flex-col gap-4 relative h-full bg-secondary-background
-			p-2 rounded-sm overflow-y-auto`}
-			onClick={() => refocus()}>
+			p-2 rounded-sm overflow-y-auto`}>
 			{suggestions
 				.sort((a: Suggestion, b: Suggestion) => a.startLine - b.startLine)
 				.map((sugg: Suggestion, i: number) => {
 					return <SuggestionDialog key={sugg.id}
 						suggestion={sugg} view={editorView}
-						paneId={paneId} index={i} />
+						paneId={paneId} index={i}
+						refocus={() => refocus(i)} />
 				})}
 		</div>
 	);
