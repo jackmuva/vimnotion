@@ -112,10 +112,13 @@ export const VimEditor = ({
 			setActivePanel(PanelType.MAIN);
 
 			const currentPane: PaneNode = getPane(paneId);
-			const updatedPane = {
+			const updatedPane: PaneNode = {
 				[paneId]: {
 					...currentPane[paneId],
-					suggestionActive: false,
+					suggestionState: {
+						...currentPane[paneId].suggestionState,
+						suggestionActive: true,
+					}
 				}
 			};
 			updatePane(updatedPane);
@@ -392,7 +395,23 @@ export const VimEditor = ({
 			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && vimEditor &&
 				<SuggestionSidebar paneId={paneId}
 					editorView={vimEditor}
-					suggestions={pane[paneId].suggestionState.suggestions} />
+					suggestions={pane[paneId].suggestionState.suggestions}
+					refocus={() => {
+						const currentPane: PaneNode = getPane(paneId);
+						const updatedPane: PaneNode = {
+							[paneId]: {
+								...currentPane[paneId],
+								suggestionState: {
+									...currentPane[paneId].suggestionState,
+									activeSuggestionIndex: 0,
+									suggestionActive: true,
+								}
+							}
+						};
+						console.log("refocusing");
+						updatePane(updatedPane);
+						updateActivePane(paneId);
+					}} />
 			}
 		</div>
 	);

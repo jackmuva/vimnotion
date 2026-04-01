@@ -16,7 +16,7 @@ vimnotion/
 
 ### Frontend (nextjs-vimnotion/)
 ```bash
-npm run dev          # Dev server with Turbopack (port 3000)
+npm run dev          # Dev server with Webpack (port 3000)
 npm run build        # Production build
 npm run lint         # ESLint (next/core-web-vitals + next/typescript)
 ```
@@ -126,7 +126,7 @@ func GetSomething(db *sql.DB) http.HandlerFunc {
 
 ## Key Technologies
 
-**Frontend:** Next.js 16 (App Router, Turbopack), React 19, TypeScript 5, Tailwind 4, Zustand 5, SWR, CodeMirror 6 + @replit/codemirror-vim
+**Frontend:** Next.js 16 (App Router, Webpack), React 19, TypeScript 5, Tailwind 4, Zustand 5, SWR, CodeMirror 6 + @replit/codemirror-vim
 
 **Backend:** Go 1.24, standard library HTTP, Turso (LibSQL), JWT (golang-jwt/jwt/v5), OAuth (GitHub, Google)
 

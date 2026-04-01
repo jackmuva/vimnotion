@@ -22,7 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] tiptap editor
-    - suggestions with line numbers are going to be messed up
     - suggestion sidebar
     - cursor and scroll positions between toggling
 - agent
@@ -46,6 +45,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] endpoint timeout?
     - [ ] evaluation hook?
     - [ ] model selector?
+- optimizations
+    - [ ] batch writing instead of concurrent writes
+    - [ ] non-blocking retries on database updates
 
 
 # Marketing Todos
