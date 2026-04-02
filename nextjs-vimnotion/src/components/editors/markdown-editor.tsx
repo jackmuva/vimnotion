@@ -56,17 +56,18 @@ export const MarkdownEditor = ({
 				updateAllBuffers(currentPane[paneId].fileId, await htmlToMarkdown(editor?.getHTML() ?? ""));
 			}
 		},
-		onSelectionUpdate: ({ editor: currentEditor }) => {
-			const { from } = currentEditor.state.selection;
-			const currentPane = getPane(paneId);
-			const updatedPane = {
-				[paneId]: {
-					...currentPane[paneId],
-					cursorPosition: from,
-				}
-			};
-			updatePane(updatedPane);
-		},
+		//TODO:Update with the correct cursor position
+		// onSelectionUpdate: ({ editor: currentEditor }) => {
+		// 	const { from } = currentEditor.state.selection;
+		// 	const currentPane = getPane(paneId);
+		// 	const updatedPane = {
+		// 		[paneId]: {
+		// 			...currentPane[paneId],
+		// 			cursorPosition: from,
+		// 		}
+		// 	};
+		// 	updatePane(updatedPane);
+		// },
 	});
 
 	useEffect(() => {
@@ -144,13 +145,13 @@ export const MarkdownEditor = ({
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} h-full w-full 
 				z-20 bg-background flex`}>
-			<div className="flex-col justify-start items-center space-y-2 p-2 relative"
+			<div className="flex flex-col justify-between items-center space-y-2 p-2 relative h-full w-full"
 				onClick={() => {
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
 				}}>
 				<div id={`md-editor-${paneId}`}
-					className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20`}>
+					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {
 						if (!editor) return;
 						editor?.chain()
@@ -159,7 +160,7 @@ export const MarkdownEditor = ({
 						setMode("INSERT")
 					}} />
 				</div>
-				<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 pl-8 text-sm font-mono
+				<div className={`rounded-sm h-8 flex items-center px-4 pl-8 text-sm font-mono w-full 
 					${mode === "COMMAND"
 						? "bg-indigo-900 text-white"
 						: "bg-orange-900 text-white"

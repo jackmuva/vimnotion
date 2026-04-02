@@ -23,8 +23,8 @@ export const SuggestionSidebar = ({
 			{suggestions
 				.sort((a: Suggestion, b: Suggestion) => a.startLine - b.startLine)
 				.map((sugg: Suggestion, i: number) => {
-					return <SuggestionDialog key={sugg.id}
-						suggestion={sugg} view={view} tiptap={editor}
+					return 					<SuggestionDialog key={sugg.id}
+						suggestion={sugg} view={view} editor={editor}
 						paneId={paneId} index={i}
 						refocus={() => refocus(i)} />
 				})}

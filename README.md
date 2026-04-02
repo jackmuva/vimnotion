@@ -22,7 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - [x] tiptap editor
-    - suggestion sidebar
     - cursor and scroll positions between toggling
 - agent
     - [x] compaction hook
