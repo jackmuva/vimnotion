@@ -189,6 +189,7 @@ export const SuggestionDialog = ({
 					const toChangePlainText = toChangeHtml.replace(/<[^>]*>/g, '').trim();
 					const numOcc: number = prefix.split(toChangePlainText).length - 1;
 
+					//BUG:When the text is a link which maps to multiple nodes
 					let selectionPos = 1;
 					let occurrenceCount = 0;
 					if (toChangePlainText) {

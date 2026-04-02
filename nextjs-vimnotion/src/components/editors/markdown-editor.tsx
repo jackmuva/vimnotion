@@ -78,7 +78,7 @@ export const MarkdownEditor = ({
 	}, [pane[paneId].bufferVersion, pane[paneId].fileId]);
 
 	useEffect(() => {
-		if (activePane === paneId && activePanel === PanelType.MAIN && editor) {
+		if (activePane === paneId && activePanel === PanelType.MAIN && editor && !getPane(paneId)[paneId].suggestionState.suggestionActive) {
 			const handleSpaceKey = (event: KeyboardEvent) => {
 				if (modeRef.current === "COMMAND" && event.key === ' ') {
 					event.preventDefault();
