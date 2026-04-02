@@ -76,7 +76,8 @@ export const SuggestionDialog = ({
 		});
 	}
 
-	const findClosestIndex = (matchString: string, line: number): number | null => {
+	const findClosestIndexInView = (matchString: string, line: number): number | null => {
+		if (!view) return null;
 		const content: string = view.state.doc.toString();
 
 		const matchIndexes: number[] = [];
@@ -104,39 +105,43 @@ export const SuggestionDialog = ({
 	}
 
 	const applySuggestion = () => {
-		const content: string = view.state.doc.toString();
-		const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine);
+		if (view) {
+			const content: string = view.state.doc.toString();
+			const closestIndex: number | null = findClosestIndexInView(suggestion.oldString, suggestion.startLine);
 
-		const prefix: string = content.slice(0, closestIndex!);
-		const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
-		const toChange = suggestion.newString;
+			const prefix: string = content.slice(0, closestIndex!);
+			const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
+			const toChange = suggestion.newString;
 
-		const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
-		const line = view.state.doc.line(lineNumber);
+			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
+			const line = view.state.doc.line(lineNumber);
 
-		view.dispatch({
-			changes: {
-				from: 0,
-				to: content.length,
-				insert: prefix + toChange + suffix,
-			},
-			selection: { anchor: line.from, head: line.from },
-			scrollIntoView: true,
-		});
-		view.scrollDOM.scrollTop = line.from;
+			view.dispatch({
+				changes: {
+					from: 0,
+					to: content.length,
+					insert: prefix + toChange + suffix,
+				},
+				selection: { anchor: line.from, head: line.from },
+				scrollIntoView: true,
+			});
+			view.scrollDOM.scrollTop = line.from;
+		}
 	}
 
 	useEffect(() => {
 		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index &&
 			activePanel === PanelType.MAIN && getPane(paneId)[paneId].suggestionState.suggestionActive) {
-			const matchLine: number = view.state.doc.toString().slice(0, findClosestIndex(suggestion.oldString, suggestion.startLine)!).split("\n").length;
-			const lineNumber = Math.min(matchLine, view.state.doc.lines);
-			const line = view.state.doc.line(lineNumber);
-			view.dispatch({
-				selection: { anchor: line.from, head: line.from },
-				scrollIntoView: true,
-			});
-			view.scrollDOM.scrollTop = line.from;
+			if (view) {
+				const matchLine: number = view.state.doc.toString().slice(0, findClosestIndexInView(suggestion.oldString, suggestion.startLine)!).split("\n").length;
+				const lineNumber = Math.min(matchLine, view.state.doc.lines);
+				const line = view.state.doc.line(lineNumber);
+				view.dispatch({
+					selection: { anchor: line.from, head: line.from },
+					scrollIntoView: true,
+				});
+				view.scrollDOM.scrollTop = line.from;
+			}
 
 			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
