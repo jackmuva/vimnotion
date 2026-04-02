@@ -1,17 +1,20 @@
 import { Suggestion } from "@/types/primitive-types"
 import { SuggestionDialog } from "./suggestion-dialog";
 import { EditorView } from "codemirror";
+import { Editor } from "@tiptap/react"
 
 export const SuggestionSidebar = ({
 	paneId,
 	suggestions,
-	editorView,
+	view,
+	editor,
 	refocus,
 }: {
 	paneId: string,
 	suggestions: Suggestion[],
-	editorView: EditorView,
 	refocus: (index: number) => void,
+	view?: EditorView,
+	editor?: Editor,
 }) => {
 	return (
 		<div id={`suggestion-sidebar-${paneId}`}
@@ -21,7 +24,7 @@ export const SuggestionSidebar = ({
 				.sort((a: Suggestion, b: Suggestion) => a.startLine - b.startLine)
 				.map((sugg: Suggestion, i: number) => {
 					return <SuggestionDialog key={sugg.id}
-						suggestion={sugg} view={editorView}
+						suggestion={sugg} view={view} tiptap={editor}
 						paneId={paneId} index={i}
 						refocus={() => refocus(i)} />
 				})}

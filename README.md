@@ -32,30 +32,37 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - bug fixes
     - [ ] window moving on markdown editor
 
-## High-level Todos
+## Next Todos
 - [ ] create teams
+  - account management
 - [ ] extensability with hotkeys for apis
 - [ ] version history
   - [ ] trash
 - [ ] local md downloads
-- [ ] account modal
+- [ ] backlinking
 
 ## Nice to haves
-- agent
-    - [ ] endpoint timeout?
-    - [ ] evaluation hook?
-    - [ ] model selector?
 - optimizations
     - [ ] batch writing instead of concurrent writes
     - [ ] non-blocking retries on database updates
 
+## In Question
+- migrating go to next?
+- agent
+    - [ ] endpoint timeout?
+    - [ ] evaluation hook?
+    - [ ] model selector?
+- spreadsheets
+- inbox/messaging
+
 
 # Marketing Todos
 - [ ] blog on "why markdown"
+- [ ] blog on why notion is a beautiful product 
+- [ ] blog on you being the product and that you should be working building a better you
 - [ ] blog posts that help other developers building "x"
     - [ ] search
     - [ ] image storage
     - [ ] key commands useRef
     - [ ] agents from scratch
-    - [ ] AI and purpose
     - [ ] AI engineering is just software engineering

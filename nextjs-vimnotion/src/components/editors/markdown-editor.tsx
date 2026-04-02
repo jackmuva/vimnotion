@@ -7,6 +7,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
 import { CustomFileHandler } from "./markdown-file-handler";
+import { SuggestionSidebar } from "./suggestion-sidebar";
 
 export const MarkdownEditor = ({
 	paneId
@@ -141,40 +142,63 @@ export const MarkdownEditor = ({
 	}, [activePane, editor, activePanel]);
 
 	return (
-		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} relative h-full w-full 
-				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}
-			onClick={() => {
-				updateActivePane(paneId);
-				setActivePanel(PanelType.MAIN);
-			}}>
-			<div id={`md-editor-${paneId}`}
-				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20`}>
-				<EditorContent editor={editor} onClick={() => {
-					if (!editor) return;
-					editor?.chain()
-						.focus()
-						.run();
-					setMode("INSERT")
-				}} />
-			</div>
-			<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 pl-8 text-sm font-mono
+		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} h-full w-full 
+				z-20 bg-background flex`}>
+			<div className="flex-col justify-start items-center space-y-2 p-2 relative"
+				onClick={() => {
+					updateActivePane(paneId);
+					setActivePanel(PanelType.MAIN);
+				}}>
+				<div id={`md-editor-${paneId}`}
+					className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20`}>
+					<EditorContent editor={editor} onClick={() => {
+						if (!editor) return;
+						editor?.chain()
+							.focus()
+							.run();
+						setMode("INSERT")
+					}} />
+				</div>
+				<div className={`absolute rounded-sm bottom-0 left-0 right-0 h-8 flex items-center px-4 pl-8 text-sm font-mono
 					${mode === "COMMAND"
-					? "bg-indigo-900 text-white"
-					: "bg-orange-900 text-white"
-				}`}>
-				<span className="font-bold mr-4">-- {mode} --</span>
-				{mode === "COMMAND" ? (
-					<span className="flex items-center gap-4">
-						<span>↑j k↓ move</span>
-						<span className="text-blue-200">|</span>
-						<span>-: directory sidebar</span>
-						<span className="text-blue-200">|</span>
-						<span>SPACE: leader menu</span>
-					</span>
-				) : (
-					<span>esc:command mode</span>
-				)}
+						? "bg-indigo-900 text-white"
+						: "bg-orange-900 text-white"
+					}`}>
+					<span className="font-bold mr-4">-- {mode} --</span>
+					{mode === "COMMAND" ? (
+						<span className="flex items-center gap-4">
+							<span>↑j k↓ move</span>
+							<span className="text-blue-200">|</span>
+							<span>-: directory sidebar</span>
+							<span className="text-blue-200">|</span>
+							<span>SPACE: leader menu</span>
+						</span>
+					) : (
+						<span>esc:command mode</span>
+					)}
+				</div>
 			</div>
+			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && editor &&
+				<SuggestionSidebar paneId={paneId}
+					view={undefined}
+					editor={editor}
+					suggestions={pane[paneId].suggestionState.suggestions}
+					refocus={(index: number) => {
+						const currentPane: PaneNode = getPane(paneId);
+						const updatedPane: PaneNode = {
+							[paneId]: {
+								...currentPane[paneId],
+								suggestionState: {
+									...currentPane[paneId].suggestionState,
+									activeSuggestionIndex: index,
+									suggestionActive: true,
+								}
+							}
+						};
+						updatePane(updatedPane);
+						updateActivePane(paneId);
+					}} />
+			}
 		</div>
 	);
 }

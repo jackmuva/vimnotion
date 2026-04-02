@@ -394,7 +394,8 @@ export const VimEditor = ({
 			</div>
 			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && vimEditor &&
 				<SuggestionSidebar paneId={paneId}
-					editorView={vimEditor}
+					view={vimEditor}
+					editor={undefined}
 					suggestions={pane[paneId].suggestionState.suggestions}
 					refocus={(index: number) => {
 						const currentPane: PaneNode = getPane(paneId);

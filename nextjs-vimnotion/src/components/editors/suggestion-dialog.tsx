@@ -4,19 +4,22 @@ import { PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
 import { useEffect, useState } from "react";
+import { Editor } from "@tiptap/react"
 
 export const SuggestionDialog = ({
 	suggestion,
 	paneId,
 	index,
-	view,
 	refocus,
+	view,
+	editor,
 }: {
 	suggestion: Suggestion,
 	paneId: string,
 	index: number,
-	view: EditorView,
 	refocus: () => void,
+	view?: EditorView,
+	editor?: Editor,
 }) => {
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
