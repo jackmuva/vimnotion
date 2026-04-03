@@ -8,6 +8,8 @@ import Image from '@tiptap/extension-image';
 import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
 import { CustomFileHandler } from "./markdown-file-handler";
 import { SuggestionSidebar } from "./suggestion-sidebar";
+import { TableKit } from '@tiptap/extension-table';
+import { TaskList, TaskItem } from "@tiptap/extension-list";
 
 export const MarkdownEditor = ({
 	paneId
@@ -34,10 +36,26 @@ export const MarkdownEditor = ({
 	}, [mode])
 
 	const editor = useEditor({
-		extensions: [StarterKit, Image, CustomFileHandler],
+		//NOTE:
+		// <ul class="contains-task-list">
+		// <li class="task-list-item"><input type="checkbox" disabled> hi</li>
+		// </ul>
+
+		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
+			TaskList.configure({
+				HTMLAttributes: {
+					class: "contains-task-list"
+				}
+			}),
+			TaskItem.configure({
+				HTMLAttributes: {
+					class: "task-list-item"
+				}
+			})],
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {
+			console.log("html: ", await markdownToHtml(pane[paneId].buffer));
 			currentEditor
 				.chain()
 				.setContent(await markdownToHtml(pane[paneId].buffer))
@@ -143,7 +161,7 @@ export const MarkdownEditor = ({
 					setActivePanel(PanelType.MAIN);
 				}}>
 				<div id={`md-editor-${paneId}`}
-					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
+					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth py-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {
 						if (!editor) return;
 						editor?.chain()

@@ -98,6 +98,8 @@ body {
 
   & li:has(input[type="checkbox"]) {
     list-style-type: none;
+    display: flex;
+    gap: 10px;
   }
 
   & ol {
