@@ -1,7 +1,6 @@
 import { useEditorStore } from "@/store/editor-store";
 import { PanelType, PaneNode } from "@/types/editor-types";
 import { useEffect, useRef, useState } from "react";
-
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -10,6 +9,7 @@ import { CustomFileHandler } from "./markdown-file-handler";
 import { SuggestionSidebar } from "./suggestion-sidebar";
 import { TableKit } from '@tiptap/extension-table';
 import { TaskList, TaskItem } from "@tiptap/extension-list";
+import { MarkdownToolbar } from "./markdown-toolbar";
 
 export const MarkdownEditor = ({
 	paneId
@@ -169,8 +169,9 @@ export const MarkdownEditor = ({
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
 				}}>
+				{editor && <MarkdownToolbar mode={mode} editor={editor} />}
 				<div id={`md-editor-${paneId}`}
-					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth py-20 flex-1 min-h-0`}>
+					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {
 						if (!editor) return;
 						editor?.chain()
@@ -178,24 +179,6 @@ export const MarkdownEditor = ({
 							.run();
 						setMode("INSERT")
 					}} />
-				</div>
-				<div className={`rounded-sm h-8 flex items-center px-4 pl-8 text-sm font-mono w-full 
-					${mode === "COMMAND"
-						? "bg-indigo-900 text-white"
-						: "bg-orange-900 text-white"
-					}`}>
-					<span className="font-bold mr-4">-- {mode} --</span>
-					{mode === "COMMAND" ? (
-						<span className="flex items-center gap-4">
-							<span>↑j k↓ move</span>
-							<span className="text-blue-200">|</span>
-							<span>-: directory sidebar</span>
-							<span className="text-blue-200">|</span>
-							<span>SPACE: leader menu</span>
-						</span>
-					) : (
-						<span>esc:command mode</span>
-					)}
 				</div>
 			</div>
 			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && editor &&
