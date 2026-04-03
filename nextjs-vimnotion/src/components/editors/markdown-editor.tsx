@@ -67,6 +67,7 @@ export const MarkdownEditor = ({
 				.run()
 		},
 		onUpdate: async ({ editor: currentEditor }) => {
+			console.log("html:", currentEditor.getHTML());
 			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {

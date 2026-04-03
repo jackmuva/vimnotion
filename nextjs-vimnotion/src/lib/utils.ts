@@ -40,13 +40,13 @@ export const rehypeToTiptap = (html: string): string => {
 	// Checked items
 	result = result.replace(
 		/<li class="task-list-item"><input type="checkbox" checked[^>]*>\s*([^<]*)<\/li>/g,
-		'<li class="task-list-item" data-checked="true"><label contenteditable="false"><input aria-label="task completed" type="checkbox"><span></span></label><div><p>$1</p></div></li>'
+		'<li class="task-list-item" data-checked="true" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
 	);
 
 	// Unchecked items
 	result = result.replace(
 		/<li class="task-list-item"><input type="checkbox"(?!.*checked)[^>]*>\s*([^<]*)<\/li>/g,
-		'<li class="task-list-item" data-checked="false"><label contenteditable="false"><input aria-label="task incomplete" type="checkbox"><span></span></label><div><p>$1</p></div></li>'
+		'<li class="task-list-item" data-checked="false" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
 	);
 
 	return result;
@@ -63,13 +63,13 @@ export const tiptapToRehype = (html: string): string => {
 
 	// Checked items back
 	result = result.replace(
-		/<li class="task-list-item" data-checked="true"><label contenteditable="false"><input[^>]*><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
-		'<li class="task-list-item"><input type="checkbox" disabled> $1</li>'
+		/<li class="task-list-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
+		'<li class="task-list-item"><input type="checkbox" checked> $1</li>'
 	);
 
 	// Unchecked items back
 	result = result.replace(
-		/<li class="task-list-item" data-checked="false"><label contenteditable="false"><input[^>]*><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
+		/<li class="task-list-item" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
 		'<li class="task-list-item"><input type="checkbox" disabled> $1</li>'
 	);
 
@@ -98,13 +98,14 @@ export const formatMarkdown = async (markdown: string): Promise<string> => {
 }
 
 export const htmlToMarkdown = async (html: string): Promise<string> => {
+	console.log("tiptap html: ", tiptapToRehype(html));
 	const file = await unified()
 		.use(rehypeParse)
 		.use(rehypeRemark)
 		.use(remarkGfm)
 		.use(remarkStringify)
-		.process(html);
-	return tiptapToRehype(String(file));
+		.process(tiptapToRehype(html));
+	return String(file);
 }
 
 export const base64ToBinary = (base64: string): Uint8Array => {
