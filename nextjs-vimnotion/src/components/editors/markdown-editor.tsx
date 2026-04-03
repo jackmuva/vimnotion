@@ -36,10 +36,6 @@ export const MarkdownEditor = ({
 	}, [mode])
 
 	const editor = useEditor({
-		//NOTE:
-		// <ul class="contains-task-list">
-		// <li class="task-list-item"><input type="checkbox" disabled> hi</li>
-		// </ul>
 
 		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
 			TaskList.configure({
@@ -50,6 +46,11 @@ export const MarkdownEditor = ({
 			TaskItem.configure({
 				HTMLAttributes: {
 					class: "task-list-item"
+				},
+				a11y: {
+					checkboxLabel(_, checked) {
+						return checked ? "task completed" : "task incomplete"
+					},
 				}
 			})],
 		content: '<p>Loading...</p>',
