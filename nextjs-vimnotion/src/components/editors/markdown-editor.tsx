@@ -36,7 +36,6 @@ export const MarkdownEditor = ({
 	}, [mode])
 
 	const editor = useEditor({
-
 		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
 			TaskList.configure({
 				HTMLAttributes: {
@@ -153,6 +152,14 @@ export const MarkdownEditor = ({
 			}
 		}
 	}, [activePane, editor, activePanel]);
+
+	useEffect(() => {
+		return () => {
+			if (editor) {
+				editor.destroy();
+			}
+		}
+	}, [editor]);
 
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} h-full w-full 

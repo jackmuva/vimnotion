@@ -21,8 +21,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [x] tiptap editor
-    - toolbar
+- tiptap editor
+    - [x] toolbar
 - agent
     - [x] compaction hook
     - [x] test automated delete session
@@ -30,6 +30,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] RSS feed
 - bug fixes
     - [ ] window moving on markdown editor
+    - [ ] nested checkboxes
 
 ## Next Todos
 - [ ] create teams

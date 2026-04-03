@@ -21,31 +21,31 @@ export function debounce<T extends (...args: any[]) => any>(
 		}, delay);
 	};
 }
-//NOTE: <ul class="contains-task-list" data-type="taskList"><li class="task-list-item" data-checked="false"><label contenteditable="false"><input aria-label="task incomplete" type="checkbox"><span></span></label><div><p>hi</p></div></li></ul>
-//<ul class="contains-task-list" data-type="taskList"><li class="task-list-item" data-checked="true"><label contenteditable="false"><input aria-label="task completed" type="checkbox"><span></span></label><div><p>hi</p></div></li></ul>
-//
-//NOTE:<ul class="contains-task-list">
-// <li class="task-list-item"><input type="checkbox" disabled> hi</li>
-// </ul>
-//
 export const rehypeToTiptap = (html: string): string => {
 	let result = html;
 
-	// Add data-type="taskList" to ul
 	result = result.replace(
 		/<ul class="contains-task-list">/g,
 		'<ul class="contains-task-list" data-type="taskList">'
 	);
 
-	// Checked items
 	result = result.replace(
-		/<li class="task-list-item"><input type="checkbox" checked[^>]*>\s*([^<]*)<\/li>/g,
+		/<li class="task-list-item">\s*<p><input type="checkbox"[^>]*?\bchecked\b[^>]*?>\s*([\s\S]*?)<\/p>\s*<\/li>/g,
 		'<li class="task-list-item" data-checked="true" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
 	);
 
-	// Unchecked items
 	result = result.replace(
-		/<li class="task-list-item"><input type="checkbox"(?!.*checked)[^>]*>\s*([^<]*)<\/li>/g,
+		/<li class="task-list-item"><input type="checkbox"[^>]*?\bchecked\b[^>]*?>\s*([\s\S]*?)<\/li>/g,
+		'<li class="task-list-item" data-checked="true" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
+	);
+
+	result = result.replace(
+		/<li class="task-list-item">\s*<p><input type="checkbox"(?![^>]*\bchecked\b)[^>]*?>\s*([\s\S]*?)<\/p>\s*<\/li>/g,
+		'<li class="task-list-item" data-checked="false" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
+	);
+
+	result = result.replace(
+		/<li class="task-list-item"><input type="checkbox"(?![^>]*\bchecked\b)[^>]*?>\s*([\s\S]*?)<\/li>/g,
 		'<li class="task-list-item" data-checked="false" data-type="taskItem"><label contenteditable="false"><input type="checkbox"><span></span></label><div><p>$1</p></div></li>'
 	);
 
@@ -55,19 +55,16 @@ export const rehypeToTiptap = (html: string): string => {
 export const tiptapToRehype = (html: string): string => {
 	let result = html;
 
-	// Remove data-type="taskList" from ul
 	result = result.replace(
 		/<ul class="contains-task-list" data-type="taskList">/g,
 		'<ul class="contains-task-list">'
 	);
 
-	// Checked items back
 	result = result.replace(
 		/<li class="task-list-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
 		'<li class="task-list-item"><input type="checkbox" checked> $1</li>'
 	);
 
-	// Unchecked items back
 	result = result.replace(
 		/<li class="task-list-item" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
 		'<li class="task-list-item"><input type="checkbox" disabled> $1</li>'
@@ -84,6 +81,7 @@ export const markdownToHtml = async (markdown: string): Promise<string> => {
 		.use(remarkRehype)
 		.use(rehypeStringify)
 		.process(markdown);
+	console.log("before parsing: ", String(file));
 	return rehypeToTiptap(String(file));
 }
 
