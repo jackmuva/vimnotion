@@ -41,6 +41,10 @@ export const MarkdownEditor = ({
 			currentEditor
 				.chain()
 				.setContent(await markdownToHtml(pane[paneId].buffer))
+				.setTextSelection(getPane(paneId)[paneId].cursorPosition)
+				.focus()
+				.scrollIntoView()
+				.blur()
 				.run()
 		},
 		onUpdate: async ({ editor: currentEditor }) => {
@@ -56,18 +60,6 @@ export const MarkdownEditor = ({
 				updateAllBuffers(currentPane[paneId].fileId, await htmlToMarkdown(editor?.getHTML() ?? ""));
 			}
 		},
-		//TODO:Update with the correct cursor position
-		// onSelectionUpdate: ({ editor: currentEditor }) => {
-		// 	const { from } = currentEditor.state.selection;
-		// 	const currentPane = getPane(paneId);
-		// 	const updatedPane = {
-		// 		[paneId]: {
-		// 			...currentPane[paneId],
-		// 			cursorPosition: from,
-		// 		}
-		// 	};
-		// 	updatePane(updatedPane);
-		// },
 	});
 
 	useEffect(() => {

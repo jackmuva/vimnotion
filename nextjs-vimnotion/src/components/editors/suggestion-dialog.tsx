@@ -189,17 +189,18 @@ export const SuggestionDialog = ({
 					const toChangePlainText = toChangeHtml.replace(/<[^>]*>/g, '').trim();
 					const numOcc: number = prefix.split(toChangePlainText).length - 1;
 
-					//BUG:When the text is a link which maps to multiple nodes
 					let selectionPos = 1;
 					let occurrenceCount = 0;
+					let found = false;
 					if (toChangePlainText) {
 						editor.state.doc.descendants((node, nodePos) => {
 							if (node.isText) {
 								const nodeText = node.text || '';
 								let searchStart = 0;
-								let indexInNode: number;
-								while ((indexInNode = nodeText.indexOf(toChangePlainText, searchStart)) !== -1) {
+								const indexInNode = nodeText.indexOf(toChangePlainText, searchStart)
+								while (indexInNode !== -1) {
 									if (occurrenceCount === numOcc) {
+										found = true;
 										selectionPos = nodePos + indexInNode;
 										return false;
 									}
@@ -210,6 +211,7 @@ export const SuggestionDialog = ({
 							return true;
 						});
 					}
+					if (!found) selectionPos = content.split("\n").filter((_: string, i: number) => i <= suggestion.endLine).join("\n").length;
 
 					editor.chain()
 						.setTextSelection(selectionPos)
