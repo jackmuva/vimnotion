@@ -40,7 +40,7 @@ export const rehypeToTiptap = (html: string): string => {
 	// Checked items
 	result = result.replace(
 		/<li class="task-list-item"><input type="checkbox" checked[^>]*>\s*([^<]*)<\/li>/g,
-		'<li class="task-list-item" data-checked="true"><label contenteditable="false"><input aria-label="task completed" type="checkbox" checked><span></span></label><div><p>$1</p></div></li>'
+		'<li class="task-list-item" data-checked="true"><label contenteditable="false"><input aria-label="task completed" type="checkbox"><span></span></label><div><p>$1</p></div></li>'
 	);
 
 	// Unchecked items
@@ -64,7 +64,7 @@ export const tiptapToRehype = (html: string): string => {
 	// Checked items back
 	result = result.replace(
 		/<li class="task-list-item" data-checked="true"><label contenteditable="false"><input[^>]*><span><\/span><\/label><div><p>([^<]*)<\/p><\/div><\/li>/g,
-		'<li class="task-list-item"><input type="checkbox" checked disabled> $1</li>'
+		'<li class="task-list-item"><input type="checkbox" disabled> $1</li>'
 	);
 
 	// Unchecked items back
