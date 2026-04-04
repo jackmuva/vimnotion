@@ -31,6 +31,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - bug fixes
     - [ ] window moving on markdown editor
     - [ ] nested checkboxes
+    - [ ] don't show line numbers on suggestion
 
 ## Next Todos
 - [ ] create teams
@@ -57,6 +58,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 
 # Marketing Todos
+- [ ] blog post on friction, DX, and WX
 - [ ] blog on "why markdown"
 - [ ] blog on why notion is a beautiful product 
 - [ ] blog on you being the product and that you should be working building a better you

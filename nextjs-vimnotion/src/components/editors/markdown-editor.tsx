@@ -29,11 +29,17 @@ export const MarkdownEditor = ({
 	const getActivePane = useEditorStore((state) => state.getActivePane);
 
 	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
+	const [exec, setExec] = useState<string>("");
 	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
+	const execRef = useRef<string>("");
 
 	useEffect(() => {
 		modeRef.current = mode;
-	}, [mode])
+	}, [mode]);
+
+	useEffect(() => {
+		execRef.current = exec;
+	}, [exec])
 
 	const editor = useEditor({
 		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
@@ -169,7 +175,7 @@ export const MarkdownEditor = ({
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
 				}}>
-				{editor && <MarkdownToolbar mode={mode} editor={editor} />}
+				{editor && <MarkdownToolbar exec={exec} mode={mode} editor={editor} />}
 				<div id={`md-editor-${paneId}`}
 					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {
