@@ -25,6 +25,7 @@ export const MarkdownToolbar = ({
   const renderMdTutor = useEditorStore(state => state.renderMdTutor);
   const saveVnObjectBuffer = useEditorStore(state => state.saveVnObjectBuffer);
   const openFileInBuffer = useEditorStore(state => state.openFileInBuffer);
+  const createNewTab = useEditorStore(state => state.createNewTab);
 
   const [exec, setExec] = useState<ToolbarExec | null>(null);
 
@@ -43,47 +44,10 @@ export const MarkdownToolbar = ({
       () => getActivePane(),
       (paneId: string) => getPane(paneId),
       (paneNode: PaneNode) => updatePane(paneNode),
+      () => createNewTab(),
     );
     setExec(toolbarExec);
   }, []);
-
-  const executeCommand = async (command: string) => {
-    if (!exec) return;
-    const cmd = command.trim();
-    if (!cmd) return;
-
-    switch (cmd) {
-      case ':w':
-      case ':write':
-        await exec.write();
-        break;
-      case ':e':
-      case ':edits':
-        exec.update();
-        break;
-      case ':q':
-      case ':quit':
-        exec.quit();
-        break;
-      case ':wq':
-      case ':wquit':
-        await exec.saveAndQuit();
-        break;
-      case ':split':
-        exec.split();
-        break;
-      case ':vs':
-      case ':vsplit':
-        exec.vsplit();
-        break;
-      case ':mdtutor':
-        exec.mdTutor();
-        break;
-      case ':vimtutor':
-        exec.vimTutor();
-        break;
-    }
-  }
 
   return (
     <div className={`rounded-sm h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]
@@ -98,16 +62,20 @@ export const MarkdownToolbar = ({
           <span className="flex items-center gap-4">
             <span>↑j k↓ move</span>
             <span className="text-blue-200">|</span>
-            <span>-: directory sidebar</span>
+            <span>&quot;-&quot; directory sidebar</span>
             <span className="text-blue-200">|</span>
-            <span>SPACE: leader menu</span>
+            <span>&quot;SPACE&quot; leader menu</span>
+            <span className="text-blue-200">|</span>
+            <div low-data-tooltip={`:vs to vertical split, :split to horizontal split, :w to save, :q to quit, :tabnew to tab`}>
+              more commands
+            </div>
           </span>
           <form onSubmit={async (e) => {
             e.preventDefault();
             const input = document.getElementById(`exec-input-${paneId}`);
-            if (input) {
+            if (input && exec) {
               //@ts-expect-error value does exist on html element
-              await executeCommand(input.value);
+              await exec.executeCommand(input.value);
               //@ts-expect-error value does exist on html element
               input.value = "";
               input.blur();
@@ -118,7 +86,6 @@ export const MarkdownToolbar = ({
         </>
       ) : (
         <div>
-          <span className="font-bold mr-4">-- {mode} --</span>
           <span>esc:command mode</span>
         </div>
       )}

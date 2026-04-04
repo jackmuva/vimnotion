@@ -15,6 +15,7 @@ export class ToolbarExec {
     private getActivePane: () => string,
     private getPane: (paneId: string) => PaneNode,
     private updatePane: (paneNode: PaneNode) => void,
+    private createNewTab: () => void,
   ) { }
   async write() {
     const activePanel: PanelType = this.getActivePanel();
@@ -96,6 +97,52 @@ export class ToolbarExec {
     const activePanel: PanelType = this.getActivePanel();
     if (activePanel === PanelType.MAIN) {
       this.renderVimTutor();
+    }
+  }
+
+  newTab() {
+    const activePanel: PanelType = this.getActivePanel();
+    if (activePanel === PanelType.MAIN) {
+      this.createNewTab();
+    }
+  }
+
+  async executeCommand(command: string) {
+    const cmd = command.trim();
+    if (!cmd) return;
+
+    switch (cmd) {
+      case ':w':
+      case ':write':
+        await this.write();
+        break;
+      case ':e':
+      case ':edits':
+        this.update();
+        break;
+      case ':q':
+      case ':quit':
+        this.quit();
+        break;
+      case ':wq':
+      case ':wquit':
+        await this.saveAndQuit();
+        break;
+      case ':split':
+        this.split();
+        break;
+      case ':vs':
+      case ':vsplit':
+        this.vsplit();
+        break;
+      case ':mdtutor':
+        this.mdTutor();
+        break;
+      case ':vimtutor':
+        this.vimTutor();
+        break;
+      case ':tabnew':
+        this.newTab();
     }
   }
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export const TabContainer = () => {
 	const tabs = useEditorStore(state => state.tabArray);
 	const activeTab = useEditorStore(state => state.activeTab);
+	const setActiveTab = useEditorStore(state => state.setActiveTab);
 	const initTabMap = useEditorStore(state => state.initTabMap);
 	const tabMap = useEditorStore(state => state.tabMap);
 	const [isClient, setIsClient] = useState(false);
@@ -29,9 +30,12 @@ export const TabContainer = () => {
 				<div className="flex space-x-4 shrink-0">
 					{tabs.map((tab, i) => {
 						return (
-							<div key={tab} className={` ${tab === activeTab ?
+							<div key={tab} className={`cursor-pointer ${tab === activeTab ?
 								"text-green-600" :
-								"text-foreground-muted/50"}`}>
+								"text-foreground-muted/50"}`}
+								onClick={() => {
+									setActiveTab(tab);
+								}}>
 								tab:{i}
 							</div>
 						)
