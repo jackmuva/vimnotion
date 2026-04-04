@@ -1,13 +1,55 @@
 import { Editor } from '@tiptap/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { ToolbarExec } from './toolbar-exec';
+import { useEditorStore } from '@/store/editor-store';
+import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
 
 export const MarkdownToolbar = ({
   mode,
   editor,
+  paneId,
 }: {
   mode: "COMMAND" | "INSERT",
   editor: Editor,
+  paneId: string,
 }) => {
+  const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
+  const getActivePanel: () => PanelType = useEditorStore((state) => state.getActivePanel);
+  const splitPane = useEditorStore(state => state.splitPane);
+  const closePane = useEditorStore(state => state.closePane);
+  const getPane: (paneId: string) => PaneNode = useEditorStore((state) => state.getPaneById);
+  const updatePane = useEditorStore((state) => state.updatePane);
+  const setDirectoryConfirmation = useEditorStore(state => state.setDirectoryConfirmation);
+  const renderVimTutor = useEditorStore(state => state.renderVimTutor);
+  const getActivePane = useEditorStore(state => state.getActivePane);
+  const renderMdTutor = useEditorStore(state => state.renderMdTutor);
+  const saveVnObjectBuffer = useEditorStore(state => state.saveVnObjectBuffer);
+  const openFileInBuffer = useEditorStore(state => state.openFileInBuffer);
+
+  const [exec, setExec] = useState<ToolbarExec | null>(null);
+
+  useEffect(() => {
+    const toolbarExec: ToolbarExec = new ToolbarExec(
+      () => splitPane(SplitState.VERTICAL),
+      () => splitPane(SplitState.HORIZONTAL),
+      () => closePane(),
+      () => getActivePanel(),
+      () => saveVnObjectBuffer(),
+      () => setDirectoryConfirmation(true),
+      () => toggleSidebar,
+      () => renderMdTutor(),
+      () => renderVimTutor(),
+      (fileId: string) => openFileInBuffer(fileId),
+      () => getActivePane(),
+      (paneId: string) => getPane(paneId),
+      (paneNode: PaneNode) => updatePane(paneNode),
+    );
+    setExec(toolbarExec);
+  }, []);
+
+  const executeCommand = (command: string) => {
+
+  }
 
   return (
     <div className={`rounded-sm h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]

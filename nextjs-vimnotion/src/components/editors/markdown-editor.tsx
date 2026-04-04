@@ -195,7 +195,7 @@ export const MarkdownEditor = ({
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
 				}}>
-				{editor && <MarkdownToolbar mode={mode} editor={editor} />}
+				{editor && <MarkdownToolbar paneId={paneId} mode={mode} editor={editor} />}
 				<div id={`md-editor-${paneId}`}
 					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {
