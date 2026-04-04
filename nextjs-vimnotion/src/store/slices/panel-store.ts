@@ -394,9 +394,7 @@ export const createPanelSlice = (
 			paneIndex = paneIndex >= paneArray.length ? 0 : paneIndex;
 			curPane = paneArray[paneIndex];
 
-			if (paneTree[curPane].state === SplitState.NONE
-				&& !paneTree[curPane].deleted
-				&& paneTree[curPane].editorType === EditorType.VIM) {
+			if (paneTree[curPane].state === SplitState.NONE && !paneTree[curPane].deleted) {
 				return curPane;
 			}
 		}
