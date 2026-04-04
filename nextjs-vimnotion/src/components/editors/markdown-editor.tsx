@@ -91,7 +91,7 @@ export const MarkdownEditor = ({
 
 	useEffect(() => {
 		if (activePane === paneId && activePanel === PanelType.MAIN && editor && (!getPane(paneId)[paneId].suggestionState.suggestionActive || getPane(paneId)[paneId].suggestionState.suggestions.length === 0)) {
-			const input = document.getElementById("exec-input");
+			const input = document.getElementById(`exec-input-${paneId}`);
 
 			const handleSpaceKey = (event: KeyboardEvent) => {
 				if (modeRef.current === "COMMAND" && event.key === ' ' && input !== document.activeElement) {
@@ -143,7 +143,7 @@ export const MarkdownEditor = ({
 							.run();
 						setMode("COMMAND");
 					} else {
-						const input = document.getElementById("exec-input");
+						const input = document.getElementById(`exec-input-${paneId}`);
 						if (input) {
 							//@ts-expect-error value does exist on html element
 							input.value = "";
@@ -158,7 +158,7 @@ export const MarkdownEditor = ({
 				if (modeRef.current === "COMMAND" && event.key === ':' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
-					const input = document.getElementById("exec-input");
+					const input = document.getElementById(`exec-input-${paneId}`);
 					if (input) {
 						input.focus();
 						//@ts-expect-error value does exist on html element

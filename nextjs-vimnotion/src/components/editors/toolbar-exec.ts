@@ -20,10 +20,11 @@ export class ToolbarExec {
     const activePanel: PanelType = this.getActivePanel();
     const paneData = this.getPane(this.getActivePane())[this.getActivePane()];
     if (activePanel === PanelType.MAIN && paneData.editorType !== EditorType.AGENT) {
-      await this.saveVnObjectBuffer();
+      return await this.saveVnObjectBuffer();
     } else if (activePanel === PanelType.SIDEBAR) {
       this.setDirectoryConfirmation();
     }
+    return false;
   }
 
   update() {
