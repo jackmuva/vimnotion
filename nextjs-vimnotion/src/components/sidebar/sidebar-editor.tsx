@@ -210,7 +210,7 @@ export const SidebarEditor = () => {
 	}
 
 	return (
-		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 bg-secondary-background'>
+		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 '>
 			<div className="flex gap-2 justify-center items-center px-2">
 				<div low-data-tooltip="&quot;i&quot; to go into insert mode, type the file name on a new line"
 					className="text-sm flex-1 font-robo-mono">

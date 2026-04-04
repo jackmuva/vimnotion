@@ -29,17 +29,12 @@ export const MarkdownEditor = ({
 	const getActivePane = useEditorStore((state) => state.getActivePane);
 
 	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
-	const [exec, setExec] = useState<string>("");
 	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
 	const execRef = useRef<string>("");
 
 	useEffect(() => {
 		modeRef.current = mode;
 	}, [mode]);
-
-	useEffect(() => {
-		execRef.current = exec;
-	}, [exec])
 
 	const editor = useEditor({
 		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
@@ -95,9 +90,11 @@ export const MarkdownEditor = ({
 	}, [pane[paneId].bufferVersion, pane[paneId].fileId]);
 
 	useEffect(() => {
-		if (activePane === paneId && activePanel === PanelType.MAIN && editor && !getPane(paneId)[paneId].suggestionState.suggestionActive) {
+		if (activePane === paneId && activePanel === PanelType.MAIN && editor && (!getPane(paneId)[paneId].suggestionState.suggestionActive || getPane(paneId)[paneId].suggestionState.suggestions.length === 0)) {
+			const input = document.getElementById("exec-input");
+
 			const handleSpaceKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === ' ') {
+				if (modeRef.current === "COMMAND" && event.key === ' ' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					toggleLeaderPanel();
@@ -106,7 +103,7 @@ export const MarkdownEditor = ({
 			document.addEventListener('keydown', handleSpaceKey);
 
 			const handleDashKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === '-') {
+				if (modeRef.current === "COMMAND" && event.key === '-' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					toggleSidebar()
@@ -115,7 +112,7 @@ export const MarkdownEditor = ({
 			document.addEventListener('keydown', handleDashKey);
 
 			const handleJKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === 'j') {
+				if (modeRef.current === "COMMAND" && event.key === 'j' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
@@ -125,7 +122,7 @@ export const MarkdownEditor = ({
 			document.addEventListener('keydown', handleJKey);
 
 			const handleKKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "COMMAND" && event.key === 'k') {
+				if (modeRef.current === "COMMAND" && event.key === 'k' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
@@ -135,19 +132,41 @@ export const MarkdownEditor = ({
 			document.addEventListener('keydown', handleKKey);
 
 			const handleEscKey = (event: KeyboardEvent) => {
-				if (modeRef.current === "INSERT" && event.key === 'Escape') {
-					event.preventDefault();
-					event.stopImmediatePropagation();
-					const { from } = editor.state.selection;
-					editor?.chain()
-						.setTextSelection({ from: from, to: from + 1 })
-						.blur()
-						.run();
-					setMode("COMMAND");
+				if (event.key === 'Escape') {
+					if (modeRef.current === "INSERT") {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						const { from } = editor.state.selection;
+						editor?.chain()
+							.setTextSelection({ from: from, to: from + 1 })
+							.blur()
+							.run();
+						setMode("COMMAND");
+					} else {
+						const input = document.getElementById("exec-input");
+						if (input) {
+							//@ts-expect-error value does exist on html element
+							input.value = "";
+							input.blur();
+						}
+					}
 				}
 			};
 			document.addEventListener('keydown', handleEscKey);
 
+			const handleColonKey = (event: KeyboardEvent) => {
+				if (modeRef.current === "COMMAND" && event.key === ':' && input !== document.activeElement) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					const input = document.getElementById("exec-input");
+					if (input) {
+						input.focus();
+						//@ts-expect-error value does exist on html element
+						input.value = ":";
+					}
+				}
+			};
+			document.addEventListener('keydown', handleColonKey);
 
 			return () => {
 				document.removeEventListener('keydown', handleSpaceKey);
@@ -155,6 +174,7 @@ export const MarkdownEditor = ({
 				document.removeEventListener('keydown', handleJKey);
 				document.removeEventListener('keydown', handleKKey);
 				document.removeEventListener('keydown', handleEscKey);
+				document.removeEventListener('keydown', handleColonKey);
 			}
 		}
 	}, [activePane, editor, activePanel]);
@@ -175,7 +195,7 @@ export const MarkdownEditor = ({
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
 				}}>
-				{editor && <MarkdownToolbar exec={exec} mode={mode} editor={editor} />}
+				{editor && <MarkdownToolbar mode={mode} editor={editor} />}
 				<div id={`md-editor-${paneId}`}
 					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
 					<EditorContent editor={editor} onClick={() => {

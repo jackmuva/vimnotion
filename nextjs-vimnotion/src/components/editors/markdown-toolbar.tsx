@@ -4,19 +4,17 @@ import { useState } from 'react';
 export const MarkdownToolbar = ({
   mode,
   editor,
-  exec,
 }: {
   mode: "COMMAND" | "INSERT",
   editor: Editor,
-  exec: string,
 }) => {
 
   return (
     <div className={`rounded-sm h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]
       items-center relative
 					${mode === "COMMAND"
-        ? "bg-indigo-900 text-white"
-        : "bg-orange-900 text-white"
+        ? "bg-radial-[at_50%_175%] from-background to-indigo-900/20 dark:to-indigo-900/75 to-100%"
+        : "bg-radial-[at_50%_100%] from-background to-orange-900/20 dark:to-orange-900/75 to-100%"
       }`}>
       <span className="font-bold mr-4">-- {mode} --</span>
       {mode === "COMMAND" ? (
@@ -28,9 +26,19 @@ export const MarkdownToolbar = ({
             <span className="text-blue-200">|</span>
             <span>SPACE: leader menu</span>
           </span>
-          <div className='h-4 absolute bottom-1 left-4'>
-            {exec}
-          </div>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const input = document.getElementById("exec-input");
+            if (input) {
+              //@ts-expect-error value does exist on html element
+              console.log(input.value);
+              //@ts-expect-error value does exist on html element
+              input.value = "";
+              input.blur();
+            }
+          }}>
+            <input className='h-4 absolute bottom-1 left-4 focus:outline-none w-full' id="exec-input" />
+          </form>
         </>
       ) : (
         <div>

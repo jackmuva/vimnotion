@@ -289,17 +289,13 @@ export const SuggestionDialog = ({
 		<div id={`suggestion--${paneId}-${suggestion.id}`}
 			className={`${(paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index
 				&& getPane(paneId)[paneId].suggestionState.suggestionActive) ?
-				"bg-foreground/15" : ""} 
-			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}
+				"bg-radial-[at_-20%_50%] from-background to-foreground/15 to-100%" : ""} 
+			p-2 flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}
 			onClick={() => refocus()}>
-			<div className="flex text-sm font-bold">
-				{suggestion.startLine !== suggestion.endLine ? ` Lines: ${suggestion.startLine} - ${suggestion.endLine}` :
-					`Line: ${suggestion.startLine}`}
-			</div>
 			<div className="text-sm text-black flex flex-col">
 				{suggestion.oldString.split('\n').map((line, i) => (
 					<div key={i}>
-						<span className="bg-red-200/70 px-1 rounded-xs">{`[${suggestion.startLine + i}]`} {line}</span>
+						<span className="bg-red-200/70 px-1 rounded-xs">{line}</span>
 					</div>
 				))}
 			</div>
