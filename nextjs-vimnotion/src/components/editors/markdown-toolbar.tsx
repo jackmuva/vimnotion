@@ -162,7 +162,7 @@ export const MarkdownToolbar = ({
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("## ", editor);
+              await typeWithDelay("### ", editor);
               editor.commands.setHeading({ level: 3 });
               editor.chain().focus().run();
             }}>
