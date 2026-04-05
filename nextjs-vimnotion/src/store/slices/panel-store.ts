@@ -4,6 +4,7 @@ import { VnObject } from "@/types/primitive-types";
 import { MD_TUTOR_BUFFER, START_BUFFER, VIM_TUTOR_BUFFER } from "./tutorial-text";
 import { updateVnObject } from "@/services/api-service";
 import { StoreSetter, StoreGetter, DrillDownResult } from "../../types/store-types";
+import { formatMarkdown } from "@/lib/utils";
 
 export const createPanelSlice = (
 	set: StoreSetter,
@@ -393,9 +394,7 @@ export const createPanelSlice = (
 			paneIndex = paneIndex >= paneArray.length ? 0 : paneIndex;
 			curPane = paneArray[paneIndex];
 
-			if (paneTree[curPane].state === SplitState.NONE
-				&& !paneTree[curPane].deleted
-				&& paneTree[curPane].editorType === EditorType.VIM) {
+			if (paneTree[curPane].state === SplitState.NONE && !paneTree[curPane].deleted) {
 				return curPane;
 			}
 		}
@@ -409,7 +408,7 @@ export const createPanelSlice = (
 			id: activePane[paneId].fileId.split("|")[0],
 			name: activePane[paneId].fileId.split("|")[1],
 			isFile: true,
-			contents: activePane[paneId].buffer,
+			contents: await get().formatMarkdownBuffer(),
 			updateDate: (new Date).toISOString(),
 			public: activePane[paneId].public,
 		}
@@ -459,5 +458,15 @@ export const createPanelSlice = (
 		activePane[Object.keys(activePane)[0]].buffer = VIM_TUTOR_BUFFER;
 		get().updatePane(activePane);
 	},
+
+	formatMarkdownBuffer: async (): Promise<string> => {
+		const activePane: PaneNode = { ...get().getPaneById(get().activePane) };
+		const formattedMd = await formatMarkdown(activePane[Object.keys(activePane)[0]].buffer);
+		get().updatePane(activePane);
+		activePane[Object.keys(activePane)[0]].buffer = formattedMd;
+		activePane[Object.keys(activePane)[0]].bufferVersion += 1;
+		get().updatePane(activePane);
+		return formattedMd;
+	}
 });
 

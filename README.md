@@ -21,36 +21,48 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
-- [x] tiptap editor
+- tiptap editor
+    - [ ] nested checkboxes
 - agent
-    - [x] compaction hook
-    - [x] test automated delete session
+    - [ ] compaction hook
+    - [ ] test automated delete session
     - [ ] Read file in sections
 - [ ] RSS feed
 - bug fixes
     - [ ] window moving on markdown editor
 
-## High-level Todos
+## Next Todos
 - [ ] create teams
+  - account management
 - [ ] extensability with hotkeys for apis
 - [ ] version history
   - [ ] trash
 - [ ] local md downloads
-- [ ] account modal
+- [ ] backlinking
 
 ## Nice to haves
+- optimizations
+    - [ ] batch writing instead of concurrent writes
+    - [ ] non-blocking retries on database updates
+
+## In Question
+- migrating go to next?
 - agent
     - [ ] endpoint timeout?
     - [ ] evaluation hook?
     - [ ] model selector?
+- spreadsheets
+- inbox/messaging
 
 
 # Marketing Todos
+- [ ] blog post on friction, DX, and WX
 - [ ] blog on "why markdown"
+- [ ] blog on why notion is a beautiful product 
+- [ ] blog on you being the product and that you should be working building a better you
 - [ ] blog posts that help other developers building "x"
     - [ ] search
     - [ ] image storage
     - [ ] key commands useRef
     - [ ] agents from scratch
-    - [ ] AI and purpose
     - [ ] AI engineering is just software engineering

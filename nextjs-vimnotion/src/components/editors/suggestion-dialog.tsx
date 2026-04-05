@@ -4,17 +4,23 @@ import { PanelType, PaneNode } from "@/types/editor-types";
 import { Suggestion } from "@/types/primitive-types";
 import { EditorView } from "codemirror";
 import { useEffect, useState } from "react";
+import { Editor } from "@tiptap/react"
+import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
 
 export const SuggestionDialog = ({
 	suggestion,
 	paneId,
 	index,
+	refocus,
 	view,
+	editor,
 }: {
 	suggestion: Suggestion,
 	paneId: string,
 	index: number,
-	view: EditorView,
+	refocus: () => void,
+	view?: EditorView,
+	editor?: Editor,
 }) => {
 	const activePane = useEditorStore((state) => state.activePane);
 	const getPane = useEditorStore((state) => state.getPaneById);
@@ -71,9 +77,7 @@ export const SuggestionDialog = ({
 		});
 	}
 
-	const findClosestIndex = (matchString: string, line: number): number | null => {
-		const content: string = view.state.doc.toString();
-
+	const findClosestIndex = (matchString: string, line: number, content: string): number | null => {
 		const matchIndexes: number[] = [];
 		let curStart: number = 0;
 		while (content.slice(curStart).indexOf(matchString) !== -1) {
@@ -98,40 +102,125 @@ export const SuggestionDialog = ({
 		return closestIndex;
 	}
 
-	const applySuggestion = () => {
-		const content: string = view.state.doc.toString();
-		const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine);
+	const applySuggestion = async () => {
+		if (view) {
+			const content: string = view.state.doc.toString();
+			const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine, content);
 
-		const prefix: string = content.slice(0, closestIndex!);
-		const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
-		const toChange = suggestion.newString;
+			const prefix: string = content.slice(0, closestIndex!);
+			const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
+			const toChange = suggestion.newString;
 
-		const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
-		const line = view.state.doc.line(lineNumber);
+			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
+			const line = view.state.doc.line(lineNumber + 1);
 
-		view.dispatch({
-			changes: {
-				from: 0,
-				to: content.length,
-				insert: prefix + toChange + suffix,
-			},
-			selection: { anchor: line.from, head: line.from },
-			scrollIntoView: true,
-		});
-		view.scrollDOM.scrollTop = line.from;
+			view.dispatch({
+				changes: {
+					from: 0,
+					to: content.length,
+					insert: prefix + toChange + suffix,
+				},
+				selection: { anchor: line.from, head: line.from },
+				scrollIntoView: true,
+			});
+			view.scrollDOM.scrollTop = line.from;
+		} else if (editor) {
+			const content: string = await htmlToMarkdown(editor.getHTML());
+			const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine, content);
+			if (!closestIndex) return;
+
+			const prefix: string = content.slice(0, closestIndex);
+			const suffix: string = content.slice(closestIndex! + suggestion.oldString.length);
+			const toChange = suggestion.newString;
+			const numOcc: number = prefix.split(suggestion.oldString).length - 1;
+
+			const toChangeHtml = await markdownToHtml(suggestion.oldString);
+			const toChangePlainText = toChangeHtml.replace(/<[^>]*>/g, '').trim();
+
+			let selectionPos = 1;
+			let occurrenceCount = 0;
+			if (toChangePlainText) {
+				editor.state.doc.descendants((node, nodePos) => {
+					if (node.isText) {
+						const nodeText = node.text || '';
+						let searchStart = 0;
+						let indexInNode: number;
+						while ((indexInNode = nodeText.indexOf(toChangePlainText, searchStart)) !== -1) {
+							if (occurrenceCount === numOcc) {
+								selectionPos = nodePos + indexInNode;
+								return false;
+							}
+							occurrenceCount++;
+							searchStart = indexInNode + 1;
+						}
+					}
+					selectionPos = prefix.length;
+					return true;
+				});
+			}
+
+			editor.chain()
+				.setContent(await markdownToHtml(prefix + toChange + suffix))
+				.setTextSelection(selectionPos)
+				.scrollIntoView()
+				.run();
+		}
 	}
 
 	useEffect(() => {
 		if (paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index &&
 			activePanel === PanelType.MAIN && getPane(paneId)[paneId].suggestionState.suggestionActive) {
-			const matchLine: number = view.state.doc.toString().slice(0, findClosestIndex(suggestion.oldString, suggestion.startLine)!).split("\n").length;
-			const lineNumber = Math.min(matchLine, view.state.doc.lines);
-			const line = view.state.doc.line(lineNumber);
-			view.dispatch({
-				selection: { anchor: line.from, head: line.from },
-				scrollIntoView: true,
-			});
-			view.scrollDOM.scrollTop = line.from;
+			if (view) {
+				const matchLine: number = view.state.doc.toString().slice(0, findClosestIndex(suggestion.oldString, suggestion.startLine, view.state.doc.toString())!).split("\n").length;
+				const lineNumber = Math.min(matchLine, view.state.doc.lines);
+				const line = view.state.doc.line(lineNumber);
+				view.dispatch({
+					selection: { anchor: line.from, head: line.from },
+					scrollIntoView: true,
+				});
+				view.scrollDOM.scrollTop = line.from;
+			} else if (editor) {
+				(async () => {
+					const content: string = await htmlToMarkdown(editor.getHTML());
+					const closestIndex: number | null = findClosestIndex(suggestion.oldString, suggestion.startLine, content);
+
+					const prefix: string = content.slice(0, closestIndex ?? 0);
+					const toChangeHtml: string = await markdownToHtml(suggestion.oldString);
+					const toChangePlainText = toChangeHtml.replace(/<[^>]*>/g, '').trim();
+					const numOcc: number = prefix.split(toChangePlainText).length - 1;
+
+					let selectionPos = 1;
+					let occurrenceCount = 0;
+					let found = false;
+					if (toChangePlainText) {
+						editor.state.doc.descendants((node, nodePos) => {
+							if (node.isText) {
+								const nodeText = node.text || '';
+								let searchStart = 0;
+								const indexInNode = nodeText.indexOf(toChangePlainText, searchStart)
+								while (indexInNode !== -1) {
+									if (occurrenceCount === numOcc) {
+										found = true;
+										selectionPos = nodePos + indexInNode;
+										return false;
+									}
+									occurrenceCount++;
+									searchStart = indexInNode + 1;
+								}
+							}
+							return true;
+						});
+					}
+					if (!found) selectionPos = content.split("\n").filter((_: string, i: number) => i <= suggestion.endLine).join("\n").length;
+
+					editor.chain()
+						.setTextSelection(selectionPos)
+						.focus()
+						.scrollIntoView()
+						.blur()
+						.run();
+				})();
+			}
 
 			const handleYKey = async (event: KeyboardEvent) => {
 				if (event.key === 'y') {
@@ -192,23 +281,21 @@ export const SuggestionDialog = ({
 				document.removeEventListener('keydown', handleSpaceKey);
 			};
 		}
-	}, [activeIndex, updatePane, paneId, index, activePane, view,
-		getPane, toggleLeaderPanel, activePanel, suggestion]);
+	}, [activeIndex, updatePane, paneId, index, activePane, view, editor,
+		getPane, toggleLeaderPanel, activePanel, suggestion,
+		getPane(paneId)[paneId].suggestionState.activeSuggestionIndex, getPane(paneId)[paneId].suggestionState.suggestionActive]);
 
 	return (
 		<div id={`suggestion--${paneId}-${suggestion.id}`}
 			className={`${(paneId === activePane && getPane(paneId)[paneId].suggestionState.activeSuggestionIndex === index
 				&& getPane(paneId)[paneId].suggestionState.suggestionActive) ?
-				"bg-foreground/15" : ""} 
-			flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}>
-			<div className="flex text-sm font-bold">
-				{suggestion.startLine !== suggestion.endLine ? ` Lines: ${suggestion.startLine} - ${suggestion.endLine}` :
-					`Line: ${suggestion.startLine}`}
-			</div>
+				"bg-radial-[at_-20%_50%] from-background to-foreground/15 to-100%" : ""} 
+			p-2 flex flex-col gap-1 border-b border-foreground/50 pb-2 font-ibm-mono`}
+			onClick={() => refocus()}>
 			<div className="text-sm text-black flex flex-col">
 				{suggestion.oldString.split('\n').map((line, i) => (
 					<div key={i}>
-						<span className="bg-red-200/70 px-1 rounded-xs">{`[${suggestion.startLine + i}]`} {line}</span>
+						<span className="bg-red-200/70 px-1 rounded-xs">{line}</span>
 					</div>
 				))}
 			</div>

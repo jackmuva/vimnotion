@@ -42,7 +42,7 @@ export const SearchPanel = () => {
 	return (
 		<div id={`search-panel`}
 			className='px-2 pb-2 font-robo-mono text-xl z-20 w-full h-1/4 absolute bottom-0 left-0'>
-			<div className="bg-background-muted rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4
+			<div className="bg-radial-[at_50%_-50%] from-background to-background-muted to-100% rounded-sm grid grid-cols-1 md:grid-cols-2 p-4 px-28 content-start gap-4
 				h-full">
 				<div>
 					<button id={`first-search-option`}

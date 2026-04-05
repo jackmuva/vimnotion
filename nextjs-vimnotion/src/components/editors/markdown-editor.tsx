@@ -1,12 +1,17 @@
 import { useEditorStore } from "@/store/editor-store";
-import { EditorType, PanelType, PaneNode } from "@/types/editor-types";
-import { Loader } from "lucide-react";
-import { useEffect } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { gruvboxDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PanelType, PaneNode } from "@/types/editor-types";
+import { useEffect, useRef, useState } from "react";
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import { htmlToMarkdown, markdownToHtml } from "@/lib/utils";
+import { CustomFileHandler } from "./markdown-file-handler";
+import { SuggestionSidebar } from "./suggestion-sidebar";
+import { TableKit } from '@tiptap/extension-table';
+import { TaskList, TaskItem } from "@tiptap/extension-list";
+import { MarkdownToolbar } from "./markdown-toolbar";
+import { all, createLowlight } from 'lowlight';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
 export const MarkdownEditor = ({
 	paneId
@@ -17,52 +22,85 @@ export const MarkdownEditor = ({
 	const updatePane: (pane: PaneNode) => void = useEditorStore((state) => state.updatePane);
 	const pane: PaneNode = getPane(paneId);
 	const activePane: string = useEditorStore((state) => state.activePane);
+	const activePanel: PanelType = useEditorStore((state) => state.activePanel);
 	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
 	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
 	const updateActivePane = useEditorStore((state) => state.updateActivePane);
 	const setActivePanel = useEditorStore((state) => state.setActivePanel);
+	const updateAllBuffers = useEditorStore((state) => state.updateAllBuffers);
+	const getActivePane = useEditorStore((state) => state.getActivePane);
 
-	const shiftToVim = (): void => {
-		const updateNode: PaneNode = {
-			[paneId]: {
-				...pane[paneId],
-				editorType: EditorType.VIM,
-			},
-		};
-		updatePane(updateNode);
-	}
+	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
+	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
+
+	const lowlight = createLowlight(all)
 
 	useEffect(() => {
-		const mdElement = document.getElementById(`md-editor-${paneId}`);
-		if (!mdElement) return;
+		modeRef.current = mode;
+	}, [mode]);
 
-		const buffer = pane[paneId].buffer;
-		const cursorPos = pane[paneId].cursorPosition;
-		const textBeforeCursor = buffer.slice(0, cursorPos);
-		const cursorLine = textBeforeCursor.split('\n').length;
-
-		const elementsWithLine = mdElement.querySelectorAll('[data-source-line]');
-		let closestElement: Element | null = null;
-		let closestLine = 0;
-
-		elementsWithLine.forEach((el) => {
-			const line = parseInt(el.getAttribute('data-source-line') || '0', 10);
-			if (line <= cursorLine && line > closestLine) {
-				closestLine = line;
-				closestElement = el;
+	const editor = useEditor({
+		extensions: [StarterKit.configure({
+			codeBlock: false
+		}),
+			Image, CustomFileHandler, TableKit,
+		TaskList.configure({
+			HTMLAttributes: {
+				class: "contains-task-list"
 			}
-		});
-
-		if (closestElement !== null) {
-			(closestElement as Element).scrollIntoView({ block: 'center', behavior: 'instant' });
-		}
-
-	}, [toggleLeaderPanel]);
+		}),
+		TaskItem.configure({
+			HTMLAttributes: {
+				class: "task-list-item"
+			},
+			a11y: {
+				checkboxLabel(_, checked) {
+					return checked ? "task completed" : "task incomplete"
+				},
+			}
+		}),
+		CodeBlockLowlight.configure({ lowlight }),
+		],
+		content: '<p>Loading...</p>',
+		immediatelyRender: false,
+		onCreate: async ({ editor: currentEditor }) => {
+			currentEditor
+				.chain()
+				.setContent(await markdownToHtml(pane[paneId].buffer))
+				.setTextSelection(getPane(paneId)[paneId].cursorPosition)
+				.focus()
+				.scrollIntoView()
+				.blur()
+				.run()
+		},
+		onUpdate: async ({ editor: currentEditor }) => {
+			const currentPane: PaneNode = getPane(paneId);
+			const updatedPane = {
+				[paneId]: {
+					...currentPane[paneId],
+					buffer: await htmlToMarkdown(currentEditor?.getHTML() ?? ""),
+				}
+			};
+			updatePane(updatedPane);
+			if (paneId === getActivePane()) {
+				updateAllBuffers(currentPane[paneId].fileId, await htmlToMarkdown(editor?.getHTML() ?? ""));
+			}
+		},
+	});
 
 	useEffect(() => {
-		if (activePane === paneId) {
+		if (!editor) return;
+		markdownToHtml(pane[paneId].buffer).then((html: string) => {
+			editor.commands.setContent(html);
+		});
+	}, [pane[paneId].bufferVersion, pane[paneId].fileId]);
+
+	useEffect(() => {
+		if (activePane === paneId && activePanel === PanelType.MAIN && editor && (!getPane(paneId)[paneId].suggestionState.suggestionActive || getPane(paneId)[paneId].suggestionState.suggestions.length === 0)) {
+			const input = document.getElementById(`exec-input-${paneId}`);
+
 			const handleSpaceKey = (event: KeyboardEvent) => {
-				if (event.key === ' ') {
+				if (modeRef.current === "COMMAND" && event.key === ' ' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					toggleLeaderPanel();
@@ -71,7 +109,7 @@ export const MarkdownEditor = ({
 			document.addEventListener('keydown', handleSpaceKey);
 
 			const handleDashKey = (event: KeyboardEvent) => {
-				if (event.key === '-') {
+				if (modeRef.current === "COMMAND" && event.key === '-' && input !== document.activeElement) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 					toggleSidebar()
@@ -79,100 +117,123 @@ export const MarkdownEditor = ({
 			};
 			document.addEventListener('keydown', handleDashKey);
 
+			const handleJKey = (event: KeyboardEvent) => {
+				if (modeRef.current === "COMMAND" && event.key === 'j' && input !== document.activeElement) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
+					editorElem?.scrollBy(0, 200);
+				}
+			};
+			document.addEventListener('keydown', handleJKey);
+
+			const handleKKey = (event: KeyboardEvent) => {
+				if (modeRef.current === "COMMAND" && event.key === 'k' && input !== document.activeElement) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					const editorElem = window.document.getElementById(`md-editor-${paneId}`);
+					editorElem?.scrollBy(0, -200);
+				}
+			};
+			document.addEventListener('keydown', handleKKey);
+
+			const handleEscKey = (event: KeyboardEvent) => {
+				if (event.key === 'Escape') {
+					if (modeRef.current === "INSERT") {
+						event.preventDefault();
+						event.stopImmediatePropagation();
+						const { from } = editor.state.selection;
+						editor?.chain()
+							.setTextSelection({ from: from, to: from + 1 })
+							.blur()
+							.run();
+						setMode("COMMAND");
+					} else {
+						const input = document.getElementById(`exec-input-${paneId}`);
+						if (input) {
+							//@ts-expect-error value does exist on html element
+							input.value = "";
+							input.blur();
+						}
+					}
+				}
+			};
+			document.addEventListener('keydown', handleEscKey);
+
+			const handleColonKey = (event: KeyboardEvent) => {
+				if (modeRef.current === "COMMAND" && event.key === ':' && input !== document.activeElement) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					const input = document.getElementById(`exec-input-${paneId}`);
+					if (input) {
+						input.focus();
+						//@ts-expect-error value does exist on html element
+						input.value = ":";
+					}
+				}
+			};
+			document.addEventListener('keydown', handleColonKey);
 
 			return () => {
 				document.removeEventListener('keydown', handleSpaceKey);
 				document.removeEventListener('keydown', handleDashKey);
+				document.removeEventListener('keydown', handleJKey);
+				document.removeEventListener('keydown', handleKKey);
+				document.removeEventListener('keydown', handleEscKey);
+				document.removeEventListener('keydown', handleColonKey);
 			}
 		}
-	}, [activePane]);
+	}, [activePane, editor, activePanel]);
+
+	useEffect(() => {
+		return () => {
+			if (editor) {
+				editor.destroy();
+			}
+		}
+	}, [editor]);
 
 	return (
-		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} relative h-full w-full 
-				z-20 bg-background flex flex-col justify-start items-center space-y-2 p-2`}
-			onClick={() => {
-				updateActivePane(paneId);
-				setActivePanel(PanelType.MAIN);
-			}}>
-			<h1 className="flex justify-end w-full italic  
-				border-b border-b-background-muted/50">
-				<button className="flex items-center space-x-1 
-					hover:bg-background-muted/50 p-1 cursor-pointer rounded-sm"
-					onClick={() => shiftToVim()}>
-					<Loader size={15} />
-					<div className="text-sm">vim-mode</div>
-				</button>
-			</h1>
-			<div id={`md-editor-${paneId}`}
-				className={`no-scrollbar h-full max-w-[1100px] w-full overflow-y-scroll`}>
-				<Markdown remarkPlugins={[remarkGfm]}
-					rehypePlugins={[rehypeRaw]}
-					components={{
-						a({ node, children, ...props }: any) {
-							return <a target="_blank" {...props}>{children}</a>;
-						},
-						p({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <p data-source-line={line} {...props}>{children}</p>;
-						},
-						h1({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h1 data-source-line={line} {...props}>{children}</h1>;
-						},
-						h2({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h2 data-source-line={line} {...props}>{children}</h2>;
-						},
-						h3({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h3 data-source-line={line} {...props}>{children}</h3>;
-						},
-						h4({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h4 data-source-line={line} {...props}>{children}</h4>;
-						},
-						h5({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h5 data-source-line={line} {...props}>{children}</h5>;
-						},
-						h6({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <h6 data-source-line={line} {...props}>{children}</h6>;
-						},
-						li({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <li data-source-line={line} {...props}>{children}</li>;
-						},
-						blockquote({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <blockquote data-source-line={line} {...props}>{children}</blockquote>;
-						},
-						img({ node, src, alt, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <img data-source-line={line} src={src} alt={alt} {...props} />;
-						},
-						pre({ node, children, ...props }: any) {
-							const line = node?.position?.start?.line;
-							return <pre data-source-line={line} {...props}>{children}</pre>;
-						},
-						code({ node, inline, className, children, ...props }: any) {
-							const match = /language-(\w+)/.exec(className || '');
-
-							return !inline && match ? (
-								<SyntaxHighlighter style={gruvboxDark} PreTag="div" language={match[1]} {...props}>
-									{String(children).replace(/\n$/, '')}
-								</SyntaxHighlighter>
-							) : (
-								<code className={className} {...props}>
-									{children}
-								</code>
-							);
-						},
-					}}
-				>
-					{pane[paneId].buffer}
-				</Markdown>
+		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} h-full w-full 
+				z-20 bg-background flex`}>
+			<div className="flex flex-col justify-between items-center space-y-2 p-2 relative h-full w-full"
+				onClick={() => {
+					updateActivePane(paneId);
+					setActivePanel(PanelType.MAIN);
+				}}>
+				{editor && <MarkdownToolbar paneId={paneId} mode={mode} editor={editor} />}
+				<div id={`md-editor-${paneId}`}
+					className={`no-scrollbar max-w-[1100px] w-full overflow-y-scroll scroll-smooth pb-20 flex-1 min-h-0`}>
+					<EditorContent editor={editor} onClick={() => {
+						if (!editor) return;
+						editor?.chain()
+							.focus()
+							.run();
+						setMode("INSERT")
+					}} />
+				</div>
 			</div>
+			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && editor &&
+				<SuggestionSidebar paneId={paneId}
+					view={undefined}
+					editor={editor}
+					suggestions={pane[paneId].suggestionState.suggestions}
+					refocus={(index: number) => {
+						const currentPane: PaneNode = getPane(paneId);
+						const updatedPane: PaneNode = {
+							[paneId]: {
+								...currentPane[paneId],
+								suggestionState: {
+									...currentPane[paneId].suggestionState,
+									activeSuggestionIndex: index,
+									suggestionActive: true,
+								}
+							}
+						};
+						updatePane(updatedPane);
+						updateActivePane(paneId);
+					}} />
+			}
 		</div>
 	);
 }

@@ -112,10 +112,13 @@ export const VimEditor = ({
 			setActivePanel(PanelType.MAIN);
 
 			const currentPane: PaneNode = getPane(paneId);
-			const updatedPane = {
+			const updatedPane: PaneNode = {
 				[paneId]: {
 					...currentPane[paneId],
-					suggestionActive: false,
+					suggestionState: {
+						...currentPane[paneId].suggestionState,
+						suggestionActive: false,
+					}
 				}
 			};
 			updatePane(updatedPane);
@@ -189,7 +192,7 @@ export const VimEditor = ({
 			} else if (activePanel === PanelType.MAIN) {
 				vimEditor.focus();
 				if (newImageUrl) {
-					const mdImage = `![your-image-name](${newImageUrl})`
+					const mdImage = `![new-image](${newImageUrl})`
 					const cursorPosition: number = vimEditor.state.selection.main.head;
 					const transaction = vimEditor.state.update({
 						changes: {
@@ -391,8 +394,24 @@ export const VimEditor = ({
 			</div>
 			{pane[paneId].suggestionState.suggestions && pane[paneId].suggestionState.suggestions.length > 0 && vimEditor &&
 				<SuggestionSidebar paneId={paneId}
-					editorView={vimEditor}
-					suggestions={pane[paneId].suggestionState.suggestions} />
+					view={vimEditor}
+					editor={undefined}
+					suggestions={pane[paneId].suggestionState.suggestions}
+					refocus={(index: number) => {
+						const currentPane: PaneNode = getPane(paneId);
+						const updatedPane: PaneNode = {
+							[paneId]: {
+								...currentPane[paneId],
+								suggestionState: {
+									...currentPane[paneId].suggestionState,
+									activeSuggestionIndex: index,
+									suggestionActive: true,
+								}
+							}
+						};
+						updatePane(updatedPane);
+						updateActivePane(paneId);
+					}} />
 			}
 		</div>
 	);
