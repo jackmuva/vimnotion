@@ -95,8 +95,9 @@ export const MarkdownToolbar = ({
         : "bg-radial-[at_50%_100%] from-background to-orange-900/20 dark:to-orange-900/75 to-100%"
       }`}>
       <span className={`text-base font-bold mr-4 bg-clip-text text-transparent
-      bg-linear-to-r ${mode === "COMMAND" ? "from-indigo-200 via-blue-200 to-fuchsia-200" :
-          "from-orange-400 via-amber-200 to-fuchsia-200"}`}
+      bg-linear-to-r ${mode === "COMMAND" ?
+          "from-indigo-700 via-blue-700 to-fuchsia-700 dark:from-indigo-200 dark:via-blue-200 dark:to-fuchsia-200" :
+          "from-red-700 via-amber-700 to-fuchsia-700 dark:from-orange-400 dark:via-amber-200 dark:to-fuchsia-200"}`}
       >{mode}</span>
       {mode === "COMMAND" ? (
         <>
@@ -130,7 +131,7 @@ export const MarkdownToolbar = ({
           <span>&quot;esc&quot; command mode</span>
           <span className="text-blue-150">|</span>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center bg-orange-100 dark:bg-orange-900/90 font-semibold cursor-pointer'
             onClick={() => {
               editor.commands.setParagraph();
               editor.chain().focus().run();
@@ -138,7 +139,7 @@ export const MarkdownToolbar = ({
             p
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("# ", editor);
@@ -148,7 +149,7 @@ export const MarkdownToolbar = ({
             h1
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("## ", editor);
@@ -158,7 +159,7 @@ export const MarkdownToolbar = ({
             h2
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("## ", editor);
@@ -168,7 +169,7 @@ export const MarkdownToolbar = ({
             h3
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("* ", editor);
@@ -178,7 +179,7 @@ export const MarkdownToolbar = ({
             <List size={16} />
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("1. ", editor);
@@ -188,7 +189,7 @@ export const MarkdownToolbar = ({
             <ListOrdered size={16} />
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("[] ", editor);
@@ -198,7 +199,7 @@ export const MarkdownToolbar = ({
             <ListTodo size={16} />
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={() => {
               uploadImage();
             }}>
@@ -206,7 +207,7 @@ export const MarkdownToolbar = ({
           </button>
           <input type="file" id="image" style={{ display: 'none' }} ref={imageFile} accept="image/*" onChange={handleImage} />
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockEnd().run();
               await typeWithDelay("\n---\n", editor);
@@ -216,7 +217,7 @@ export const MarkdownToolbar = ({
             -
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockEnd().run();
               await typeWithDelay("\n```\n", editor);
@@ -226,7 +227,7 @@ export const MarkdownToolbar = ({
             <Code size={16} />
           </button>
           <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
             onClick={async () => {
               editor.chain().focus().selectTextblockStart().run();
               await typeWithDelay("> ", editor);
