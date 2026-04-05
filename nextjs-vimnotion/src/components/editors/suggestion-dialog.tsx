@@ -112,7 +112,7 @@ export const SuggestionDialog = ({
 			const toChange = suggestion.newString;
 
 			const lineNumber = Math.min(suggestion.startLine, view.state.doc.lines);
-			const line = view.state.doc.line(lineNumber);
+			const line = view.state.doc.line(lineNumber + 1);
 
 			view.dispatch({
 				changes: {

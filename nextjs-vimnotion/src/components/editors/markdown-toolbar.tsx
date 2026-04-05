@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ToolbarExec } from './toolbar-exec';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
+import { Quote, Code, Image, List, ListTodo, ListOrdered } from 'lucide-react';
 
 export const MarkdownToolbar = ({
   mode,
@@ -85,8 +86,86 @@ export const MarkdownToolbar = ({
           </form>
         </>
       ) : (
-        <div>
-          <span>esc:command mode</span>
+        <div className='flex items-center gap-4'>
+          <span>&quot;esc&quot; command mode</span>
+          <span className="text-blue-200">|</span>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+              editor.commands.setParagraph();
+            }}>
+            p
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            h1
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            h2
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            h3
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <List size={16} />
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <ListOrdered size={16} />
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <ListTodo size={16} />
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <Image size={16} />
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            -
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <Code size={16} />
+          </button>
+          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          px-2 py-0.5 flex items-center bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+
+            }}>
+            <Quote size={16} />
+          </button>
         </div>
       )}
     </div>
