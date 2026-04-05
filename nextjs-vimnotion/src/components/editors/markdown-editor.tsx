@@ -10,6 +10,8 @@ import { SuggestionSidebar } from "./suggestion-sidebar";
 import { TableKit } from '@tiptap/extension-table';
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import { MarkdownToolbar } from "./markdown-toolbar";
+import { all, createLowlight } from 'lowlight';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
 export const MarkdownEditor = ({
 	paneId
@@ -30,29 +32,35 @@ export const MarkdownEditor = ({
 
 	const [mode, setMode] = useState<"COMMAND" | "INSERT">("COMMAND");
 	const modeRef = useRef<"COMMAND" | "INSERT">("COMMAND");
-	const execRef = useRef<string>("");
+
+	const lowlight = createLowlight(all)
 
 	useEffect(() => {
 		modeRef.current = mode;
 	}, [mode]);
 
 	const editor = useEditor({
-		extensions: [StarterKit, Image, CustomFileHandler, TableKit,
-			TaskList.configure({
-				HTMLAttributes: {
-					class: "contains-task-list"
-				}
-			}),
-			TaskItem.configure({
-				HTMLAttributes: {
-					class: "task-list-item"
+		extensions: [StarterKit.configure({
+			codeBlock: false
+		}),
+			Image, CustomFileHandler, TableKit,
+		TaskList.configure({
+			HTMLAttributes: {
+				class: "contains-task-list"
+			}
+		}),
+		TaskItem.configure({
+			HTMLAttributes: {
+				class: "task-list-item"
+			},
+			a11y: {
+				checkboxLabel(_, checked) {
+					return checked ? "task completed" : "task incomplete"
 				},
-				a11y: {
-					checkboxLabel(_, checked) {
-						return checked ? "task completed" : "task incomplete"
-					},
-				}
-			})],
+			}
+		}),
+		CodeBlockLowlight.configure({ lowlight }),
+		],
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {

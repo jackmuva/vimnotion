@@ -22,11 +22,10 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - tiptap editor
-    - [ ] codeblock in tiptap
     - [ ] nested checkboxes
 - agent
-    - [x] compaction hook
-    - [x] test automated delete session
+    - [ ] compaction hook
+    - [ ] test automated delete session
     - [ ] Read file in sections
 - [ ] RSS feed
 - bug fixes

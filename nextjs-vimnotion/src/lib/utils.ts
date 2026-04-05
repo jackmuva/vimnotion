@@ -81,6 +81,7 @@ export const markdownToHtml = async (markdown: string): Promise<string> => {
 		.use(remarkRehype)
 		.use(rehypeStringify)
 		.process(markdown);
+	console.log("md to html: ", rehypeToTiptap(String(file)));
 	return rehypeToTiptap(String(file));
 }
 

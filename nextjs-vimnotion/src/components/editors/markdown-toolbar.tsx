@@ -32,6 +32,7 @@ export const MarkdownToolbar = ({
   const [exec, setExec] = useState<ToolbarExec | null>(null);
   const imageFile = useRef<HTMLInputElement | null>(null);
 
+
   useEffect(() => {
     const toolbarExec: ToolbarExec = new ToolbarExec(
       () => splitPane(SplitState.VERTICAL),
