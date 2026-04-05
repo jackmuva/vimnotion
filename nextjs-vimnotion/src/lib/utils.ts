@@ -81,7 +81,6 @@ export const markdownToHtml = async (markdown: string): Promise<string> => {
 		.use(remarkRehype)
 		.use(rehypeStringify)
 		.process(markdown);
-	console.log("before parsing: ", String(file));
 	return rehypeToTiptap(String(file));
 }
 
@@ -96,7 +95,6 @@ export const formatMarkdown = async (markdown: string): Promise<string> => {
 }
 
 export const htmlToMarkdown = async (html: string): Promise<string> => {
-	console.log("tiptap html: ", tiptapToRehype(html));
 	const file = await unified()
 		.use(rehypeParse)
 		.use(rehypeRemark)

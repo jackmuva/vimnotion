@@ -22,7 +22,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 
 ## Immediate Todos
 - tiptap editor
-    - [x] toolbar
     - [ ] codeblock in tiptap
     - [ ] nested checkboxes
 - agent

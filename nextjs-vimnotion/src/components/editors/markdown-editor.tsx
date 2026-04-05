@@ -56,7 +56,6 @@ export const MarkdownEditor = ({
 		content: '<p>Loading...</p>',
 		immediatelyRender: false,
 		onCreate: async ({ editor: currentEditor }) => {
-			console.log("html: ", await markdownToHtml(pane[paneId].buffer));
 			currentEditor
 				.chain()
 				.setContent(await markdownToHtml(pane[paneId].buffer))
@@ -67,7 +66,6 @@ export const MarkdownEditor = ({
 				.run()
 		},
 		onUpdate: async ({ editor: currentEditor }) => {
-			console.log("html:", currentEditor.getHTML());
 			const currentPane: PaneNode = getPane(paneId);
 			const updatedPane = {
 				[paneId]: {
