@@ -51,7 +51,6 @@ export const applyPanelBindings = ({
 
 	Vim.defineEx('quit', 'q', function() {
 		const activePanel: PanelType = getActivePanel();
-		const paneData = getPane(getActivePane())[getActivePane()];
 		if (activePanel === PanelType.MAIN) {
 			closePane();
 		} else if (activePanel === PanelType.SIDEBAR) {

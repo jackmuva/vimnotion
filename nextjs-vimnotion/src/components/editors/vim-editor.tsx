@@ -169,6 +169,7 @@ export const VimEditor = ({
 					anchor: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
 					head: pane[paneId].cursorPosition > vimEditor.state.doc.length ? vimEditor.state.doc.length : pane[paneId].cursorPosition,
 				},
+				scrollIntoView: true,
 			});
 			vimEditor.scrollDOM.scrollTop = pane[paneId].scrollPosition;
 		}
