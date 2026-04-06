@@ -24,6 +24,23 @@ export default async function BlogPage() {
 					Jack's Blog, Hosted on VimNotion
 				</h1>
 				<div className="flex flex-col gap-8 text-base ">
+					{/* <Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/writing-experience`}
+						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
+						pb-2 hover:text-foreground/30">
+						<div className="flex w-full justify-between items-center">
+							<h2 className="text-xl">
+								Bringing Developer Experience to Word Processors
+							</h2>
+							<div>
+								Published: April 4, 2026
+							</div>
+						</div>
+						<div>
+							Written by: Jack
+						</div>
+						<div className="text-sm lineclamp-3">
+						</div>
+					</Link> */}
 					<Link href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/blog/why-write-with-vim`}
 						target="_self" className="flex flex-col gap-2 border-b border-b-foreground/30
 						pb-2 hover:text-foreground/30">

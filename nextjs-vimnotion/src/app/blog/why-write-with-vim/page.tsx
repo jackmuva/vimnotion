@@ -36,9 +36,6 @@ export default async function WhyVimPage() {
 								Published: January 31, 2025
 							</div>
 						</div>
-						<div className="text-sm lineclamp-3">
-
-						</div>
 					</div>
 				</div>
 				<h1>

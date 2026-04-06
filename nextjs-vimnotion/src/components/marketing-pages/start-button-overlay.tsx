@@ -9,7 +9,7 @@ export const StartButtonOverlay = ({
 }: {
 	variant: "sm" | "normal",
 }) => {
-	const buttonStyle = variant === "sm" ? `font-robo-slab text-lg px-2 h-8
+	const buttonStyle = variant === "sm" ? `font-robo-slab text-base sm:text-lg px-2 h-7 sm:h-8
 					border-yellow-600 text-[#151515] border-b-4 border bg-[#ffd497]
 					hover:border-b-2 hover:translate-y-0.5` :
 		`font-robo-slab text-3xl px-8 h-12
