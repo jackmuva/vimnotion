@@ -21,6 +21,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
 ## Immediate Todos
+- [ ] toast-like notifications for file saved
 - tiptap editor
     - [ ] nested checkboxes
 - agent
@@ -30,6 +31,9 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] RSS feed
 - bug fixes
     - [ ] window moving on markdown editor
+    - [ ] toolbar overflow
+    - [x] No scrollbar resetting on save
+        - This is a result of the reformat markdown
 
 ## Next Todos
 - [ ] create teams

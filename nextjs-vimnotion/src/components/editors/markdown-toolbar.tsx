@@ -89,7 +89,7 @@ export const MarkdownToolbar = ({
 
   return (
     <div className={`rounded-sm h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]
-      items-center relative
+      items-center relative 
 					${mode === "COMMAND"
         ? "bg-radial-[at_50%_175%] from-background to-indigo-900/20 dark:to-indigo-900/75 to-100%"
         : "bg-radial-[at_50%_100%] from-background to-orange-900/20 dark:to-orange-900/75 to-100%"
@@ -127,115 +127,117 @@ export const MarkdownToolbar = ({
           </form>
         </>
       ) : (
-        <div className='flex items-center gap-4'>
-          <span>&quot;esc&quot; command mode</span>
+        <div className='flex items-center gap-4 w-full h-full p-1'>
+          <span className='w-fit'>&quot;esc&quot; command mode</span>
           <span className="text-blue-150">|</span>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center bg-orange-100 dark:bg-orange-900/90 font-semibold cursor-pointer'
-            onClick={() => {
-              editor.commands.setParagraph();
-              editor.chain().focus().run();
-            }}>
-            p
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+          <div className='flex items-center flex-wrap gap-x-4 gap-y-1 overflow-y-auto h-full'>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                           bg-orange-100 dark:bg-orange-900/90 font-semibold cursor-pointer'
+              onClick={() => {
+                editor.commands.setParagraph();
+                editor.chain().focus().run();
+              }}>
+              p
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("# ", editor);
+                editor.commands.setHeading({ level: 1 });
+                editor.chain().focus().run();
+              }}>
+              h1
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("## ", editor);
+                editor.commands.setHeading({ level: 2 });
+                editor.chain().focus().run();
+              }}>
+              h2
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("### ", editor);
+                editor.commands.setHeading({ level: 3 });
+                editor.chain().focus().run();
+              }}>
+              h3
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("# ", editor);
-              editor.commands.setHeading({ level: 1 });
-              editor.chain().focus().run();
-            }}>
-            h1
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("* ", editor);
+                editor.commands.toggleBulletList();
+                editor.chain().focus().run();
+              }}>
+              <List size={16} />
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("## ", editor);
-              editor.commands.setHeading({ level: 2 });
-              editor.chain().focus().run();
-            }}>
-            h2
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("1. ", editor);
+                editor.commands.toggleOrderedList();
+                editor.chain().focus().run();
+              }}>
+              <ListOrdered size={16} />
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("### ", editor);
-              editor.commands.setHeading({ level: 3 });
-              editor.chain().focus().run();
-            }}>
-            h3
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("[] ", editor);
+                editor.commands.toggleTaskList();
+                editor.chain().focus().run();
+              }}>
+              <ListTodo size={16} />
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("* ", editor);
-              editor.commands.toggleBulletList();
-              editor.chain().focus().run();
-            }}>
-            <List size={16} />
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              onClick={() => {
+                uploadImage();
+              }}>
+              <Image size={16} />
+            </button>
+            <input type="file" id="image" style={{ display: 'none' }} ref={imageFile} accept="image/*" onChange={handleImage} />
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+                          dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
+              onClick={async () => {
+                editor.chain().focus().selectTextblockEnd().run();
+                await typeWithDelay("\n---\n", editor);
+                editor.commands.insertContent("<hr/>");
+                editor.chain().focus().run();
+              }}>
+              -
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("1. ", editor);
-              editor.commands.toggleOrderedList();
-              editor.chain().focus().run();
-            }}>
-            <ListOrdered size={16} />
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              onClick={async () => {
+                editor.chain().focus().selectTextblockEnd().run();
+                await typeWithDelay("\n```\n", editor);
+                editor.commands.insertContent("<pre></pre>");
+                editor.chain().focus().run();
+              }}>
+              <Code size={16} />
+            </button>
+            <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
                           px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("[] ", editor);
-              editor.commands.toggleTaskList();
-              editor.chain().focus().run();
-            }}>
-            <ListTodo size={16} />
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={() => {
-              uploadImage();
-            }}>
-            <Image size={16} />
-          </button>
-          <input type="file" id="image" style={{ display: 'none' }} ref={imageFile} accept="image/*" onChange={handleImage} />
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockEnd().run();
-              await typeWithDelay("\n---\n", editor);
-              editor.commands.insertContent("<hr/>");
-              editor.chain().focus().run();
-            }}>
-            -
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockEnd().run();
-              await typeWithDelay("\n```\n", editor);
-              editor.commands.insertContent("<pre></pre>");
-              editor.chain().focus().run();
-            }}>
-            <Code size={16} />
-          </button>
-          <button className='text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
-                          px-2 py-0.5 flex items-center dark:bg-orange-900/90 bg-orange-100 font-semibold cursor-pointer'
-            onClick={async () => {
-              editor.chain().focus().selectTextblockStart().run();
-              await typeWithDelay("> ", editor);
-              editor.commands.setBlockquote();
-              editor.chain().focus().run();
-            }}>
-            <Quote size={16} />
-          </button>
+              onClick={async () => {
+                editor.chain().focus().selectTextblockStart().run();
+                await typeWithDelay("> ", editor);
+                editor.commands.setBlockquote();
+                editor.chain().focus().run();
+              }}>
+              <Quote size={16} />
+            </button>
+          </div>
         </div>
       )}
     </div>
