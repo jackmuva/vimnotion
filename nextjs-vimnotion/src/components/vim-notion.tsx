@@ -2,7 +2,7 @@
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { DirectoryTree, SidebarData } from "@/types/sidebar-types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LeaderPanel } from "@/components/leader-panels/leader-panel";
 import { WindowPanel } from "@/components/leader-panels/window-panel";
 import { TabContainer } from "@/components/tab-container";
@@ -18,6 +18,8 @@ import { AiPanel } from "./leader-panels/ai-panel";
 import { AiModal } from "./modals/ascii-modal";
 import { getDirectory } from "@/services/api-service";
 import { SessionModal } from "./modals/session-modal";
+import { WelcomeModal } from "./welcome-modal";
+import { EditorType } from "@/types/editor-types";
 
 export default function VimNotion() {
 	const leaderPanel = useEditorStore((state) => state.openLeaderPanel);
@@ -29,8 +31,23 @@ export default function VimNotion() {
 	const imageModal = useEditorStore((state) => state.openImageModal);
 	const publishModal = useEditorStore((state) => state.openPublishModal);
 	const sessionModal = useEditorStore((state) => state.openSessionModal);
-	const { openSidebar, directoryConfirmation, setDirectoryState,
-		setProposedDirectoryState, setLocation, } = useEditorStore((state) => state);
+	const openSidebar = useEditorStore((state) => state.openSidebar);
+	const directoryConfirmation = useEditorStore((state) => state.directoryConfirmation);
+	const setDirectoryState = useEditorStore((state) => state.setDirectoryState);
+	const setProposedDirectoryState = useEditorStore((state) => state.setProposedDirectoryState);
+	const setLocation = useEditorStore((state) => state.setLocation);
+	const setDefaultEditorType = useEditorStore((state) => state.setDefaultEditorType);
+
+	const [welcome, setWelcome] = useState<boolean>(false);
+
+	useEffect(() => {
+		const freshLogin: string | null = window.localStorage.getItem("defaultEditor");
+		if (!freshLogin) {
+			setWelcome(true);
+		} else {
+			setDefaultEditorType(window.localStorage.getItem("defaultEditor") === "markdown" ? EditorType.MARKDOWN : EditorType.VIM)
+		}
+	}, []);
 
 	useEffect(() => {
 		if (leaderPanel) {
@@ -130,8 +147,9 @@ export default function VimNotion() {
 	return (
 		<div className="bg-background w-dvw h-dvh flex justify-center items-center pt-14 px-4 font-robo-slab text-base">
 			<Header />
+			{welcome && <WelcomeModal close={() => setWelcome(false)} />}
 			{openSidebar && <Sidebar sidebarData={data} sidebarDataIsLoading={isLoading} />}
-			<TabContainer />
+			{!welcome && <TabContainer />}
 			{leaderPanel && <LeaderPanel />}
 			{windowPanel && <WindowPanel />}
 			{searchPanel && <SearchPanel />}

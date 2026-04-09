@@ -9,17 +9,20 @@ export const TabContainer = () => {
 	const initTabMap = useEditorStore(state => state.initTabMap);
 	const tabMap = useEditorStore(state => state.tabMap);
 	const [isClient, setIsClient] = useState(false);
-	const { toggleSidebar, toggleLeaderPanel } = useEditorStore((state) => state);
+	const toggleSidebar = useEditorStore((state) => state.toggleSidebar);
+	const toggleLeaderPanel = useEditorStore((state) => state.toggleLeaderPanel);
+	const defaultEditorType = useEditorStore((state) => state.defaultEditorType);
 
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
 
 	useEffect(() => {
-		if (tabs && tabs.length === 0) {
+		if (tabs && tabs.length === 0 && defaultEditorType) {
+			console.log("initializing tabs");
 			initTabMap();
 		}
-	}, [tabs]);
+	}, [tabs, defaultEditorType]);
 
 	if (!isClient || !tabs || tabs.length === 0) {
 		return <div className="h-full w-full text-center font-robo-mono">Loading...</div>;

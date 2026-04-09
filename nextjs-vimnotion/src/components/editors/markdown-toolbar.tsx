@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ToolbarExec } from './toolbar-exec';
 import { useEditorStore } from '@/store/editor-store';
 import { PanelType, PaneNode, SplitState } from '@/types/editor-types';
-import { Quote, Code, Image, List, ListTodo, ListOrdered } from 'lucide-react';
+import { Quote, Code, Image, List, ListTodo, ListOrdered, Save } from 'lucide-react';
 import { uploadImageToBackend } from '@/services/api-service';
 
 export const MarkdownToolbar = ({
@@ -129,6 +129,14 @@ export const MarkdownToolbar = ({
       ) : (
         <div className='flex items-center gap-4 w-full h-full p-1'>
           <span className='w-fit'>&quot;esc&quot; command mode</span>
+          <span className="text-blue-150">|</span>
+          <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 
+              px-2 py-0.5 flex items-center bg-orange-100 dark:bg-orange-900/90 font-semibold cursor-pointer'
+            onClick={() => {
+              exec?.write();
+            }}>
+            <Save size={16} />
+          </button>
           <span className="text-blue-150">|</span>
           <div className='flex items-center flex-wrap gap-x-4 gap-y-1 overflow-y-auto h-full'>
             <button className='h-6 w-8 text-sm font-robo-mono border border-foreground-muted/50 rounded-sm 

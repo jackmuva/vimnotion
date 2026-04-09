@@ -1,4 +1,4 @@
-import { PaneNode, SplitState, Direction, ChildType, PanelType, TabMap } from "@/types/editor-types";
+import { PaneNode, SplitState, Direction, ChildType, PanelType, TabMap, EditorType } from "@/types/editor-types";
 import { DirectoryChanges, DirectoryTree } from "@/types/sidebar-types";
 import { SearchResults, SearchType } from "@/types/search-types";
 
@@ -32,10 +32,12 @@ export type ToggleState = {
 };
 
 export type PanelState = {
+	defaultEditorType: EditorType | null;
 	activePane: string;
 	paneTree: PaneNode;
 	activePanel: PanelType;
 
+	setDefaultEditorType: (editorType: EditorType) => void;
 	getActivePane: () => string;
 	getActivePanel: () => PanelType;
 	updateActivePane: (newPane: string) => void;

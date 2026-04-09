@@ -10,10 +10,12 @@ export const createPanelSlice = (
 	set: StoreSetter,
 	get: StoreGetter
 ) => ({
+	defaultEditorType: null,
 	activePanel: PanelType.MAIN,
 	activePane: "",
 	paneTree: {} as PaneNode,
 
+	setDefaultEditorType: (editorType: EditorType) => set({ defaultEditorType: editorType }),
 	getActivePane: (): string => get().activePane,
 
 	getPaneById: (paneId: string): PaneNode => {
@@ -41,7 +43,7 @@ export const createPanelSlice = (
 
 	newRoot: () => {
 		const rootId = v4();
-		const { paneTree, setPaneTree } = get();
+		const { paneTree, setPaneTree, defaultEditorType } = get();
 		const newPaneTree: PaneNode = paneTree;
 		newPaneTree[rootId] = {
 			state: SplitState.NONE,
@@ -55,7 +57,7 @@ export const createPanelSlice = (
 			},
 			childType: ChildType.NONE,
 			deleted: false,
-			editorType: EditorType.VIM,
+			editorType: defaultEditorType ?? EditorType.VIM,
 			buffer: START_BUFFER,
 			bufferVersion: 1,
 			suggestionState: {
