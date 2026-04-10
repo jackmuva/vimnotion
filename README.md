@@ -20,22 +20,14 @@ docker tag go-vimnotion registry.digitalocean.com/vimnotion/go-vimnotion:latest
 docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 ```
 
-## Immediate Todos
+## Final Todos
 - [ ] toast-like notifications for file saved
-- tiptap editor
-    - [ ] save button in toolbar
-    - [ ] nested checkboxes
-- agent
-    - [ ] compaction hook
-    - [ ] test automated delete session
-    - [ ] Read file in sections
 - [ ] RSS feed
 - bug fixes
-    - [ ] window moving on markdown editor
-    - [ ] No scrollbar resetting on save
-        - This is a result of the reformat markdown
 - normie config
     - [ ] directory
+    - [ ] agent
+- markdown export
 
 ## Next Todos
 - [ ] create teams
@@ -43,8 +35,8 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] extensability with hotkeys for apis
 - [ ] version history
   - [ ] trash
-- [ ] local md downloads
 - [ ] backlinking
+- [ ] nested checkboxes
 
 ## Nice to haves
 - optimizations
@@ -59,7 +51,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] model selector?
 - spreadsheets
 - inbox/messaging
-
 
 # Marketing Todos
 - [ ] blog post on friction, DX, and WX
