@@ -232,7 +232,7 @@ export const SidebarEditor = () => {
 				</div>
 				<div low-data-tooltip="&quot;:w&quot; to save changes"
 					className="text-sm flex-1 font-robo-mono">
-					<button className="font-robo-mono w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
+					<button className="bg-foreground/20 font-robo-mono w-full border border-foreground-muted/50 rounded-sm px-2 py-1 flex gap-1 items-center
 					justify-center"
 						onClick={() => setDirectoryConfirmation(true)}>
 						<SaveIcon size={16} className="text-foreground/90" />

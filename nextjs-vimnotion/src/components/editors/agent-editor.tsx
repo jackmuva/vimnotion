@@ -35,6 +35,7 @@ import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
 import { SendIcon } from "lucide-react";
+import { submitAgentEditorMessage } from "./extensions/agent-bindings";
 
 export const HAIKU_45_CONTEXT_WINDOW = 200000
 
@@ -88,7 +89,8 @@ export const AgentEditor = ({
 			isFile: boolean,
 		},
 	} = useEditorStore((state) => state.constructLocationMapHelper);
-	const { updateActivePane, getPaneById, updatePane, getLocationById, setLocation, activePanel } = useEditorStore(state => state);
+	const { updateActivePane, getPaneById, updatePane, activePanel, getLocationById, setLocation, getPaneTree, openFileInBuffer, getDirectoryState } = useEditorStore(state => state);
+
 	const pane: PaneNode = getPaneById(paneId);
 
 
@@ -382,18 +384,20 @@ export const AgentEditor = ({
 				{memoizedMessages}
 				<div className="w-full flex flex-col gap-4">
 					<div className="w-full outline outline-offset-2 outline-foreground-muted/50"
-						id={`agent-editor-${paneId}`} />
+						id={`agent-editor-${paneId}`}
+						low-data-tooltip="&quot;i&quot; to go into [i]nsert mode and start typing" />
+					<button className="w-fit items-center px-2 outline outline-offset-2 outline-foreground-muted/50 flex gap-2"
+						onClick={async () => {
+							await submitAgentEditorMessage(paneId, activePanel, getPaneTree, updatePane, openFileInBuffer, getDirectoryState, getLocationMap)
+						}}
+						low-data-tooltip="&quot;Enter&quot; while in normal mode (&quot;ESC&quot;)" >
+						<SendIcon size={16} />
+						<label>Send</label>
+					</button>
 				</div>
 			</div>
 
 		</div>
 	);
 }
-// <button className="w-fit items-center px-2 outline outline-offset-2 outline-foreground-muted/50 flex gap-2"
-// 	onClick={() => {
-//
-// 	}}>
-// 	<SendIcon size={16} />
-// 	<label>Send</label>
-// </button>
 

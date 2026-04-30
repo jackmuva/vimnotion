@@ -27,7 +27,6 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
     - [ ] bug with window focus when moving tabs
 - normie config
     - [ ] directory
-    - [ ] agent
 - markdown export
 
 ## Next Todos
