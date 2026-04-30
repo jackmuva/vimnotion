@@ -88,12 +88,8 @@ export const MarkdownToolbar = ({
   }
 
   return (
-    <div className={`rounded-sm h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]
-      items-center relative 
-					${mode === "COMMAND"
-        ? "bg-radial-[at_50%_175%] from-background to-indigo-900/20 dark:to-indigo-900/75 to-100%"
-        : "bg-radial-[at_50%_100%] from-background to-orange-900/20 dark:to-orange-900/75 to-100%"
-      }`}>
+    <div className={`h-16 flex px-4 text-sm font-mono w-full max-w-[1100px]
+      items-center relative`}>
       <span className={`text-base font-bold mr-4 bg-clip-text text-transparent
       bg-linear-to-r ${mode === "COMMAND" ?
           "from-indigo-700 via-blue-700 to-fuchsia-700 dark:from-indigo-200 dark:via-blue-200 dark:to-fuchsia-200" :
@@ -119,8 +115,12 @@ export const MarkdownToolbar = ({
               //@ts-expect-error value does exist on html element
               await exec.executeCommand(input.value);
               //@ts-expect-error value does exist on html element
-              input.value = "";
-              input.blur();
+              input.value = "success";
+              setTimeout(() => {
+                //@ts-expect-error value does exist on html element
+                input.value = "";
+                input.blur();
+              }, 3000);
             }
           }}>
             <input className='h-4 absolute bottom-1 left-4 focus:outline-none w-full' id={`exec-input-${paneId}`} />

@@ -24,6 +24,7 @@ docker push registry.digitalocean.com/vimnotion/go-vimnotion:latest
 - [ ] toast-like notifications for file saved
 - [ ] RSS feed
 - bug fixes
+    - [ ] bug with window focus when moving tabs
 - normie config
     - [ ] directory
     - [ ] agent

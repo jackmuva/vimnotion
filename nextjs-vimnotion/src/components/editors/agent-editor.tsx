@@ -34,6 +34,7 @@ import { PaneNode, AgentState, PanelType } from "@/types/editor-types";
 import { AiMessage } from "@/types/ai-types";
 import { DirectoryTree } from "@/types/sidebar-types";
 import { v4 } from "uuid";
+import { SendIcon } from "lucide-react";
 
 export const HAIKU_45_CONTEXT_WINDOW = 200000
 
@@ -379,11 +380,20 @@ export const AgentEditor = ({
 					</div>
 				}
 				{memoizedMessages}
-				<div className="w-full outline outline-offset-2 outline-foreground-muted/50"
-					id={`agent-editor-${paneId}`}
-				/>
+				<div className="w-full flex flex-col gap-4">
+					<div className="w-full outline outline-offset-2 outline-foreground-muted/50"
+						id={`agent-editor-${paneId}`} />
+				</div>
 			</div>
 
 		</div>
 	);
 }
+// <button className="w-fit items-center px-2 outline outline-offset-2 outline-foreground-muted/50 flex gap-2"
+// 	onClick={() => {
+//
+// 	}}>
+// 	<SendIcon size={16} />
+// 	<label>Send</label>
+// </button>
+

@@ -196,7 +196,7 @@ export const MarkdownEditor = ({
 	return (
 		<div className={`${activePane === paneId ? "" : "brightness-[82%]"} h-full w-full 
 				z-20 bg-background flex`}>
-			<div className="flex flex-col justify-between items-center space-y-2 p-2 relative h-full w-full"
+			<div className="flex flex-col justify-between items-center relative h-full w-full"
 				onClick={() => {
 					updateActivePane(paneId);
 					setActivePanel(PanelType.MAIN);
