@@ -47,7 +47,7 @@ export const PublishModal = () => {
 		<div className="font-robo-mono text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
 			z-30 bg-background h-48 max-w-11/12 w-[700px] p-4 
 			flex flex-col justify-between outline  outline-offset-2 
-			outline-foreground-muted/50">
+			outline-foreground-muted/50 max-h-5/6">
 			<div className="h-full w-full flex flex-col p-4 border border-foreground-muted/50 mb-2 justify-center">
 				{activeTree[activePane].public ? `Published at ` : "Currently private"}
 				{activeTree[activePane].public && <a href={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/doc/${activeTree[activePane].fileId.split("|")[0]}`}

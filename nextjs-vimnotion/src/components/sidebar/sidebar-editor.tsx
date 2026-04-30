@@ -22,7 +22,7 @@ import { customTheme } from "../editors/vim-editor-theme";
 import { birdsOfParadise as darkTheme, noctisLilac as lightTheme } from 'thememirror';
 import { DirectoryTree } from "@/types/sidebar-types";
 import { useEditorStore } from "@/store/editor-store";
-import { FilePenIcon, FolderClosedIcon, SaveIcon } from "lucide-react";
+import { EclipseIcon, EllipsisIcon, FilePenIcon, FolderClosedIcon, SaveIcon, TrashIcon } from "lucide-react";
 
 
 export const SidebarEditor = () => {
@@ -30,10 +30,21 @@ export const SidebarEditor = () => {
 	const themeRef = useRef(new Compartment());
 	const theme = themeRef.current;
 	const [isClient, setIsClient] = useState(false);
-	const { location, setOilLine, directoryState, pushSidebarBufferHistory, setSidebarBufferMap,
-		editingDirectory, proposedDirectoryState, evaluateOilBufferChanges, directoryConfirmation,
-		setDirectoryConfirmation, dirCursorPosition, setDirCursorPosition,
-	} = useEditorStore((state) => state);
+	const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+	const menuRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+	const buttonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
+	const location = useEditorStore((state) => state.location);
+	const setOilLine = useEditorStore((state) => state.setOilLine);
+	const directoryState = useEditorStore((state) => state.directoryState);
+	const pushSidebarBufferHistory = useEditorStore((state) => state.pushSidebarBufferHistory);
+	const setSidebarBufferMap = useEditorStore((state) => state.setSidebarBufferMap);
+	const editingDirectory = useEditorStore((state) => state.editingDirectory);
+	const proposedDirectoryState = useEditorStore((state) => state.proposedDirectoryState);
+	const evaluateOilBufferChanges = useEditorStore((state) => state.evaluateOilBufferChanges);
+	const directoryConfirmation = useEditorStore((state) => state.directoryConfirmation);
+	const setDirectoryConfirmation = useEditorStore((state) => state.setDirectoryConfirmation);
+	const dirCursorPosition = useEditorStore((state) => state.dirCursorPosition);
+	const setDirCursorPosition = useEditorStore((state) => state.setDirCursorPosition);
 
 	const bufferChangeListener: Extension = EditorView.updateListener.of((v) => {
 		if (v.docChanged) {
@@ -42,7 +53,7 @@ export const SidebarEditor = () => {
 		}
 	});
 
-	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree) => {
+	const getSidebarBuffer = (locArr: Array<string>, dir: DirectoryTree, setting: boolean = true) => {
 		let curDir: DirectoryTree = dir;
 		for (const loc of locArr) {
 			if (!loc) continue;
@@ -54,9 +65,12 @@ export const SidebarEditor = () => {
 		for (const fn of Object.keys(curDir)) {
 			bufferMap[fn.split("|")[1]] = fn;
 		}
-		setSidebarBufferMap(bufferMap);
+
 		const buffer = Object.keys(bufferMap).join("\n") + "\n\n\n";
-		pushSidebarBufferHistory(buffer);
+		if (setting) {
+			setSidebarBufferMap(bufferMap);
+			pushSidebarBufferHistory(buffer);
+		}
 		return buffer;
 	}
 
@@ -84,6 +98,23 @@ export const SidebarEditor = () => {
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
+
+	useEffect(() => {
+		if (openMenuId === null) return;
+
+		const handleClickOutside = (e: MouseEvent) => {
+			const menuEl = menuRefs.current[openMenuId];
+			const buttonEl = buttonRefs.current[openMenuId];
+			const target = e.target as Node;
+
+			if (menuEl && buttonEl && !menuEl.contains(target) && !buttonEl.contains(target)) {
+				setOpenMenuId(null);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, [openMenuId]);
 
 	useEffect(() => {
 		if (vimEditor) {
@@ -209,6 +240,24 @@ export const SidebarEditor = () => {
 		});
 	}
 
+	const deleteLine = (lineNum: number) => {
+		let charCount = 0;
+		if (vimEditor?.state.doc) {
+			const lineArray = vimEditor?.state.doc.toString().split("\n")
+			for (let i = 0; i < lineNum; i++) {
+				charCount += lineArray[i].length;
+			}
+
+			vimEditor?.dispatch({
+				changes: {
+					from: charCount,
+					to: charCount + lineArray[lineNum].length,
+					insert: "",
+				}
+			});
+		}
+	}
+
 	return (
 		<div className='flex flex-col gap-2 relative h-full w-full rounded-sm z-20 '>
 			<div className="flex gap-2 justify-center items-center px-2">
@@ -240,11 +289,43 @@ export const SidebarEditor = () => {
 					</button>
 				</div>
 			</div>
-			<div id={`sidebar-editor`}
-				right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
-				className={`text-sm font-robo-mono h-fit w-full overflow-y-scroll bg-transparent no-scrollbar`}>
+			<div className="flex w-full">
+				<div id={`sidebar-editor`}
+					right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
+					className={`flex-1 text-sm font-robo-mono h-fit w-full overflow-y-scroll bg-transparent no-scrollbar`}>
+				</div>
+				<div className="flex flex-col gap-0 pt-1">
+					{getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState, false).split("\n").filter((line) => line.trim() !== "").map((_, i) => {
+						return (
+							<div key={i} className="relative">
+								<button ref={(el) => {
+									if (el) buttonRefs.current[i] = el;
+								}}
+									className="bg-foreground-muted/10 rounded-sm hover:bg-foreground-muted/20 transition-colors"
+									onClick={() => setOpenMenuId(openMenuId === i ? null : i)} >
+									<EllipsisIcon size={16} />
+								</button>
+								{openMenuId === i && (
+									<div ref={(el) => {
+										if (el) menuRefs.current[i] = el;
+									}}
+										className="font-robo-mono text-sm absolute left-full ml-2 top-0 bg-background border border-foreground-muted/30 rounded-sm shadow-lg z-50 min-w-max" >
+										<button className="flex gap-1 items-center w-full py-0.5 px-2 text-left border-t border-foreground-muted/20"
+											onClick={() => {
+												deleteLine(i);
+												setOpenMenuId(null);
+											}} >
+											<TrashIcon size={16} />
+											<label>Delete</label>
+										</button>
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</div>
 			</div>
-		</div>
+		</div >
 
 	);
 }

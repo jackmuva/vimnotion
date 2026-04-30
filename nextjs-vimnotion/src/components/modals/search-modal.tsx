@@ -178,7 +178,7 @@ export const SearchModal = () => {
 
 	return (
 		<div className="font-robo-mono text-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-			z-30 h-[600px] max-h-11/12 max-w-11/12 w-[900px] 
+			z-30 max-h-[600px] h-5/6 max-w-11/12 w-[900px] 
 			flex flex-col items-center bg-background">
 			<div className="h-full w-full flex flex-col justify-between">
 				<div className="w-full h-full flex gap-4">
