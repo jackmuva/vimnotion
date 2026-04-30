@@ -245,7 +245,7 @@ export const SidebarEditor = () => {
 		if (vimEditor?.state.doc) {
 			const lineArray = vimEditor?.state.doc.toString().split("\n")
 			for (let i = 0; i < lineNum; i++) {
-				charCount += lineArray[i].length;
+				charCount += lineArray[i].length + 1;
 			}
 
 			vimEditor?.dispatch({
@@ -294,14 +294,14 @@ export const SidebarEditor = () => {
 					right-data-tooltip="<Enter> to open a file or directory. &quot;-&quot; to go back a directory"
 					className={`flex-1 text-sm font-robo-mono h-fit w-full overflow-y-scroll bg-transparent no-scrollbar`}>
 				</div>
-				<div className="flex flex-col gap-0 pt-1">
+				<div className="flex flex-col gap-[4.7px] pt-1.5">
 					{getSidebarBuffer(location.split("/"), editingDirectory ? proposedDirectoryState : directoryState, false).split("\n").filter((line) => line.trim() !== "").map((_, i) => {
 						return (
-							<div key={i} className="relative">
+							<div key={i} className="leading-none relative">
 								<button ref={(el) => {
 									if (el) buttonRefs.current[i] = el;
 								}}
-									className="bg-foreground-muted/10 rounded-sm hover:bg-foreground-muted/20 transition-colors"
+									className="p-0 bg-foreground-muted/10 rounded-sm hover:bg-foreground-muted/20"
 									onClick={() => setOpenMenuId(openMenuId === i ? null : i)} >
 									<EllipsisIcon size={16} />
 								</button>
