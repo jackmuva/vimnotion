@@ -19,7 +19,7 @@ export function DocContent({ id, content }: DocContentProps) {
 
 	return (
 		<div id={`md-editor-${id}`}
-			className="no-scrollbar pb-20 h-full max-w-[1100px] w-full overflow-y-scroll">
+			className="no-scrollbar pb-20 h-full max-w-[900px] w-full overflow-y-scroll">
 			<Markdown
 				remarkPlugins={[remarkGfm]}
 				rehypePlugins={[rehypeRaw]}
